@@ -2,7 +2,6 @@
 using System.Collections.Generic;
 using System.Collections.Immutable;
 using System.Linq;
-using Neptune.Domain;
 
 namespace Neptune.Web.ViewModel
 {
@@ -27,19 +26,19 @@ namespace Neptune.Web.ViewModel
 
         public TransacoesMes(int ano, 
                              int mes, 
-                             IEnumerable<TransacaoDomain> transacoesModel, 
+                             List<Transacao> transacoes, 
                              decimal saldoUltimoDiaMesAnterior, 
-                             List<ContaDomain> contasAtivasModel,
-                             List<ContaDomain> todasContasModel)
+                             List<Conta> contasAtivasModel,
+                             List<Conta> todasContasModel)
         {
             Ano = ano;
             Mes = mes;
 
-            transacoesModel.ToList().Sort((x, y) => x.Data.CompareTo(y.Data));
+            transacoes.ToList().Sort((x, y) => x.Data.CompareTo(y.Data));
 
             SaldoUltimoDiaMesAnterior = saldoUltimoDiaMesAnterior;
 
-            var dias = transacoesModel
+            var dias = transacoes
                 .GroupBy(item => new {item.Data.Month, item.Data.Day}).Select(x => x.First())
                 .Select(d => d.Data).ToList();
 
@@ -47,7 +46,7 @@ namespace Neptune.Web.ViewModel
             for (var index = 0; index < dias.Count; index++)
             {
                 var dia = dias[index];
-                var transacoesDia = transacoesModel.Where(x => x.Data.Day == dia.Day);
+                var transacoesDia = transacoes.Where(x => x.Data.Day == dia.Day).ToList();
 
                 if (index == 0)
                 {
@@ -77,27 +76,28 @@ namespace Neptune.Web.ViewModel
             });
         }
 
-        public void AdicionarTransacao(Transacao transacaoViewModel)
+        public void AdicionarTransacao(Transacao transacao)
         {
-            var dia = Dias.FirstOrDefault(x => (x.Data.Day == transacaoViewModel.Data.Day &&
-                x.Data.Month == transacaoViewModel.Data.Month &&
-                x.Data.Year == transacaoViewModel.Data.Year));
+            var dia = Dias.FirstOrDefault(x => (x.Data.Day == transacao.Data.Day &&
+                x.Data.Month == transacao.Data.Month &&
+                x.Data.Year == transacao.Data.Year));
 
             if (dia == null)
             {
-                var diaAnterior = Dias.FirstOrDefault(x => (x.Data.Day < transacaoViewModel.Data.AddDays(-1).Day &&
-                                                            x.Data.Month == transacaoViewModel.Data.Month &&
-                                                            x.Data.Year == transacaoViewModel.Data.Year));
+                var diaAnterior = Dias.FirstOrDefault(x => (x.Data.Day < transacao.Data.AddDays(-1).Day &&
+                                                            x.Data.Month == transacao.Data.Month &&
+                                                            x.Data.Year == transacao.Data.Year));
 
                 var saldoDoDiaAnterior = diaAnterior.ObterSaldoDoDia();
-                var transacoes = new List<TransacaoDomain>() { new TransacaoDomain(transacaoViewModel.Id, transacaoViewModel.Data, transacaoViewModel.Descricao, transacaoViewModel.Valor, transacaoViewModel.ContaId) };
-
-                var novoDia = new Dia(transacaoViewModel.Data, transacoes, saldoDoDiaAnterior);
+                var transacoes = new List<Transacao>(); 
+                transacoes.Add(transacao);
+                
+                var novoDia = new Dia(transacao.Data, transacoes, saldoDoDiaAnterior);
 
                 Dias.Add(novoDia);                
             }
             else
-                dia.AdicionarTransacao(transacaoViewModel);
+                dia.AdicionarTransacao(transacao);
 
             Dias.Sort((x, y) => x.Data.CompareTo(y.Data));
         }

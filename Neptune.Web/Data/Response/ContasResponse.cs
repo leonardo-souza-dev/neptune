@@ -8,11 +8,11 @@ using System.Collections;
 
 namespace Neptune.Web.Data
 {
-    public class ContasResponse : List<ContaDto>
+    public class ContasResponse : List<ContaResponse>
     {
     }
 
-    public class ContaDto
+    public class ContaResponse
     {
         public int Id { get; set; }
         public string Nome { get; set; }

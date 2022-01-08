@@ -1,4 +1,4 @@
-﻿using Neptune.Domain;
+﻿using Neptune.Web.Data.Response;
 using System;
 
 namespace Neptune.Web.ViewModel
@@ -12,13 +12,23 @@ namespace Neptune.Web.ViewModel
         public decimal Valor { get; set; }
         public DateTime Data { get; set; }
 
-        public Transacao(TransacaoDomain transacao)
+        public Transacao(TransacaoResponse transacao)
         {
             Id = transacao.Id;
             Descricao = transacao.Descricao;
             ContaId = transacao.ContaId;
             Valor = transacao.Valor;
             Data = transacao.Data;
+        }
+
+        public TransacaoResponse Converter()
+        {       
+            return new TransacaoResponse(Id, 
+                                         Descricao, 
+                                         Conta, 
+                                         ContaId, 
+                                         Valor, 
+                                         Data);
         }
     }
 }

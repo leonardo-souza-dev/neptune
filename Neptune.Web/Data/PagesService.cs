@@ -7,6 +7,7 @@ using System.Threading.Tasks;
 using Neptune.Web.ViewModel;
 using System;
 using Neptune.Web.Data.Response;
+using Neptune.Web.Data.Request;
 
 namespace Neptune.Web.Data
 {
@@ -22,9 +23,9 @@ namespace Neptune.Web.Data
 
         public async Task ObterTransacoesMesPage(int mes, int ano, List<int> contasId)
         {
-            var transacoesModel = await ObterTransacoesModelSort();
-            var transacoesModelMes = transacoesModel.Where(x => x.Data.Month == mes);
-            var saldoMesAnterior = await ObterSaldoMesAnterior(mes, ano, contasId, transacoesModel);
+            var transacoes = await ObterTransacoesSort();
+            var transacoesModelMes = transacoes.Where(x => x.Data.Month == mes).ToList();
+            var saldoMesAnterior = await ObterSaldoMesAnterior(mes, ano, contasId, transacoes);
 
             var todasContasModel = await ObterContasModel();
 
@@ -55,33 +56,31 @@ namespace Neptune.Web.Data
             return new Transacao(transacaoDomain);
         }
 
-        public async Task<TransacaoDomain> EditarTransacao(int id, Transacao transacao)
+        public async Task<Transacao> EditarTransacao(int id, Transacao transacao)
         {
-            var transacaoDomain = new TransacaoDomain(transacao.Id, transacao.Data, transacao.Descricao, transacao.Valor, transacao.ContaId);
-            var response = await HttpClient.PutAsJsonAsync($"/api/transacao/{id}", transacaoDomain);
+            var transacaoRequest = new TransacaoRequest(transacao.Id, 
+                                                        transacao.Descricao, 
+                                                        transacao.Valor, 
+                                                        transacao.Data, 
+                                                        transacao.ContaId);
+            var response = await HttpClient.PutAsJsonAsync($"/api/transacao/{id}", transacaoRequest);
+            var transacaoResponse = await response.Content.ReadFromJsonAsync<TransacaoResponse>();
 
-            return await response.Content.ReadFromJsonAsync<TransacaoDomain>();
+            return new Transacao(transacaoResponse);
         }
 
-        public async Task<Transacao> NovaTransacao(NovaTransacao novaTransacaoViewModel)
+        public async Task<Transacao> NovaTransacao(NovaTransacao novaTransacao)
         {
-            var transacao = new TransacaoDomain
-            {
-                Data = novaTransacaoViewModel.Data,
-                Descricao = novaTransacaoViewModel.Descricao,
-                Valor = novaTransacaoViewModel.Valor,
-                ContaId = novaTransacaoViewModel.ContaId
-            };
+            var transacaoRequest = new TransacaoRequest(novaTransacao.Descricao,
+                                                        novaTransacao.Valor, 
+                                                        novaTransacao.Data,
+                                                        novaTransacao.ContaId);
 
-            var response = await HttpClient.PostAsJsonAsync("/api/transacao", transacao);
-            var transacaoModel = await response.Content.ReadFromJsonAsync<TransacaoDomain>();
+            var response = await HttpClient.PostAsJsonAsync("/api/transacao", transacaoRequest);
+            var transacaoResponse = await response.Content.ReadFromJsonAsync<TransacaoResponse>();
 
-            return new Transacao(transacaoModel);
+            return new Transacao(transacaoResponse);
         }
-
-
-
-
 
         public async Task Atualizar()
         {
@@ -97,123 +96,44 @@ namespace Neptune.Web.Data
 
 
 
-        private async Task<List<ContaDomain>> ObterContasModel()
+        private async Task<List<Conta>> ObterContasModel()
         {
-            return await HttpClient.GetFromJsonAsync<List<ContaDomain>>("/api/conta");
+            var contasResponse = await HttpClient.GetFromJsonAsync<ContasResponse>("/api/conta");
+            var contas = new List<Conta>();
+            contasResponse.ForEach(x => contas.Add(new Conta(x)));
+
+            return contas;
         }
 
-        private async Task<decimal> ObterSaldoMesAnterior(int mes, int ano, List<int> contasId, List<TransacaoDomain> transacoes)
+        private async Task<decimal> ObterSaldoMesAnterior(int mes, 
+                                                          int ano, 
+                                                          List<int> contasId, 
+                                                          List<Transacao> transacoes)
         {
-            var contasModel = new List<ContaDomain>();
+            var contas = new List<Conta>();
             foreach (var contaId in contasId)
             {
-                var contaModel2 = await HttpClient.GetFromJsonAsync<ContaDomain>($"/api/conta/{contaId}");
-                contasModel.Add(contaModel2);
+                var contaResponse = await HttpClient.GetFromJsonAsync<ContaResponse>($"/api/conta/{contaId}");
+                contas.Add(new Conta(contaResponse));
             }
-            var saldoInicialContas = contasModel.Sum(x => x.SaldoInicial);
+            var saldoInicialContas = contas.Sum(x => x.SaldoInicial);
 
             var transacoesMesPassadoPraTras = transacoes.Where(x => x.Data.Month < mes && x.Data.Year <= ano);
-            var saldoMesAnterior = saldoInicialContas - transacoesMesPassadoPraTras.Where(x => contasId.Contains(x.ContaId)).Sum(x => x.Valor);
+            var saldoMesAnterior = 
+                saldoInicialContas - transacoesMesPassadoPraTras.Where(x => contasId.Contains(x.ContaId)).Sum(x => x.Valor);
 
             return saldoMesAnterior;
         }
 
-        private async Task<List<TransacaoDomain>> ObterTransacoesModelSort()
+        private async Task<List<Transacao>> ObterTransacoesSort()
         {
-            var transacoes = await HttpClient.GetFromJsonAsync<List<TransacaoDomain>>("/api/transacao");
-            transacoes.Sort((x, y) => x.Data.CompareTo(y.Data));
+            var transacoesResponse = await HttpClient.GetFromJsonAsync<List<TransacaoResponse>>("/api/transacao");
+            transacoesResponse.Sort((x, y) => x.Data.CompareTo(y.Data));
+
+            var transacoes = new List<Transacao>();
+            transacoesResponse.ForEach(transacaoResponse => transacoes.Add(new Transacao(transacaoResponse)));
 
             return transacoes;
         }
-
-
-
-
-
-
-        #region HttpClientHelper
-
-        //private async Task<T> Post<T>(T entidade)
-        //{
-        //    var url = $"https://localhost:21061/api/{nameof(T)}";
-        //    var client = _clientFactory.CreateClient();
-        //    var response = await client.PostAsJsonAsync(url, entidade);
-
-        //    if (response.IsSuccessStatusCode)
-        //    {
-        //        var stringResponse = await response.Content.ReadAsStringAsync();
-
-        //        return JsonSerializer.Deserialize<T>(stringResponse,
-        //            new JsonSerializerOptions() { PropertyNamingPolicy = JsonNamingPolicy.CamelCase });
-        //    }
-        //    else
-        //    {
-        //        throw new Exception($"Erro na chamada para {url}");
-        //    }
-        //}
-
-        //private async Task<T> Put<T>(int id, T entidade)
-        //{
-        //    var url = $"https://localhost:21061/api/{nameof(T)}/{id}";
-        //    var client = _clientFactory.CreateClient();
-        //    var response = await client.PutAsJsonAsync(url, entidade);
-
-        //    if (response.IsSuccessStatusCode)
-        //    {
-        //        var stringResponse = await response.Content.ReadAsStringAsync();
-
-        //        return JsonSerializer.Deserialize<T>(stringResponse,
-        //            new JsonSerializerOptions() { PropertyNamingPolicy = JsonNamingPolicy.CamelCase });
-        //    }
-        //    else
-        //    {
-        //        throw new Exception($"Erro na chamada para {url}");
-        //    }
-        //}
-
-        //private async Task<List<T>> GetList<T>()
-        //{
-        //    var url = $"https://localhost:21061/api/{nameof(T)}";
-        //    var request = new HttpRequestMessage(HttpMethod.Get, url);
-        //    var client = _clientFactory.CreateClient();
-        //    var response = await client.SendAsync(request);
-        //    var contasModel = new List<T>();
-        //    if (response.IsSuccessStatusCode)
-        //    {
-        //        var stringResponse = await response.Content.ReadAsStringAsync();
-
-        //        contasModel = JsonSerializer.Deserialize<List<T>>(stringResponse,
-        //            new JsonSerializerOptions() { PropertyNamingPolicy = JsonNamingPolicy.CamelCase });
-        //    }
-        //    else
-        //    {
-        //        throw new Exception($"Erro na chamada para {url}");
-        //    }
-
-        //    return contasModel;
-        //}
-
-        //private async Task<T> GetItem<T>(int id)
-        //{
-        //    var url = $"https://localhost:21061/api/{nameof(T)}/{id}";
-        //    var request = new HttpRequestMessage(HttpMethod.Get, url);
-        //    var client = _clientFactory.CreateClient();
-        //    var response = await client.SendAsync(request);
-        //    var contasModel = new List<T>();
-        //    if (response.IsSuccessStatusCode)
-        //    {
-        //        var stringResponse = await response.Content.ReadAsStringAsync();
-
-        //        return JsonSerializer.Deserialize<T>(stringResponse,
-        //            new JsonSerializerOptions() { PropertyNamingPolicy = JsonNamingPolicy.CamelCase });
-        //    }
-        //    else
-        //    {
-        //        throw new Exception($"Erro na chamada para {url}");
-        //    }
-        //}
-
-        #endregion
-
     }
 }
