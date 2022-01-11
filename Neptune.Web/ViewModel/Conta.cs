@@ -19,21 +19,26 @@ namespace Neptune.Web.ViewModel
             set
             {
                 _ativo = value;
-                NotificarInteressados();
+                AtualizarTransacoesMes();
             }
         }
+
+        private readonly PagesService _pagesService;
+
+        public Conta(PagesService pagesService)
+        {
+            _pagesService = pagesService;
+        }
+
 
         public void AdicionarInteressado(IInteressado interessado)
         {
             Interessados.Add(interessado);
         }
 
-        public void NotificarInteressados()
+        public void AtualizarTransacoesMes()
         {
-            foreach (var interessado in Interessados)
-            {
-                interessado.Atualizar();
-            }
+            //_pagesService.ObterTransacoesMesPage();
         }
 
         public List<IInteressado> Interessados { get; set; } = new ();

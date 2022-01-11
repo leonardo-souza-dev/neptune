@@ -19,11 +19,11 @@
 
 @if (_novaTransacaoVisivel)
 {
-    <EditForm Model="@_novaTransacaoViewModel" OnValidSubmit="@AdicionarTransacao">
-        <InputDate @bind-Value="@_novaTransacaoViewModel.Data" />
-        <InputText @bind-Value="@_novaTransacaoViewModel.Descricao" placeholder="Descrição da transação" />
-        <InputNumber @bind-Value="@_novaTransacaoViewModel.Valor" placeholder="Valor" />
-        <InputNumber @bind-Value="@_novaTransacaoViewModel.ContaId" placeholder="ContaId" />
+    <EditForm Model="@_novaTransacao" OnValidSubmit="@AdicionarTransacao">
+        <InputDate @bind-Value="@_novaTransacao.Data" />
+        <InputText @bind-Value="@_novaTransacao.Descricao" placeholder="Descrição da transação" />
+        <InputNumber @bind-Value="@_novaTransacao.Valor" placeholder="Valor" />
+        <InputNumber @bind-Value="@_novaTransacao.ContaId" placeholder="ContaId" />
         <button class="btn btn-primary" type="submit">Salvar</button>
     </EditForm>
 }
@@ -46,7 +46,13 @@ else
                 @foreach(var conta in _transacoesMes.Contas)
                 {
                     <li>
-                        <InputCheckbox @bind-Value="conta.Ativo"/>@conta.Id - @conta.Nome
+                        <input type="checkbox" checked="@conta.Ativo" name="@conta.Id" 
+                        @onchange="async (eventArgs) => 
+                            { 
+                                conta.Ativo = (bool) eventArgs.Value;
+                                var contasId = _transacoesMes.Contas.Where(x => x.Ativo).Select(x => x.Id).ToList();
+                                _transacoesMes = await _pageService.ObterTransacoesMesPage(Mes, Ano, contasId); 
+                            }" />@conta.Id - @conta.Nome
                     </li>
                 }
             }
@@ -109,9 +115,7 @@ else
 
     TransacoesMes _transacoesMes { get; set; }
 
-    NovaTransacao _novaTransacaoViewModel = new();
-
-    List<Conta> _contas = new List<Conta>();
+    NovaTransacao _novaTransacao = new();
 
     bool _novaTransacaoVisivel;
     string NavMesAnterior => $"/{_transacoesMes.ObterAnoDoMesAnterior()}/{_transacoesMes.ObterMesAnterior()}";
@@ -124,11 +128,7 @@ else
         if (Ano == 0)
             Ano = DateTime.Now.Year;
 
-        _contas = await _pageService.ObterContas();
-
-        await _pageService.ObterTransacoesMesPage(Mes, Ano, _contas.Select(x => x.Id).ToList());
-
-        _transacoesMes = _pageService.TransacoesMes;
+        _transacoesMes = await _pageService.ObterTransacoesMesPage(Mes, Ano);
     }
 
     protected override async Task OnParametersSetAsync()
@@ -138,14 +138,18 @@ else
 
     private void NovaTransacao()
     {
-        _novaTransacaoViewModel = new NovaTransacao();
+        _novaTransacao = new NovaTransacao();
         _novaTransacaoVisivel = true;
     }
 
     private async Task AdicionarTransacao()
     {
-        var novaTransacaoPersistida = await _pageService.NovaTransacao(_novaTransacaoViewModel);
+        var novaTransacaoPersistida = await _pageService.NovaTransacao(_novaTransacao);
         _transacoesMes.AdicionarTransacao(novaTransacaoPersistida);
         _novaTransacaoVisivel = false;
+    }
+
+    private async Task Xyz(ChangeEventArgs args)
+    {
     }
 }

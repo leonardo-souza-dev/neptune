@@ -28,8 +28,8 @@ namespace Neptune.Web.ViewModel
                              int mes, 
                              List<Transacao> transacoes, 
                              decimal saldoUltimoDiaMesAnterior, 
-                             List<Conta> contasAtivasModel,
-                             List<Conta> todasContasModel)
+                             List<Conta> contasAtivas,
+                             List<Conta> todasContas)
         {
             Ano = ano;
             Mes = mes;
@@ -62,10 +62,10 @@ namespace Neptune.Web.ViewModel
                 }
             }
 
-            todasContasModel.ForEach(x => 
+            todasContas.ForEach(x => 
             {
                 var ativo = false;
-                foreach (var contaAtiva in contasAtivasModel)
+                foreach (var contaAtiva in contasAtivas)
                 {
                     if (x.Id == contaAtiva.Id)
                     {

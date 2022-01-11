@@ -4,6 +4,6 @@ namespace Neptune.Web.ViewModel
 {
     public interface IInteressado
     {
-        Task Atualizar();
+       // Task Atualizar();
     }
 }
