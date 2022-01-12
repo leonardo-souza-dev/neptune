@@ -34,8 +34,8 @@ namespace Neptune.Ui.Pages
 
 
         public List<int> ContasSelecionadas { get; set; }
-        public List<Conta> Contas { get; set; }
-        public Mes MesTransacoes { get; private set; }
+        public List<ContaModel> Contas { get; set; }
+        public MesModel MesTransacoes { get; private set; }
 
 
         public IndexModel(IPagesService pagesService)
@@ -45,10 +45,10 @@ namespace Neptune.Ui.Pages
 
         public async Task OnGet()
         {
-            Contas = await _pagesService.ObterContas();
+            Contas = await _pagesService.ObterContas2();
             ContasSelecionadas = Contas.Where(x => x.Ativo).Select(x => x.Id).ToList();
 
-            MesTransacoes = await _pagesService.ObterMes(Ano, Mes, ContasSelecionadas);
+            MesTransacoes = await _pagesService.ObterMes2(Ano, Mes, ContasSelecionadas);
         }
     }
 }

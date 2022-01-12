@@ -5,6 +5,6 @@ namespace Neptune.Ui.Infra.Response
 {
     public record ObterMesResponse
     {
-        public Mes? Result { get; set; }
+        public MesModel? Result { get; set; }
     }
 }

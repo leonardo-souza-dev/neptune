@@ -1,6 +1,9 @@
-﻿using Neptune.Ui.Infra.Response;
+﻿using System;
+using System.Collections.Generic;
+using System.ComponentModel.DataAnnotations;
+using System.Linq;
 
-namespace Neptune.Ui.Models
+namespace Neptune.Domain
 {
     public struct MesTransacao
     {
