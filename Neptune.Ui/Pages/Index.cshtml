@@ -59,11 +59,15 @@ else
                 </thead>
                 <tbody>
                     <tr>
-                        <th colspan="6" style="text-align: right;">Saldo no dia @Model.UltimoDiaMesAnterior: @Model.SaldoUltimoDiaMesAnterior</th>
+                        <th colspan="6" style="text-align: right;">
+                            Saldo no dia @Model.UltimoDiaMesAnterior: @Model.MesTransacoes.SaldoUltimoDiaMesAnterior
+                        </th>
                     </tr>
-                    @if (Model.Dias != null && Model.Dias.Any())
+                    @if (Model.MesTransacoes != null && 
+                         Model.MesTransacoes.Dias != null &&
+                         Model.MesTransacoes.Dias.Any())
                     {
-                        @foreach (var dia in Model.Dias)
+                        @foreach (var dia in Model.MesTransacoes.Dias)
                         {
                             <tr>
                                 <td colspan="6">@dia.Data.ToString("dd/MM/yyyy")</td>
@@ -73,14 +77,14 @@ else
                                 <tr style="background-color: #cccccc">
                                     <td>@transacao.Id</td>
                                     <td>@transacao.Descricao</td>
-                                    <td>Lorem Ipsum</td>
+                                    <td>@transacao.Categoria</td>
                                     <td>@transacao.Valor</td>
                                     <td>@transacao.ContaId</td>
                                     <td><a href="/editar-transacao/@transacao.Id">Editar</a></td>
                                 </tr>
                             }
                             <tr>
-                                <td colspan="6" style="text-align: right;">Saldo do dia: @dia.ObterSaldoDoDia()</td>
+                                <td colspan="6" style="text-align: right;">Saldo do dia: @dia.SaldoDoDia</td>
                             </tr>
                         }
                     }

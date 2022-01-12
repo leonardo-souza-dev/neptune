@@ -7,14 +7,8 @@ namespace Neptune.Ui.Pages
 {
     public class IndexModel : PageModel
     {
-        private readonly ILogger<IndexModel> _logger;
-        private readonly PagesServices _pagesServices;
+        private readonly IPagesService _pagesService;
 
-        public List<Transacao> Transacoes { get; set; }
-        public List<Conta> Contas { get; private set; }
-        public List<Dia> Dias { get; private set; }
-
-        public decimal SaldoUltimoDiaMesAnterior { get; private set; }
         private DateTime _ultimoDiaMesAnterior
         {
             get
@@ -39,18 +33,22 @@ namespace Neptune.Ui.Pages
 
 
 
-        bool _novaTransacaoVisivel;
+        public List<int> ContasSelecionadas { get; set; }
+        public List<Conta> Contas { get; set; }
+        public Mes MesTransacoes { get; private set; }
 
 
-        public IndexModel(ILogger<IndexModel> logger)
+        public IndexModel(IPagesService pagesService)
         {
-            _logger = logger;
-            _pagesServices = new PagesServices();
+            _pagesService = pagesService;
         }
 
-        public void OnGet()
+        public async Task OnGet()
         {
-            Transacoes = _pagesServices.ObterTodasTransacoes();
+            Contas = await _pagesService.ObterContas();
+            ContasSelecionadas = Contas.Where(x => x.Ativo).Select(x => x.Id).ToList();
+
+            MesTransacoes = await _pagesService.ObterMes(Ano, Mes, ContasSelecionadas);
         }
     }
 }

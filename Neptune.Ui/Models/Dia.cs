@@ -1,26 +1,18 @@
-﻿namespace Neptune.Ui.Models
+﻿using Neptune.Ui.Infra.Response;
+
+namespace Neptune.Ui.Models
 {
     public class Dia
     {
-        public List<Transacao> Transacoes { get; } = new();
-        private decimal SaldoDoDiaAnterior { get; }
-        public DateTime Data { get; }
+        public List<Transacao>? Transacoes { get; set; } 
+        private decimal SaldoDoDiaAnterior { get; set; }
+        public decimal SaldoDoDia { get; set; }
+        public DateTime Data { get; set; }
 
-        public Dia(DateTime data, List<Transacao> transacoes, decimal saldoDoDiaAnterior)
+      
+        public decimal? ObterSaldoDoDia()
         {
-            Data = data;
-            SaldoDoDiaAnterior = saldoDoDiaAnterior;
-            Transacoes = transacoes;
-        }
-
-        public decimal ObterSaldoDoDia()
-        {
-            return SaldoDoDiaAnterior - Transacoes.Sum(x => x.Valor);
-        }
-
-        public void AdicionarTransacao(Transacao transacaoViewModel)
-        {
-            Transacoes.Add(transacaoViewModel);
+            return SaldoDoDiaAnterior - Transacoes?.Sum(x => x.Valor);
         }
     }
 }
