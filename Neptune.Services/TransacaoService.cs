@@ -19,9 +19,9 @@ namespace Neptune.Application
             _contaRepository = contaRepository;
         }
 
-        public List<Transacao> ObterTodas()
+        public async Task<List<Transacao>> ObterTodas()
         {
-            return _transacaoRepository.ObterTodas();
+            return await _transacaoRepository.ObterTodas();
         }
 
         public async Task<Mes> ObterMes(MesTransacao mesTransacao)
@@ -47,9 +47,11 @@ namespace Neptune.Application
 
         private async Task<SaldoUltimoDiaMesAnterior> ObterSaldoUltimoDiaMesAnterior(MesTransacao mesTransacao)
         {
-            var mesAnterior = mesTransacao.ObterMesAnterior();
+            var primeiroDiaDoMes = new DateTime(mesTransacao.Ano, mesTransacao.Mes, 1);
 
-            var transacoes = await _transacaoRepository.Obter(mesAnterior.Ano, mesAnterior.Mes);
+            var todasTransacoes = await _transacaoRepository.ObterTodas();
+            var transacoesMesPassadoPraTras = todasTransacoes
+                .Where(x => x.Data < primeiroDiaDoMes);
 
             var contas = await _contaRepository.ObterTodas();
 
@@ -57,7 +59,7 @@ namespace Neptune.Application
 
             contas.ForEach(conta =>
             {
-                var somaMes = transacoes.Where(t => t.ContaId == conta.Id).Sum(x => x.Valor);
+                var somaMes = transacoesMesPassadoPraTras.Where(t => t.ContaId == conta.Id).Sum(x => x.Valor);
                 var valor = conta.SaldoInicial - somaMes;
 
                 saldoUltimoDiaMesAnteriorContas.Add(new SaldoUltimoDiaMesAnteriorConta(conta.Id, valor));

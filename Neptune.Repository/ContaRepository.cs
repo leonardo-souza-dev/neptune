@@ -12,8 +12,8 @@ namespace Neptune.Infra
 
         private readonly List<Conta> Contas = new()
         {
-            new Conta(1, "NuConta", 1000M),
-            new Conta(2, "NuPoup", 1000M)
+            new Conta(1, "Conta corrente", 100M),
+            new Conta(2, "Poupanca", 100M)
         };
 
         public async Task<List<Conta>> ObterTodas()

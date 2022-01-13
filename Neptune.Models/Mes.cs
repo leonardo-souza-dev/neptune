@@ -13,7 +13,7 @@ namespace Neptune.Domain
         { 
             get 
             {
-                return MesTransacao.ObterUltimoDiaMesAnterior();
+                return MesTransacao.UltimoDiaDoMesAnterior;
             } 
         }
         public List<Dia> Dias { get; private set; } = new List<Dia>();

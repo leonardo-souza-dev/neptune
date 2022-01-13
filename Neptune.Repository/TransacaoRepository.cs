@@ -12,27 +12,33 @@ namespace Neptune.Infra
 
         public TransacaoRepository()
         {
-            // dezembro 
-            _transacoes.Add(new Transacao(1, DateTime.Now.AddMonths(-1), "Saladaaaaa", 1M, 1));
-            _transacoes.Add(new Transacao(2, DateTime.Now.AddMonths(-1), "Rendimento", 10M, 2));
+            // novembro
+            _transacoes.Add(new Transacao(1, DateTime.Now.AddMonths(-2), "Lorem NOVEMBRO 2021", 1M, 1));
+            _transacoes.Add(new Transacao(1, DateTime.Now.AddMonths(-2), "Lorem NOVEMBRO 2021", 1M, 2));
+
+            // dezembro
+            _transacoes.Add(new Transacao(2, DateTime.Now.AddMonths(-1), "Lorem DEZEMBRO 2021 🎅", 1M, 1));
+            _transacoes.Add(new Transacao(2, DateTime.Now.AddMonths(-1), "Lorem DEZEMBRO 2021 🎅", 1M, 2));
 
             // TEMP - janeiro
             // hoje
-            _transacoes.Add(new Transacao(3, DateTime.Now, "Cafééééééé", 1M, 1));
-            _transacoes.Add(new Transacao(5, DateTime.Now, "Paoooooooo", 1M, 1));
+            _transacoes.Add(new Transacao(3, DateTime.Now, "Lorem JANEIRO", 1M, 1));
+            _transacoes.Add(new Transacao(5, DateTime.Now, "Lorem JANEIRO", 1M, 2));
             
             // amanha
-            _transacoes.Add(new Transacao(5, DateTime.Now.AddDays(1), "Outroo_jan", 1M, 1));
-            _transacoes.Add(new Transacao(6, DateTime.Now.AddDays(1), "Rendimento", 2M, 2));
+            _transacoes.Add(new Transacao(5, DateTime.Now.AddDays(1), "Lorem", 1M, 1));
+            _transacoes.Add(new Transacao(6, DateTime.Now.AddDays(1), "Lorem", 1M, 2));
 
             // depois de amanha
-            _transacoes.Add(new Transacao(7, DateTime.Now.AddDays(2), "Rendimento", 20M, 2));
+            _transacoes.Add(new Transacao(7, DateTime.Now.AddDays(2), "Lorem", 1M, 1));
+            _transacoes.Add(new Transacao(7, DateTime.Now.AddDays(2), "Lorem", 1M, 2));
 
             // fevereiro
-            _transacoes.Add(new Transacao(7, DateTime.Now.AddMonths(1), "Uber", 20M, 2));
+            _transacoes.Add(new Transacao(7, DateTime.Now.AddMonths(1), "Lorem", 1M, 1));
+            _transacoes.Add(new Transacao(7, DateTime.Now.AddMonths(1), "Lorem", 1M, 2));
         }
 
-        public List<Transacao> ObterTodas()
+        public async Task<List<Transacao>> ObterTodas()
         {
             return _transacoes;
         }

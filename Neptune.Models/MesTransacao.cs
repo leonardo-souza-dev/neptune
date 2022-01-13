@@ -16,15 +16,29 @@ namespace Neptune.Domain
             Mes = mes;
         }
 
-        public MesTransacao ObterMesAnterior()
+        public int NumMesAnterior
         {
-            bool ehJaneiro = Mes == 1;
-            return new MesTransacao { Ano = ehJaneiro ? Ano - 1 : Ano, Mes = ehJaneiro ? 12 : Mes - 1 };
+            get => Mes == 1 ? 12 : Mes - 1;
         }
 
-        public DateTime ObterUltimoDiaMesAnterior()
+        public int NumMesSeguinte
         {
-            return new DateTime(Ano, Mes, 1).AddDays(-1);
+            get => Mes == 12 ? 1 : Mes + 1;
+        }
+
+        public int NumAnoMesAnterior
+        {
+            get => new DateTime(Ano, Mes, 1).AddMonths(-1).Year;
+        }
+
+        public int NumAnoMesSeguinte
+        {
+            get => new DateTime(Ano, Mes, 1).AddMonths(1).Year;
+        }
+
+        public DateTime UltimoDiaDoMesAnterior 
+        { 
+            get => new DateTime(Ano, Mes, 1).AddDays(-1);
         }
     }
 }

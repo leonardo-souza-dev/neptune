@@ -30,14 +30,6 @@ namespace Neptune.Domain
             }
         }
 
-        private decimal SomaTransacoes 
-        { 
-            get
-            {
-                return Transacoes.Sum(x => x.Valor);
-            }
-        }
-
         public Dia(DateTime data, List<Transacao> transacoes, decimal saldoDiaAnterior)
         {
             Data = data;
