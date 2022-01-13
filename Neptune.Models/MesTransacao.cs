@@ -21,5 +21,10 @@ namespace Neptune.Domain
             bool ehJaneiro = Mes == 1;
             return new MesTransacao { Ano = ehJaneiro ? Ano - 1 : Ano, Mes = ehJaneiro ? 12 : Mes - 1 };
         }
+
+        public DateTime ObterUltimoDiaMesAnterior()
+        {
+            return new DateTime(Ano, Mes, 1).AddDays(-1);
+        }
     }
 }

@@ -9,6 +9,13 @@ namespace Neptune.Domain
     {
         public MesTransacao MesTransacao { get; private set; }
         public SaldoUltimoDiaMesAnterior SaldoUltimoDiaMesAnterior { get; private set; }
+        public DateTime UltimoDiaMesAnterior 
+        { 
+            get 
+            {
+                return MesTransacao.ObterUltimoDiaMesAnterior();
+            } 
+        }
         public List<Dia> Dias { get; private set; } = new List<Dia>();
 
         public Mes(MesTransacao mesTransacao, SaldoUltimoDiaMesAnterior saldoUltimoDiaMesAnterior, List<Transacao> transacoes)

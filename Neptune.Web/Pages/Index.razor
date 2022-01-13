@@ -32,9 +32,9 @@
             </thead>
             <tbody>
                 <tr>
-                    @*<th colspan="6" style="text-align: right;">
-                        Saldo no dia @mes.UltimoDiaMesAnterior: @mes.MesTransacoes.SaldoUltimoDiaMesAnterior
-                    </th>*@
+                    <th colspan="6" style="text-align: right;">
+                        Saldo no dia @mesModel.UltimoDiaMesAnterior: @mesModel.SaldoUltimoDiaMesAnterior.Valor
+                    </th>
                 </tr>
                 @if (mesModel.Dias != null && mesModel.Dias != null && mesModel.Dias.Any())
                 {
