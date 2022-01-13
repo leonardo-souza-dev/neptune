@@ -8,10 +8,10 @@ namespace Neptune.Domain
     public class Mes
     {
         public MesTransacao MesTransacao { get; private set; }
-        public decimal SaldoUltimoDiaMesAnterior { get; private set; }
+        public SaldoUltimoDiaMesAnterior SaldoUltimoDiaMesAnterior { get; private set; }
         public List<Dia> Dias { get; private set; } = new List<Dia>();
 
-        public Mes(MesTransacao mesTransacao, decimal saldoUltimoDiaMesAnterior, List<Transacao> transacoes)
+        public Mes(MesTransacao mesTransacao, SaldoUltimoDiaMesAnterior saldoUltimoDiaMesAnterior, List<Transacao> transacoes)
         {
             MesTransacao = mesTransacao;
             SaldoUltimoDiaMesAnterior = saldoUltimoDiaMesAnterior;
@@ -28,7 +28,7 @@ namespace Neptune.Domain
 
                 if (i == 0)
                 {
-                    dia = new Dia(dataDia, transacoesDia.ToList(), saldoUltimoDiaMesAnterior);
+                    dia = new Dia(dataDia, transacoesDia.ToList(), saldoUltimoDiaMesAnterior.Valor);
                 }
                 else
                 {
@@ -38,6 +38,36 @@ namespace Neptune.Domain
 
                 Dias.Add(dia);
             }
+        }
+    }
+
+    public class SaldoUltimoDiaMesAnterior
+    {
+        public decimal Valor 
+        {
+            get
+            { 
+                return Contas.Sum(x => x.Valor);
+            } 
+        }
+
+        public List<SaldoUltimoDiaMesAnteriorConta> Contas { get; private set; } = new List<SaldoUltimoDiaMesAnteriorConta>();
+
+        public SaldoUltimoDiaMesAnterior(List<SaldoUltimoDiaMesAnteriorConta> saldosUltimoDiaMesAnteriorConta)
+        {
+            Contas = saldosUltimoDiaMesAnteriorConta;
+        }
+    }
+
+    public class SaldoUltimoDiaMesAnteriorConta
+    {
+        public int ContaId { get; private set; }
+        public decimal Valor { get; private set; }
+
+        public SaldoUltimoDiaMesAnteriorConta(int contaId, decimal valor)
+        {
+            ContaId = contaId;
+            Valor = valor;
         }
     }
 }

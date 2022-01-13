@@ -1,0 +1,90 @@
+﻿@page "/{ano:int?}/{mes:int?}"
+
+@inject PagesService _pagesService
+
+<div style="display: block;">
+    <div>
+        <div class="col-2" style="">
+            Contas
+        </div>
+            
+        <ul style="float: left;" >            
+            @foreach(var contaModel in contasModel)
+            {
+                <li>
+                    <input type="checkbox" checked="@contaModel.Ativo" name="@contaModel.Id" @onchange="@(() => ContaClick(contaModel.Id, contaModel.Ativo))" />@contaModel.Id - @contaModel.Nome
+                </li>
+            }
+        </ul>
+    </div>
+
+    <div class="col-6" style="float: left;">
+        <table class="table transacoes">
+            <thead>
+                <tr>
+                    <th>Id</th>
+                    <th>Descricao</th>
+                    <th>Categoria</th>
+                    <th>Valor</th>
+                    <th>Conta</th>
+                    <th>Editar</th>
+                </tr>
+            </thead>
+            <tbody>
+                <tr>
+                    @*<th colspan="6" style="text-align: right;">
+                        Saldo no dia @mes.UltimoDiaMesAnterior: @mes.MesTransacoes.SaldoUltimoDiaMesAnterior
+                    </th>*@
+                </tr>
+                @if (mesModel.Dias != null && mesModel.Dias != null && mesModel.Dias.Any())
+                {
+                    @foreach (var dia in mesModel.Dias)  
+                    {
+                        <tr>
+                            <td colspan="6">@dia.Data.ToString("dd/MM/yyyy")</td>
+                        </tr>
+                        @foreach (var transacao in dia.Transacoes)
+                        {
+                            <tr style="background-color: #cccccc">
+                                <td>@transacao.Id</td>
+                                <td>@transacao.Descricao</td>
+                                <td>@transacao.Categoria</td>
+                                <td>@transacao.Valor</td>
+                                <td>@transacao.ContaId</td>
+                                <td><a href="/editar-transacao/@transacao.Id">Editar</a></td>
+                            </tr>
+                        }
+                        <tr>
+                            <td colspan="6" style="text-align: right;">Saldo do dia: @dia.SaldoDoDia</td>
+                        </tr>
+                    }
+                }
+            </tbody>
+        </table>
+    </div>>
+</div>>
+
+@code {
+    private MesModel mesModel;
+    private List<ContaModel> contasModel;
+
+    [Parameter]
+    public int Ano { get; set; }
+
+    [Parameter]
+    public int Mes { get; set; }
+
+    protected override async Task OnInitializedAsync()
+    {
+        contasModel = await _pagesService.ObterContas();
+        mesModel = await _pagesService.ObterMes(2022, 1);
+    }
+
+    async void ContaClick(int id, bool ativo)
+    {
+        var contaModel = contasModel.First(x => x.Id == id);
+        contaModel.Ativo = ativo;
+
+        await _pagesService.ObterMes(2022, 1, contasModel.Where(x => x.Ativo).Select(x => x.Id).ToList(), mesModel);
+    }
+}

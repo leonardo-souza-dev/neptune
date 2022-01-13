@@ -1,4 +1,7 @@
 ﻿@page "/{ano:int?}/{mes:int?}"
+
+@using System
+
 @model IndexModel
 @{
     ViewData["Title"] = "Home page";
@@ -25,17 +28,25 @@ else
     <div style="display: block;">
  
         <div style="" >
-            <div class="col-2" style="" >Contas</div>
+            <div class="col-2" style="">Contas</div>
             
             <ul style="float: left;" >
             @if (Model.Contas != null && Model.Contas.Any())
             {
-                @foreach(var conta in Model.Contas)
+                @*@foreach(var conta in Model.Contas)*@
+                @for(var i = 0; i < Model.Contas.Count; i++)
                 {
                     <li>
-                        <input type="checkbox" checked="@conta.Ativo" name="@conta.Id"/>
-                        @conta.Id - @conta.Nome
+                        <input type="checkbox" checked="@Model.Contas[i].Ativo" name="@Model.Contas[i].Id" @bind="YourMethod"" />                        
+                        @Model.Contas[i].Id - @Model.Contas[i].Nome
                     </li>
+                    <li>
+                        <input asp-for="Contas[i].Ativo" onchange="@(() => YourMethod(1))" />
+                    </li>
+                    <li>
+                        @Html.CheckBoxFor(x => x.Contas[i].Ativo, new {  })
+                    </li>
+                    <hr /><hr /><hr /><hr /><hr /><hr />
                 }
             }
             else
@@ -95,5 +106,8 @@ else
 }
 
 @functions{
-    
+    void YourMethod(object e)
+    {
+        int a = 1;
+    }
 }

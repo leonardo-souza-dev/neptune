@@ -43,7 +43,7 @@ namespace Neptune.Ui.Pages
             _pagesService = pagesService;
         }
 
-        public async Task OnGet()
+        public async Task OnGetAsync()
         {
             Contas = await _pagesService.ObterContas2();
             ContasSelecionadas = Contas.Where(x => x.Ativo).Select(x => x.Id).ToList();

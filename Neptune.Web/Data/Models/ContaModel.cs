@@ -1,4 +1,4 @@
-﻿namespace Neptune.Ui.Models
+﻿namespace Neptune.Web.Data.Models
 {
     public class ContaModel
     {

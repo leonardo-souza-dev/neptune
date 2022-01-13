@@ -10,7 +10,7 @@ namespace Neptune.Domain
         public DateTime Data { get; private set; }
         public List<Transacao> Transacoes { get; private set; } = new List<Transacao>();
 
-        public decimal? _saldoDoDia;
+        private decimal? _saldoDoDia;
         public decimal SaldoDoDia 
         { 
             get
@@ -30,7 +30,7 @@ namespace Neptune.Domain
             }
         }
 
-        private decimal _somaTransacoes 
+        private decimal SomaTransacoes 
         { 
             get
             {
@@ -38,23 +38,13 @@ namespace Neptune.Domain
             }
         }
 
-        public Dia(DateTime data, List<Transacao> transacoes, decimal saldoUltimoDiaMesAnterior)
+        public Dia(DateTime data, List<Transacao> transacoes, decimal saldoDiaAnterior)
         {
             Data = data;
-
-            foreach (var transacao in transacoes)
-            {
-                Transacoes.Add(new Transacao(transacao.Id, transacao.Data, transacao.Descricao, transacao.Valor, transacao.ContaId));
-            }
-
+            Transacoes.AddRange(transacoes.Select(transacao => new Transacao(transacao.Id, transacao.Data, transacao.Descricao, transacao.Valor, transacao.ContaId)));
             Transacoes.Sort((x, y) => x.Data.CompareTo(y.Data));
 
-            SaldoDoDia = saldoUltimoDiaMesAnterior - Transacoes.Sum(x => x.Valor);
-        }
-
-        public void Atualizar(decimal saldoDiaAnterior)
-        {
-            _saldoDoDia = saldoDiaAnterior - _somaTransacoes;
+            SaldoDoDia = saldoDiaAnterior - Transacoes.Sum(x => x.Valor);
         }
     }
 }
