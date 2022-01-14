@@ -27,7 +27,7 @@ namespace Neptune.Web.Data
         public async Task<MesModel> ObterMes(int numAno, int numMes, List<int> contasModelIds, MesModel mesModel)
         {
             var transacoes = new List<Transacao>();
-            mesModel.Dias.ForEach(diaModel => diaModel.Transacoes.ForEach(transacaoModel => 
+            mesModel.Dias.ForEach(diaModel => diaModel.Transacoes.ForEach(transacaoModel =>
             {
                 if (contasModelIds.Contains(transacaoModel.ContaId))
                 {

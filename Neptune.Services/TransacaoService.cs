@@ -27,7 +27,7 @@ namespace Neptune.Application
         public async Task<Mes> ObterMes(MesTransacao mesTransacao)
         {
             var transacoes = await _transacaoRepository.Obter(mesTransacao.Ano, mesTransacao.Mes);
-            
+
             var saldoUltimoDiaMesAnterior = await ObterSaldoUltimoDiaMesAnterior(mesTransacao);
 
             var mes = new Mes(mesTransacao, saldoUltimoDiaMesAnterior, transacoes);

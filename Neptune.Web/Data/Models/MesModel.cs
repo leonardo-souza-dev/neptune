@@ -4,9 +4,11 @@ namespace Neptune.Web.Data.Models
 {
     public class MesModel
     {
-        public MesTransacaoModel MesTransacao { get; set; }
+        public int NumMes { get; set; }
+
         public SaldoUltimoDiaMesAnterior SaldoUltimoDiaMesAnterior { get; set; }
         public decimal SaldoUltimoDiaMesAnterior2 { get; set; }
+
         public string UltimoDiaMesAnterior { get; set; }
         public List<DiaModel> Dias { get; set; } = new List<DiaModel>();
 
@@ -20,9 +22,11 @@ namespace Neptune.Web.Data.Models
 
         public MesModel(Mes mes)
         {
-            MesTransacao = new MesTransacaoModel(mes.MesTransacao);
+            NumMes = mes.MesTransacao.Mes;
+
             SaldoUltimoDiaMesAnterior = mes.SaldoUltimoDiaMesAnterior;
             SaldoUltimoDiaMesAnterior2 = mes.SaldoUltimoDiaMesAnterior.Valor;
+
             mes.Dias.ForEach(dia => Dias.Add(new DiaModel(dia)));
             UltimoDiaMesAnterior = mes.UltimoDiaMesAnterior.ToString("dd/MM/yyyy");
 
