@@ -1,11 +1,12 @@
-﻿@page "/{ano:int?}/{mes:int?}"
+﻿@page "/"
 
+@inject NavigationManager NavManager
 @inject PagesService _pagesService
 
 <div>
-    <a href="@mesModel.NavMesAnterior" target="_self">anterior</a>
+    <a href="@navMesAnterior" target="_top">anterior</a>
     <span>Mês nº @mesModel.NumMes</span>
-    <a href="@mesModel.NavMesSeguinte" target="_self">próximo</a>
+    <a href="@navMesSeguinte" target="_top">próximo</a>
 </div>
 
 <div style="display: block;">
@@ -16,32 +17,32 @@
             
         
         <ul style="float: left;" >            
-            @foreach(var contaModel in contasModel)
+            @foreach (var contaModel in contasModel)
             {
                 <EditForm Model="contaModel">
-                <li>
-                    @if (contaModel.Ativo)
-                    {
-                        <input 
+                    <li>
+                        @if (contaModel.Ativo)
+                        {
+                            <input 
                             type="checkbox" 
                             checked
                             name="@contaModel.Id" 
                             @onchange="@(() => ContaClick(contaModel.Id, false))" />
-                    }
-                    else
-                    {
-                        <input 
+                        }
+                        else
+                        {
+                            <input 
                             type="checkbox" 
                             name="@contaModel.Id" 
                             @onchange="@(() => ContaClick(contaModel.Id, true))" />
-                    }
+                        }
 
-                    @contaModel.Id - @contaModel.Nome
-                </li>
+                        @contaModel.Id - @contaModel.Nome
+                    </li>
                 </EditForm>
             }
         </ul>
-        
+
     </div>
 
     <div class="col-6" style="float: left;">
@@ -64,7 +65,7 @@
                 </tr>
                 @if (mesModel.Dias != null && mesModel.Dias != null && mesModel.Dias.Any())
                 {
-                    @foreach (var dia in mesModel.Dias)  
+                    @foreach (var dia in mesModel.Dias)
                     {
                         <tr>
                             <td colspan="6">@dia.Data.ToString("dd/MM/yyyy")</td>
@@ -94,22 +95,24 @@
     private MesModel mesModel;
     private List<ContaModel> contasModel;
 
-    [Parameter]
-    public int Ano { get; set; }
+    private int ano;
+    private int mes;
 
-    [Parameter]
-    public int Mes { get; set; }
+    private string navMesAnterior => (NavManager.BaseUri + mesModel.NavMesAnterior);
+    private string navMesSeguinte => (NavManager.BaseUri + mesModel.NavMesSeguinte);
 
     protected override async Task OnInitializedAsync()
     {
-        if (Ano == 0 || Mes == 0)
+        NavManager.TryGetQueryString<int>("ano", out ano);
+        NavManager.TryGetQueryString<int>("mes", out mes);
+        if (ano == 0 || mes == 0)
         {
-            Ano = DateTime.Now.Year;
-            Mes = DateTime.Now.Month;
+            ano = DateTime.Now.Year;
+            mes = DateTime.Now.Month;
         }
 
         contasModel = await _pagesService.ObterContas();
-        mesModel = await _pagesService.ObterMes(Ano, Mes, contasModel.Where(x => x.Ativo).ToList());
+        mesModel = await _pagesService.ObterMes(ano, mes, contasModel.Where(x => x.Ativo).ToList());
     }
 
     protected override async Task OnParametersSetAsync()
@@ -122,6 +125,6 @@
         var contaModel = contasModel.First(x => x.Id == id);
         contaModel.Ativo = ativo;
 
-        mesModel = await _pagesService.ObterMes(Ano, Mes, contasModel.Where(x => x.Ativo).ToList());
+        mesModel = await _pagesService.ObterMes(ano, mes, contasModel.Where(x => x.Ativo).ToList());
     }
 }

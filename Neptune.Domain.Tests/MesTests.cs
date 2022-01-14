@@ -35,7 +35,7 @@ namespace Neptune.Domain.Tests
 
                 new Transacao(1, DateTime.Today.AddMonths(2), "Cafe", 5M, 1)
             };
-            var mes = new Mes(mesTransacao, saldo, transacoes);
+            var mes = new Mes(mesTransacao, saldo, transacoes, new List<Conta> { new Conta(1, "conta corrente", 100) });
 
             // assert
             Assert.AreEqual(mes.Dias.Count, 2);

@@ -17,8 +17,8 @@ namespace Neptune.Web.Data.Models
         public int AnoDoMesSeguinte { get; }
         public int MesSeguinte { get; }
 
-        public string NavMesAnterior => $"/{AnoDoMesAnterior}/{MesAnterior}";
-        public string NavMesSeguinte => $"/{AnoDoMesSeguinte}/{MesSeguinte}";
+        public string NavMesAnterior => $"?ano={AnoDoMesAnterior}&mes={MesAnterior}";
+        public string NavMesSeguinte => $"?ano={AnoDoMesSeguinte}&mes={MesSeguinte}";
 
         public MesModel(Mes mes)
         {
