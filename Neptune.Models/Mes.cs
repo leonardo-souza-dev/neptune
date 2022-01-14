@@ -13,12 +13,15 @@ namespace Neptune.Domain
         
         public List<Dia> Dias { get; private set; } = new List<Dia>();
 
-        public Mes(MesTransacao mesTransacao, SaldoUltimoDiaMesAnterior saldoUltimoDiaMesAnterior, List<Transacao> transacoes, List<Conta> contas)
+        public Mes(MesTransacao mesTransacao, SaldoUltimoDiaMesAnterior saldoUltimoDiaMesAnterior, List<Transacao> transacoes)
         {
             MesTransacao = mesTransacao;
             SaldoUltimoDiaMesAnterior = saldoUltimoDiaMesAnterior;
 
-            var transacoesDiaGrupo = transacoes.GroupBy(x => x.Data.Day).ToList();
+            var transacoesDiaGrupo = transacoes
+                .Where(x => x.Data.Month == mesTransacao.Mes && x.Data.Year == mesTransacao.Ano)
+                .GroupBy(x => x.Data.Day).ToList();
+
             decimal saldoDiaAnterior = 0;
 
             for(int i = 0; i < transacoesDiaGrupo.Count(); i++)
@@ -40,37 +43,6 @@ namespace Neptune.Domain
 
                 Dias.Add(dia);
             }
-        }
-    }
-
-    public class SaldoUltimoDiaMesAnterior
-    {
-        public decimal Valor 
-        {
-            get
-            { 
-                return Contas.Sum(x => x.Valor);
-            } 
-        }
-
-        public List<SaldoUltimoDiaMesAnteriorConta> Contas { get; private set; } = new List<SaldoUltimoDiaMesAnteriorConta>();
-
-        public SaldoUltimoDiaMesAnterior(List<SaldoUltimoDiaMesAnteriorConta> saldosUltimoDiaMesAnteriorConta)
-        {
-            Contas = saldosUltimoDiaMesAnteriorConta;
-        }
-    }
-
-    public class SaldoUltimoDiaMesAnteriorConta
-    {
-        public int ContaId { get; private set; }
-        public decimal Valor { get; private set; }
-        public bool Selecionada { get; private set; }
-
-        public SaldoUltimoDiaMesAnteriorConta(int contaId, decimal valor)
-        {
-            ContaId = contaId;
-            Valor = valor;
         }
     }
 }

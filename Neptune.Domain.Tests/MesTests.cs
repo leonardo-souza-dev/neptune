@@ -16,33 +16,62 @@ namespace Neptune.Domain.Tests
         {
             // arrange & act
             var mesTransacao = new MesTransacao(2022, 1);
-            var saldoConta1 = new SaldoUltimoDiaMesAnteriorConta(1, 100);
-            var saldoConta2 = new SaldoUltimoDiaMesAnteriorConta(2, 100);
-            var saldoContas = new List<SaldoUltimoDiaMesAnteriorConta>();
-            saldoContas.Add(saldoConta1);
-            saldoContas.Add(saldoConta2);
+            var saldoContas = new List<SaldoUltimoDiaMesAnteriorConta>() 
+            { 
+                new SaldoUltimoDiaMesAnteriorConta(1, 100), 
+                new SaldoUltimoDiaMesAnteriorConta(2, 100) 
+            };
             var saldo = new SaldoUltimoDiaMesAnterior(saldoContas);
             var transacoes = new List<Transacao>
             {
-                new Transacao(1, DateTime.Today.AddMonths(-2), "Cafe", 5M, 1),
+                new Transacao(1, DateTime.Now.AddMonths(-2), "Cafe", 5M, 1),
 
-                new Transacao(1, DateTime.Today.AddMonths(-1), "Cafe", 5M, 1),
+                new Transacao(1, DateTime.Now.AddMonths(-1), "Cafe", 5M, 1),
 
-                new Transacao(1, DateTime.Today, "Cafe", 5M, 1),
-                new Transacao(1, DateTime.Today.AddDays(1), "Cafe", 5M, 1),
+                new Transacao(1, DateTime.Now, "Cafe", 5M, 1),
+                new Transacao(1, DateTime.Now.AddDays(1), "Cafe", 5M, 1),
 
-                new Transacao(1, DateTime.Today.AddMonths(1), "Cafe", 5M, 1),
+                new Transacao(1, DateTime.Now.AddMonths(1), "Cafe", 5M, 1),
 
-                new Transacao(1, DateTime.Today.AddMonths(2), "Cafe", 5M, 1)
+                new Transacao(1, DateTime.Now.AddMonths(2), "Cafe", 5M, 1)
             };
-            var mes = new Mes(mesTransacao, saldo, transacoes, new List<Conta> { new Conta(1, "conta corrente", 100) });
+            var mes = new Mes(mesTransacao, saldo, transacoes);
 
             // assert
-            Assert.AreEqual(mes.Dias.Count, 2);
-            Assert.AreEqual(mes.MesTransacao.Ano, 2022);
-            Assert.AreEqual(mes.MesTransacao.Mes, 1);
-            Assert.AreEqual(mes.SaldoUltimoDiaMesAnterior.Valor, 200);
-            Assert.AreEqual(mes.UltimoDiaMesAnterior.Day, 31);
+            Assert.AreEqual(2, mes.Dias.Count);
+            Assert.AreEqual(2022, mes.MesTransacao.Ano);
+            Assert.AreEqual(1, mes.MesTransacao.Mes);
+            Assert.AreEqual(200, mes.SaldoUltimoDiaMesAnterior.Valor);
+            Assert.AreEqual(31, mes.UltimoDiaMesAnterior.Day);
+        }
+
+        [Test]
+        public void QuandoNaoTiveremTransacoesDoMes_NaoDeveTerDiasDeTransacao()
+        {
+            // arrange & act
+            var mesTransacao = new MesTransacao(2022, 1);
+            var saldoConta1 = new SaldoUltimoDiaMesAnteriorConta(1, 100);
+            var saldoConta2 = new SaldoUltimoDiaMesAnteriorConta(2, 100);
+            var saldoContas = new List<SaldoUltimoDiaMesAnteriorConta> { saldoConta1, saldoConta2 };
+            var saldo = new SaldoUltimoDiaMesAnterior(saldoContas);
+            var transacoes = new List<Transacao>
+            {
+                new Transacao(1, DateTime.Now.AddMonths(-2), "Cafe", 1M, 1),
+                new Transacao(2, DateTime.Now.AddMonths(-2), "Cafe", 1M, 2),
+
+                new Transacao(3, DateTime.Now.AddMonths(-1), "Cafe", 1M, 1),
+                new Transacao(4, DateTime.Now.AddMonths(-1), "Cafe", 1M, 2),
+
+                new Transacao(5, DateTime.Now.AddMonths(1), "Cafe", 1M, 1),
+                new Transacao(6, DateTime.Now.AddMonths(1), "Cafe", 1M, 2),
+
+                new Transacao(7, DateTime.Now.AddMonths(2), "Cafe", 1M, 1),
+                new Transacao(8, DateTime.Now.AddMonths(2), "Cafe", 1M, 2)
+            };
+            var mes = new Mes(mesTransacao, saldo, transacoes);
+         
+            // assert
+            Assert.AreEqual(0, mes.Dias.Count);
         }
     }
 }

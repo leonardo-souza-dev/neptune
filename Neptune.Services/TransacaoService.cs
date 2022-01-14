@@ -30,7 +30,7 @@ namespace Neptune.Application
 
             var saldoUltimoDiaMesAnterior = await ObterSaldoUltimoDiaMesAnterior(mesTransacao, contas);
 
-            var mes = new Mes(mesTransacao, saldoUltimoDiaMesAnterior, transacoes, contas);
+            var mes = new Mes(mesTransacao, saldoUltimoDiaMesAnterior, transacoes);
 
             return mes;
         }
