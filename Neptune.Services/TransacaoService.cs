@@ -50,7 +50,7 @@ namespace Neptune.Application
             var primeiroDiaDoMes = new DateTime(mesTransacao.Ano, mesTransacao.Mes, 1);
 
             var todasTransacoes = await _transacaoRepository.ObterTodas();
-            var todasTransacoesContas = todasTransacoes.Where(x => contas.Select(c => c.Id).Contains(x.Id)).ToList();
+            var todasTransacoesContas = todasTransacoes.Where(x => contas.Select(c => c.Id).Contains(x.ContaId)).ToList();
             var transacoesMesPassadoPraTras = todasTransacoesContas.Where(x => x.Data < primeiroDiaDoMes);
 
 

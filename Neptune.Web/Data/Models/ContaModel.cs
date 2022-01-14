@@ -1,4 +1,6 @@
-﻿namespace Neptune.Web.Data.Models
+﻿using Neptune.Domain;
+
+namespace Neptune.Web.Data.Models
 {
     public class ContaModel
     {
@@ -13,6 +15,11 @@
             Nome = nome;
             SaldoInicial = saldoInicial;
             Ativo = ativo;
+        }
+
+        public Conta ToDomain()
+        {
+            return new Conta(Id, Nome, SaldoInicial);
         }
     }
 }
