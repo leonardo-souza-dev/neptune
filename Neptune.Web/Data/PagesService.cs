@@ -26,7 +26,6 @@ namespace Neptune.Web.Data
 
         public async Task<MesModel> ObterMes(int numAno, int numMes, List<int> contasModelIds, MesModel mesModel)
         {
-            //TODO arrumar saldoUltimoDiaMesAnterior por conta(s)
             var transacoes = new List<Transacao>();
             mesModel.Dias.ForEach(diaModel => diaModel.Transacoes.ForEach(transacaoModel => 
             {
@@ -35,6 +34,7 @@ namespace Neptune.Web.Data
                     transacoes.Add(transacaoModel.ToDomain());
                 }
             }));
+
             var mes = new Mes(new MesTransacao(numAno, numMes), mesModel.SaldoUltimoDiaMesAnterior, transacoes);
 
             return new MesModel(mes);

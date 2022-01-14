@@ -70,6 +70,7 @@ namespace Neptune.Domain
     {
         public int ContaId { get; private set; }
         public decimal Valor { get; private set; }
+        public bool Selecionada { get; private set; }
 
         public SaldoUltimoDiaMesAnteriorConta(int contaId, decimal valor)
         {

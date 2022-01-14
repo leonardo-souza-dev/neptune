@@ -14,14 +14,34 @@
             Contas
         </div>
             
+        
         <ul style="float: left;" >            
             @foreach(var contaModel in contasModel)
             {
+                <EditForm Model="contaModel">
                 <li>
-                    <input type="checkbox" checked="@contaModel.Ativo" name="@contaModel.Id" @onchange="@(() => ContaClick(contaModel.Id, contaModel.Ativo))" />@contaModel.Id - @contaModel.Nome
+                    @if (contaModel.Ativo)
+                    {
+                        <input 
+                            type="checkbox" 
+                            checked
+                            name="@contaModel.Id" 
+                            @onchange="@(() => ContaClick(contaModel.Id, false))" />
+                    }
+                    else
+                    {
+                        <input 
+                            type="checkbox" 
+                            name="@contaModel.Id" 
+                            @onchange="@(() => ContaClick(contaModel.Id, true))" />
+                    }
+
+                    @contaModel.Id - @contaModel.Nome
                 </li>
+                </EditForm>
             }
         </ul>
+        
     </div>
 
     <div class="col-6" style="float: left;">
@@ -39,7 +59,7 @@
             <tbody>
                 <tr>
                     <th colspan="6" style="text-align: right;">
-                        Saldo no dia @mesModel.UltimoDiaMesAnterior: @mesModel.SaldoUltimoDiaMesAnterior.Valor
+                        Saldo no dia @mesModel.UltimoDiaMesAnterior: @mesModel.SaldoUltimoDiaMesAnterior2
                     </th>
                 </tr>
                 @if (mesModel.Dias != null && mesModel.Dias != null && mesModel.Dias.Any())
@@ -67,8 +87,8 @@
                 }
             </tbody>
         </table>
-    </div>>
-</div>>
+    </div>
+</div>
 
 @code {
     private MesModel mesModel;
@@ -102,6 +122,6 @@
         var contaModel = contasModel.First(x => x.Id == id);
         contaModel.Ativo = ativo;
 
-        await _pagesService.ObterMes(2022, 1, contasModel.Where(x => x.Ativo).Select(x => x.Id).ToList(), mesModel);
+        mesModel = await _pagesService.ObterMes(2022, 1, contasModel.Where(x => x.Ativo).Select(x => x.Id).ToList(), mesModel);
     }
 }
