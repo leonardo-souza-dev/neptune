@@ -16,28 +16,15 @@ namespace Neptune.Web.Data
             _contaService = contaService;
         }
 
-        public async Task<MesModel> ObterMes(int numAno, int numMes)
+        public async Task<MesModel> ObterMes(int numAno, int numMes, List<ContaModel> contasModel)
         {
-            var mes = await _transacaoService.ObterMes(new MesTransacao(numAno, numMes));
+            var contas = new List<Conta>();
+            contasModel.ForEach(x => contas.Add(new Conta(x.Id, x.Nome, x.SaldoInicial)));
+
+            var mes = await _transacaoService.ObterMes(new MesTransacao(numAno, numMes), contas);
             var mesModel = new MesModel(mes);
 
             return mesModel;
-        }
-
-        public async Task<MesModel> ObterMes(int numAno, int numMes, List<int> contasModelIds, MesModel mesModel)
-        {
-            var transacoes = new List<Transacao>();
-            mesModel.Dias.ForEach(diaModel => diaModel.Transacoes.ForEach(transacaoModel =>
-            {
-                if (contasModelIds.Contains(transacaoModel.ContaId))
-                {
-                    transacoes.Add(transacaoModel.ToDomain());
-                }
-            }));
-
-            var mes = new Mes(new MesTransacao(numAno, numMes), mesModel.SaldoUltimoDiaMesAnterior, transacoes);
-
-            return new MesModel(mes);
         }
 
         public async Task<List<ContaModel>> ObterContas()

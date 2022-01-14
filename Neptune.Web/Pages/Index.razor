@@ -109,7 +109,7 @@
         }
 
         contasModel = await _pagesService.ObterContas();
-        mesModel = await _pagesService.ObterMes(Ano, Mes);
+        mesModel = await _pagesService.ObterMes(Ano, Mes, contasModel.Where(x => x.Ativo).ToList());
     }
 
     protected override async Task OnParametersSetAsync()
@@ -122,6 +122,6 @@
         var contaModel = contasModel.First(x => x.Id == id);
         contaModel.Ativo = ativo;
 
-        mesModel = await _pagesService.ObterMes(2022, 1, contasModel.Where(x => x.Ativo).Select(x => x.Id).ToList(), mesModel);
+        mesModel = await _pagesService.ObterMes(Ano, Mes, contasModel.Where(x => x.Ativo).ToList());
     }
 }

@@ -24,13 +24,13 @@ namespace Neptune.Application
             return await _transacaoRepository.ObterTodas();
         }
 
-        public async Task<Mes> ObterMes(MesTransacao mesTransacao)
+        public async Task<Mes> ObterMes(MesTransacao mesTransacao, List<Conta> contas)
         {
-            var transacoes = await _transacaoRepository.Obter(mesTransacao.Ano, mesTransacao.Mes);
+            var transacoes = await _transacaoRepository.ObterMesContas(mesTransacao.Ano, mesTransacao.Mes, contas.Select(x => x.Id).ToList());
 
-            var saldoUltimoDiaMesAnterior = await ObterSaldoUltimoDiaMesAnterior(mesTransacao);
+            var saldoUltimoDiaMesAnterior = await ObterSaldoUltimoDiaMesAnterior(mesTransacao, contas);
 
-            var mes = new Mes(mesTransacao, saldoUltimoDiaMesAnterior, transacoes);
+            var mes = new Mes(mesTransacao, saldoUltimoDiaMesAnterior, transacoes, contas);
 
             return mes;
         }
@@ -45,15 +45,14 @@ namespace Neptune.Application
             return _transacaoRepository.Atualizar(transacao);
         }
 
-        private async Task<SaldoUltimoDiaMesAnterior> ObterSaldoUltimoDiaMesAnterior(MesTransacao mesTransacao)
+        private async Task<SaldoUltimoDiaMesAnterior> ObterSaldoUltimoDiaMesAnterior(MesTransacao mesTransacao, List<Conta> contas)
         {
             var primeiroDiaDoMes = new DateTime(mesTransacao.Ano, mesTransacao.Mes, 1);
 
             var todasTransacoes = await _transacaoRepository.ObterTodas();
-            var transacoesMesPassadoPraTras = todasTransacoes
-                .Where(x => x.Data < primeiroDiaDoMes);
+            var todasTransacoesContas = todasTransacoes.Where(x => contas.Select(c => c.Id).Contains(x.Id)).ToList();
+            var transacoesMesPassadoPraTras = todasTransacoesContas.Where(x => x.Data < primeiroDiaDoMes);
 
-            var contas = await _contaRepository.ObterTodas();
 
             var saldoUltimoDiaMesAnteriorContas = new List<SaldoUltimoDiaMesAnteriorConta>();
 
