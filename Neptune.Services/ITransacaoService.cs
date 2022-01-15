@@ -8,6 +8,6 @@ namespace Neptune.Application
     public interface ITransacaoService
     {
         Task<List<Transacao>> ObterTodas();
-        Task<Meses> ObterMeses();
+        Task<Meses> ObterMeses(List<Conta> contas);
     }
 }

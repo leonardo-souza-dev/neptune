@@ -56,8 +56,8 @@ namespace Neptune.Domain
                 }
 
                 var primeiroDia = new Dia(transacao.Data, 
-                                           new List<Transacao> { transacao }, 
-                                           saldo);
+                                          new List<Transacao> { transacao }, 
+                                          saldo);
                 Dias.Add(primeiroDia);
             }
             else

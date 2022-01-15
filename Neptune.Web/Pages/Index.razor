@@ -109,7 +109,7 @@
 
         contas = await _pagesService.ObterContas();
         contas.ForEach(x => x.Selecionada = true);
-        meses = await _pagesService.ObterMeses();
+        meses = await _pagesService.ObterMeses(contas);
     }
 
     protected override async Task OnParametersSetAsync()
@@ -135,7 +135,5 @@
     {
         var conta = contas.First(x => x.Id == id);
         conta.Selecionada = selecionada;
-
-        //TODO: pendente
     }
 }

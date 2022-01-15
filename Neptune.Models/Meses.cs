@@ -9,24 +9,25 @@ namespace Neptune.Domain
     public class Meses
     {
         public List<Transacao> TodasTransacoes { get; private set; }
+        public List<Transacao> TransacoesExibicao { get; private set; }
         public List<Conta> Contas { get; private set; }
-        private List<Mes> MesList { get; } = new List<Mes>();
-        private decimal TotalSaldoInicialContas { get; }
+        public List<Mes> MesList { get; set; } = new List<Mes>();
+        public decimal TotalSaldoInicialContas { get; set; }
 
         public Meses(List<Transacao> todasTransacoes, List<Conta> contas)
         {
             TodasTransacoes = todasTransacoes;
             Contas = contas;
 
-            TodasTransacoes.Sort((x, y) => x.Data.CompareTo(y.Data));
+            TransacoesExibicao = TodasTransacoes;
+            TransacoesExibicao.Sort((x, y) => x.Data.CompareTo(y.Data));
 
+            TotalSaldoInicialContas = Contas.Where(x => x.Selecionada).Sum(x => x.SaldoInicial);
 
-            TotalSaldoInicialContas = Contas.Sum(x => x.SaldoInicial);
-
-            foreach (var t in TodasTransacoes)
+            foreach (var transacao in TransacoesExibicao)
             {
-                var mes = MesList.FirstOrDefault(x => x.DataMes.Ano == t.Data.Year && x.DataMes.Mes == t.Data.Month);
-                
+                var mes = MesList.FirstOrDefault(x => x.DataMes.Ano == transacao.Data.Year && x.DataMes.Mes == transacao.Data.Month);
+
                 if (mes == null)
                 {
                     decimal saldoUltimoDiaMesAnterior = 0;
@@ -40,13 +41,13 @@ namespace Neptune.Domain
                         saldoUltimoDiaMesAnterior = TotalSaldoInicialContas;
                     }
 
-                    var novoMes = new Mes(new DataMes(t.Data.Year, t.Data.Month), saldoUltimoDiaMesAnterior);
-                    novoMes.AdicionarTransacao(t);
+                    var novoMes = new Mes(new DataMes(transacao.Data.Year, transacao.Data.Month), saldoUltimoDiaMesAnterior);
+                    novoMes.AdicionarTransacao(transacao);
                     MesList.Add(novoMes);
                 }
                 else
                 {
-                    mes.AdicionarTransacao(t);
+                    mes.AdicionarTransacao(transacao);
                 }
             }
         }

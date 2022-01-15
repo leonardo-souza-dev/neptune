@@ -9,11 +9,15 @@ namespace Neptune.Infra
     public class TransacaoRepository : ITransacaoRepository
     {
         private readonly List<Transacao> _transacoes = new();
+        private readonly IContaRepository _contaRepository;
 
-        public TransacaoRepository()
+        public TransacaoRepository(IContaRepository contaRepository)
         {
-            var conta1 = new Conta(1, "corrente", 100);
-            var conta2 = new Conta(1, "corrente", 100);
+            _contaRepository = contaRepository;
+
+            var contas = _contaRepository.ObterTodas();
+            var conta1 = contas[0];
+            var conta2 = contas[1];
 
             // setembro
             _transacoes.Add(new Transacao(1, DateTime.Now.AddMonths(-4), "Lorem SETEmbro 2021 😉", 1M, conta1));

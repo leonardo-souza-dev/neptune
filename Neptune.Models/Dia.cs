@@ -11,7 +11,7 @@ namespace Neptune.Domain
         public DateTime Data { get; private set; }
         public List<Transacao> Transacoes { get; private set; } = new List<Transacao>();
         public decimal SaldoDiaAnterior { get; private set; }
-        public decimal SaldoFinal => SaldoDiaAnterior - Transacoes.Sum(x => x.Valor);
+        public decimal SaldoFinal => SaldoDiaAnterior - Transacoes.Where(x => x.Conta.Selecionada).Sum(x => x.Valor);
 
         public Dia(DateTime data, List<Transacao> transacoes, decimal saldoDiaAnterior)
         {
