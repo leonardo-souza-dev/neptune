@@ -3,12 +3,6 @@
 @inject NavigationManager NavManager
 @inject PagesService _pagesService
 
-@*<div>
-    <a href="@navMesAnterior" target="_top">anterior</a>
-    <span>Mês nº @mesAtual.NumMes</span>
-    <a href="@navMesSeguinte" target="_top">próximo</a>
-</div>*@
-
 <div>
     <button @onclick="IrParaMesAnterior" >anterior</button>
     <span>Mês nº @MesAtual.NumMes</span>
@@ -22,22 +16,24 @@
         </div>
             
         <ul style="float: left;" >            
-            @foreach (var contaModel in contasModel)
+            @foreach (var contaModel in contas)
             {
                 <EditForm Model="contaModel">
                     <li>
-                        @if (contaModel.Ativo)
+                        @if (contaModel.Selecionada)
                         {
                             <input 
                             type="checkbox" 
                             checked
-                            name="@contaModel.Id" />
+                            name="@contaModel.Id"
+                            @onchange="@(() => ContaClick(contaModel.Id, false))"/>
                         }
                         else
                         {
                             <input 
                             type="checkbox" 
-                            name="@contaModel.Id" />
+                            name="@contaModel.Id"
+                            @onchange="@(() => ContaClick(contaModel.Id, true))"/>
                         }
 
                         @contaModel.Id - @contaModel.Nome
@@ -96,37 +92,23 @@
 
 @code {
     private Meses meses;
-    private List<ContaModel> contasModel;
-
-    private int anoo;
-    private int mess;
+    private List<Conta> contas;
 
     private DataMes dataMes;
 
     private string navMesAnterior => (NavManager.BaseUri + MesAtual.NavMesAnterior);
     private string navMesSeguinte => (NavManager.BaseUri + MesAtual.NavMesSeguinte);
 
-    private Mes _mesAtual;
-    public Mes MesAtual
-    { 
-        get => meses.ObterMes(dataMes);
-        set => value = _mesAtual;
-    }
+    public Mes MesAtual => meses.ObterMes(dataMes);
 
     private bool firstRender;
 
     protected override async Task OnInitializedAsync()
     {
-        //NavManager.TryGetQueryString<int>("ano", out ano);
-        //NavManager.TryGetQueryString<int>("mes", out mes);
-        //if (ano == 0 || mes == 0)
-        //{
-        //    ano = DateTime.Now.Year;
-        //    mes = DateTime.Now.Month;
-        //}
         dataMes = new DataMes(DateTime.Now.Year, DateTime.Now.Month);
 
-        contasModel = await _pagesService.ObterContas();
+        contas = await _pagesService.ObterContas();
+        contas.ForEach(x => x.Selecionada = true);
         meses = await _pagesService.ObterMeses();
     }
 
@@ -140,7 +122,6 @@
         var numMesAnterior = MesAtual.DataMes.NumMesAnterior;
         var numAnoMesAnteior = MesAtual.DataMes.NumAnoDoMesAnterior;
         dataMes = new DataMes(numAnoMesAnteior, numMesAnterior);
-        MesAtual = meses.ObterMes(dataMes);
     }
 
     void IrParaMesSeguinte()
@@ -148,18 +129,13 @@
         var numMesSeguinte = MesAtual.DataMes.NumMesSeguinte;
         var numAnoMesSeguinte = MesAtual.DataMes.NumAnoDoMesSeguinte;
         dataMes = new DataMes(numAnoMesSeguinte, numMesSeguinte);
-        MesAtual = meses.ObterMes(dataMes);
     }
 
-    protected override async Task OnAfterRenderAsync(bool firstRender)
+    async void ContaClick(int id, bool selecionada)
     {
-        if (firstRender)
-        {
-            int a = 1;
-        }
-        else
-        {
-            int b = 1;
-        }
+        var conta = contas.First(x => x.Id == id);
+        conta.Selecionada = selecionada;
+
+        //mesModel = await _pagesService.ObterMes(ano, mes, contasModel.Where(x => x.Ativo).ToList());
     }
 }

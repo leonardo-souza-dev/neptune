@@ -6,9 +6,10 @@ namespace Neptune.Domain
 {
     public class Conta
     {
-        public int Id { get; set; }
-        public string Nome { get; set; }
-        public decimal SaldoInicial { get; set; }
+        public int Id { get; private set; }
+        public string Nome { get; private set; }
+        public decimal SaldoInicial { get; private set; }
+        public bool Selecionada { get; set; }
 
         public Conta(int id, string nome, decimal saldoInicial)
         {

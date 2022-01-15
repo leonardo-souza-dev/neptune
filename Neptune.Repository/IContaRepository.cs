@@ -10,6 +10,5 @@ namespace Neptune.Infra
         Task<List<Conta>> Obter(int[] ids);
         Conta Obter(int id);
         Conta Criar(Conta conta);
-        Conta Atualizar(Conta Conta);
     }
 }
