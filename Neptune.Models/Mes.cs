@@ -24,8 +24,6 @@ namespace Neptune.Domain
             }
         }
 
-
-        //TODO: colocar na Model da UI
         public string NumMes => DataMes.Mes.ToString();
         public string NavMesAnterior => $"?ano={DataMes.NumAnoDoMesAnterior}&mes={DataMes.NumMesAnterior}";
         public string NavMesSeguinte => $"?ano={DataMes.NumAnoDoMesSeguinte}&mes={DataMes.NumMesSeguinte}";

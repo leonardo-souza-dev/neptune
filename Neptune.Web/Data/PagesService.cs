@@ -1,7 +1,6 @@
 ﻿using Neptune.Application;
 using Neptune.Domain;
 using System;
-using Neptune.Web.Data.Models;
 
 namespace Neptune.Web.Data
 {
@@ -23,7 +22,9 @@ namespace Neptune.Web.Data
             return meses;
         }
 
-        public async Task<List<Conta>> ObterContas() =>
-            await _contaService.ObterTodas();
+        public async Task<List<Conta>> ObterContas()
+        {
+            return await _contaService.ObterTodas();
+        }
     }
 }

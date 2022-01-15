@@ -10,40 +10,47 @@ namespace Neptune.Domain.Tests
         public void QuandoUmaTransacao_DeveSerValido()
         {
             // arrange & act
-            var data = new DateTime(2022, 1, 1);
-            var valor = 2M;
-            var transacoes = new List<Transacao>
-            {
-                new Transacao(1, data, "Pao", valor, 1)
-            };
-            var sut = new DiaOld(data, transacoes, 0);
+            var sut = new Dia(
+                new DateTime(2022, 1, 1),
+                new List<Transacao> { new Transacao(1, new DateTime(2022, 1, 1), "Lorem", 1, 1) },
+                100);
 
             // assert
-            Assert.AreEqual(sut.SaldoDoDia, -2M);
             Assert.AreEqual(sut.Transacoes.Count, 1);
-            Assert.AreEqual(sut.Data.Day, 1);
-            Assert.AreEqual(sut.Data.Month, 1);
-            Assert.AreEqual(sut.Data.Year, 2022);
         }
 
         [Test]
-        public void QuandoDuaTransacoes_DeveSerValido()
+        public void QuandoAdicionarTransacao_DeveSerValido()
         {
-            // arrange & act
-            var data = new DateTime(2022, 1, 1);
-            var transacoes = new List<Transacao>
-            {
-                new Transacao(1, data, "Pao", 2M, 1),
-                new Transacao(1, data, "Cafe", 4M, 1)
-            };
-            var sut = new DiaOld(data, transacoes, 0);
+            // arrange 
+            var sut = new Dia(
+                new DateTime(2022, 1, 1),
+                new List<Transacao> { new Transacao(1, new DateTime(2022, 1, 1), "Lorem1", 1, 1) },
+                100);
+
+            // act
+            sut.AdicionarTransacao(new Transacao(2, new DateTime(2022, 1, 1), "Lorem2", 1, 1));
 
             // assert
-            Assert.AreEqual(sut.SaldoDoDia, -6M);
             Assert.AreEqual(sut.Transacoes.Count, 2);
-            Assert.AreEqual(sut.Data.Day, 1);
-            Assert.AreEqual(sut.Data.Month, 1);
-            Assert.AreEqual(sut.Data.Year, 2022);
+        }
+
+        [Test]
+        public void QuandoAdicionarTransacaoDesordenadas_DeveOrdernar()
+        {
+            // arrange 
+            var sut = new Dia(
+                new DateTime(2022, 1, 1),
+                new List<Transacao> { new Transacao(1, new DateTime(2022, 1, 31), "Lorem1", 1, 1) },
+                100);
+
+            // act
+            sut.AdicionarTransacao(new Transacao(2, new DateTime(2022, 1, 15), "Lorem2", 1, 1));
+            sut.AdicionarTransacao(new Transacao(2, new DateTime(2022, 1, 1), "Lorem2", 1, 1));
+
+            // assert
+            Assert.AreEqual(sut.Transacoes[0].Data.Day, 1);
+            Assert.AreEqual(sut.Transacoes[2].Data.Day, 31);
         }
     }
 }
