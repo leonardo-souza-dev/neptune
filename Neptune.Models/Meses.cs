@@ -11,7 +11,7 @@ namespace Neptune.Domain
         public List<Transacao> TodasTransacoes { get; private set; }
         public List<Transacao> TransacoesExibicao { get; private set; }
         public List<Conta> Contas { get; private set; }
-        public List<Mes> MesList { get; set; } = new List<Mes>();
+        public List<Mes> MesList { get; set; } = new List<Mes>();        
         public decimal TotalSaldoInicialContas { get; set; }
 
         public Meses(List<Transacao> todasTransacoes, List<Conta> contas)

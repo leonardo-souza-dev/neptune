@@ -69,7 +69,7 @@
                         <tr>
                             <td colspan="6">@dia.Data.ToString("dd/MM/yyyy")</td>
                         </tr>
-                        @foreach (var transacao in dia.Transacoes)
+                        @foreach (var transacao in dia.Transacoes.Where(x => x.Conta.Selecionada))
                         {
                             <tr style="background-color: #cccccc">
                                 <td>@transacao.Id</td>
