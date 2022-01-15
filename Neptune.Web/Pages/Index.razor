@@ -16,27 +16,27 @@
         </div>
             
         <ul style="float: left;" >            
-            @foreach (var contaModel in contas)
+            @foreach (var conta in contas)
             {
-                <EditForm Model="contaModel">
+                <EditForm Model="conta">
                     <li>
-                        @if (contaModel.Selecionada)
+                        @if (conta.Selecionada)
                         {
                             <input 
                             type="checkbox" 
                             checked
-                            name="@contaModel.Id"
-                            @onchange="@(() => ContaClick(contaModel.Id, false))"/>
+                            name="@conta.Id"
+                            @onchange="@(() => ContaClick(conta.Id, false))"/>
                         }
                         else
                         {
                             <input 
                             type="checkbox" 
-                            name="@contaModel.Id"
-                            @onchange="@(() => ContaClick(contaModel.Id, true))"/>
+                            name="@conta.Id"
+                            @onchange="@(() => ContaClick(conta.Id, true))"/>
                         }
 
-                        @contaModel.Id - @contaModel.Nome
+                        @conta.Id - @conta.Nome
                     </li>
                 </EditForm>
             }
@@ -76,7 +76,7 @@
                                 <td>@transacao.Descricao</td>
                                 <td>@transacao.Categoria</td>
                                 <td>@transacao.Valor</td>
-                                <td>@transacao.ContaId</td>
+                                <td>@transacao.Conta.Id</td>
                                 <td><a href="/editar-transacao/@transacao.Id">Editar</a></td>
                             </tr>
                         }

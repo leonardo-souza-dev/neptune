@@ -7,13 +7,15 @@ namespace Neptune.Domain.Tests
 {
     public class MesesTests
     {
+        private Conta _conta1 = new Conta(1, "corrente", 100);
+
         [Test]
         public void QuandoUmaTransacaoJaneiro_DeveTerMesJaneiro()
         {
             // arrange
             var transacoes = new List<Transacao> 
             {
-                new Transacao(1, new DateTime(2022, 1, 1), "Lorem", 1, 1) 
+                new Transacao(1, new DateTime(2022, 1, 1), "Lorem", 1, _conta1) 
             };
             var contas = new List<Conta> { new Conta(1, "corrente", 100) };
 
@@ -31,8 +33,8 @@ namespace Neptune.Domain.Tests
             // arrange
             var transacoes = new List<Transacao>
             {
-                new Transacao(1, new DateTime(2022, 1, 1), "Lorem1", 1, 1),
-                new Transacao(2, new DateTime(2022, 2, 1), "Lorem2", 1, 1)
+                new Transacao(1, new DateTime(2022, 1, 1), "Lorem1", 1, _conta1),
+                new Transacao(2, new DateTime(2022, 2, 1), "Lorem2", 1, _conta1)
             };
             var contas = new List<Conta> { new Conta(1, "corrente", 100) };
 
@@ -48,13 +50,14 @@ namespace Neptune.Domain.Tests
         public void QuandoTransacoesDesordenadas_DeveOrdenar()
         {
             // arrange
+            var conta1 = new Conta(1, "corrente", 100);
             var transacoes = new List<Transacao>
             {
-                new Transacao(1, new DateTime(2022, 2, 1), "Lorem1", 1, 1),
-                new Transacao(2, new DateTime(2022, 1, 15), "Lorem2", 1, 1),
-                new Transacao(2, new DateTime(2022, 3, 2), "Lorem2", 1, 1), //ultima
-                new Transacao(2, new DateTime(2021, 11, 15), "Lorem2", 1, 1), //primeira
-                new Transacao(2, new DateTime(2022, 1, 1), "Lorem2", 1, 1)
+                new Transacao(1, new DateTime(2022, 2, 1), "Lorem1", 1, conta1),
+                new Transacao(2, new DateTime(2022, 1, 15), "Lorem2", 1, conta1),
+                new Transacao(2, new DateTime(2022, 3, 2), "Lorem2", 1, conta1), //ultima
+                new Transacao(2, new DateTime(2021, 11, 15), "Lorem2", 1, conta1), //primeira
+                new Transacao(2, new DateTime(2022, 1, 1), "Lorem2", 1, conta1)
             };
             var contas = new List<Conta> { new Conta(1, "corrente", 100) };
 

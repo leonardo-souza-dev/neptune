@@ -6,6 +6,8 @@ namespace Neptune.Domain.Tests
 {
     public class MesTests
     {
+        private Conta _conta1 = new Conta(1, "corrente", 100);
+
         [Test]
         public void QuandoUmaTransacaoNova_DeveTerSaldoFinalUltimoDiaValido()
         {
@@ -13,7 +15,7 @@ namespace Neptune.Domain.Tests
             var sut = new Mes(new DataMes(2022, 1), 100);
 
             // act
-            sut.AdicionarTransacao(new Transacao(1, DateTime.Now, "Lorem", 1, 1));
+            sut.AdicionarTransacao(new Transacao(1, DateTime.Now, "Lorem", 1, _conta1));
 
             // assert
             Assert.AreEqual(sut.SaldoFinalUltimoDia, 99);
@@ -24,10 +26,10 @@ namespace Neptune.Domain.Tests
         {
             // arrange 
             var sut = new Mes(new DataMes(2022, 1), 100);
-            sut.AdicionarTransacao(new Transacao(1, DateTime.Now, "Lorem1", 1, 1));
+            sut.AdicionarTransacao(new Transacao(1, DateTime.Now, "Lorem1", 1, _conta1));
 
             // act
-            sut.AdicionarTransacao(new Transacao(2, DateTime.Now, "Lorem2", 1, 1));
+            sut.AdicionarTransacao(new Transacao(2, DateTime.Now, "Lorem2", 1, _conta1));
 
             // assert
             Assert.AreEqual(sut.SaldoFinalUltimoDia, 98);
@@ -38,9 +40,9 @@ namespace Neptune.Domain.Tests
         {
             // arrange & act
             var sut = new Mes(new DataMes(2022, 1), 100);
-            sut.AdicionarTransacao(new Transacao(1, DateTime.Now, "Lorem1", 1, 1));
-            sut.AdicionarTransacao(new Transacao(2, DateTime.Now.AddDays(1), "Lorem2", 1, 1));
-            sut.AdicionarTransacao(new Transacao(3, DateTime.Now.AddDays(2), "Lorem3", 1, 1));
+            sut.AdicionarTransacao(new Transacao(1, DateTime.Now, "Lorem1", 1, _conta1));
+            sut.AdicionarTransacao(new Transacao(2, DateTime.Now.AddDays(1), "Lorem2", 1, _conta1));
+            sut.AdicionarTransacao(new Transacao(3, DateTime.Now.AddDays(2), "Lorem3", 1, _conta1));
 
             // assert
             Assert.AreEqual(sut.Dias.Count, 3);

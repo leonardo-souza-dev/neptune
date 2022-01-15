@@ -21,7 +21,7 @@ namespace Neptune.Domain
             TodasTransacoes.Sort((x, y) => x.Data.CompareTo(y.Data));
 
 
-            TotalSaldoInicialContas = Contas.Where(x => x.Selecionada).Sum(x => x.SaldoInicial);
+            TotalSaldoInicialContas = Contas.Sum(x => x.SaldoInicial);
 
             foreach (var t in TodasTransacoes)
             {

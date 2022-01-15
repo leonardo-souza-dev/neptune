@@ -10,15 +10,15 @@ namespace Neptune.Domain
         public string Descricao { get; set; }
         public string Categoria { get; set; }
         public decimal Valor { get; set; }
-        public int ContaId { get; set; }
+        public Conta Conta { get; set; }
 
-        public Transacao(int id, DateTime data, string descricao, decimal valor, int contaId)
+        public Transacao(int id, DateTime data, string descricao, decimal valor, Conta conta)
         {
             Id = id;
             Data = data;
             Descricao = descricao;
             Valor = valor;
-            ContaId = contaId;
+            Conta = conta;
         }
     }
 }
