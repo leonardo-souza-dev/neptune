@@ -51,13 +51,13 @@ namespace Neptune.Domain
             }
         }
 
-        public Mes ObterMes(DataMes mesTransacao)
+        public Mes ObterMes(DataMes dataMes)
         {
-            var mes = MesList.FirstOrDefault(x => x.DataMes.Ano == mesTransacao.Ano && x.DataMes.Mes == mesTransacao.Mes);
+            var mes = MesList.FirstOrDefault(x => x.DataMes.Ano == dataMes.Ano && x.DataMes.Mes == dataMes.Mes);
 
             if (mes == null)
             {
-                var mesesAnteriores = MesList.Where(x => x.DataMes.ObterData() < mesTransacao.ObterData());
+                var mesesAnteriores = MesList.Where(x => x.DataMes.ObterData() < dataMes.ObterData());
                 decimal saldo = 0;
                 if (mesesAnteriores.Any())
                 {
@@ -68,7 +68,7 @@ namespace Neptune.Domain
                     saldo = TotalSaldoInicialContas;
                 }
 
-                mes = new Mes(mesTransacao, saldo);
+                mes = new Mes(dataMes, saldo);
                 MesList.Add(mes);
             }
 

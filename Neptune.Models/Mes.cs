@@ -20,7 +20,7 @@ namespace Neptune.Domain
                 if (ultimoDia != null)
                     return ultimoDia.SaldoFinal;
                 else
-                    throw new Exception("não há dias neste mês");
+                    return SaldoUltimoDiaMesAnterior;
             }
         }
 

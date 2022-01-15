@@ -3,10 +3,16 @@
 @inject NavigationManager NavManager
 @inject PagesService _pagesService
 
-<div>
+@*<div>
     <a href="@navMesAnterior" target="_top">anterior</a>
     <span>Mês nº @mesAtual.NumMes</span>
     <a href="@navMesSeguinte" target="_top">próximo</a>
+</div>*@
+
+<div>
+    <button @onclick="IrParaMesAnterior" >anterior</button>
+    <span>Mês nº @MesAtual.NumMes</span>
+    <button @onclick="IrParaMesSeguinte" >seguinte</button>
 </div>
 
 <div style="display: block;">
@@ -56,13 +62,13 @@
             <tbody>
                 <tr>
                     <th colspan="6" style="text-align: right;">
-                        Saldo no dia @mesAtual.UltimoDiaMesAnterior: @mesAtual.SaldoUltimoDiaMesAnterior
+                        Saldo no dia @MesAtual.UltimoDiaMesAnterior: @MesAtual.SaldoUltimoDiaMesAnterior
                     </th>
                 </tr>
 
-                @if (mesAtual.Dias != null && mesAtual.Dias != null && mesAtual.Dias.Any())
+                @if (MesAtual.Dias != null && MesAtual.Dias != null && MesAtual.Dias.Any())
                 {
-                    @foreach (var dia in mesAtual.Dias)
+                    @foreach (var dia in MesAtual.Dias)
                     {
                         <tr>
                             <td colspan="6">@dia.Data.ToString("dd/MM/yyyy")</td>
@@ -92,24 +98,33 @@
     private Meses meses;
     private List<ContaModel> contasModel;
 
-    private int ano;
-    private int mes;
+    private int anoo;
+    private int mess;
 
-    private string navMesAnterior => (NavManager.BaseUri + mesAtual.NavMesAnterior);
-    private string navMesSeguinte => (NavManager.BaseUri + mesAtual.NavMesSeguinte);
+    private DataMes dataMes;
 
-    private Mes mesAtual { get { return meses.ObterMes(new DataMes(ano, mes)); }}
+    private string navMesAnterior => (NavManager.BaseUri + MesAtual.NavMesAnterior);
+    private string navMesSeguinte => (NavManager.BaseUri + MesAtual.NavMesSeguinte);
 
+    private Mes _mesAtual;
+    public Mes MesAtual
+    { 
+        get => meses.ObterMes(dataMes);
+        set => value = _mesAtual;
+    }
+
+    private bool firstRender;
 
     protected override async Task OnInitializedAsync()
     {
-        NavManager.TryGetQueryString<int>("ano", out ano);
-        NavManager.TryGetQueryString<int>("mes", out mes);
-        if (ano == 0 || mes == 0)
-        {
-            ano = DateTime.Now.Year;
-            mes = DateTime.Now.Month;
-        }
+        //NavManager.TryGetQueryString<int>("ano", out ano);
+        //NavManager.TryGetQueryString<int>("mes", out mes);
+        //if (ano == 0 || mes == 0)
+        //{
+        //    ano = DateTime.Now.Year;
+        //    mes = DateTime.Now.Month;
+        //}
+        dataMes = new DataMes(DateTime.Now.Year, DateTime.Now.Month);
 
         contasModel = await _pagesService.ObterContas();
         meses = await _pagesService.ObterMeses();
@@ -117,6 +132,34 @@
 
     protected override async Task OnParametersSetAsync()
     {
-       await OnInitializedAsync();
+        await OnInitializedAsync();
+    }
+
+    void IrParaMesAnterior()
+    {
+        var numMesAnterior = MesAtual.DataMes.NumMesAnterior;
+        var numAnoMesAnteior = MesAtual.DataMes.NumAnoDoMesAnterior;
+        dataMes = new DataMes(numAnoMesAnteior, numMesAnterior);
+        MesAtual = meses.ObterMes(dataMes);
+    }
+
+    void IrParaMesSeguinte()
+    {
+        var numMesSeguinte = MesAtual.DataMes.NumMesSeguinte;
+        var numAnoMesSeguinte = MesAtual.DataMes.NumAnoDoMesSeguinte;
+        dataMes = new DataMes(numAnoMesSeguinte, numMesSeguinte);
+        MesAtual = meses.ObterMes(dataMes);
+    }
+
+    protected override async Task OnAfterRenderAsync(bool firstRender)
+    {
+        if (firstRender)
+        {
+            int a = 1;
+        }
+        else
+        {
+            int b = 1;
+        }
     }
 }
