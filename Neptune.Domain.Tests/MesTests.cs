@@ -15,7 +15,7 @@ namespace Neptune.Domain.Tests
         public void DeveSerValido()
         {
             // arrange & act
-            var mesTransacao = new MesTransacao(2022, 1);
+            var mesTransacao = new DataMes(2022, 1);
             var saldoContas = new List<SaldoUltimoDiaMesAnteriorConta>() 
             { 
                 new SaldoUltimoDiaMesAnteriorConta(1, 100), 
@@ -35,7 +35,7 @@ namespace Neptune.Domain.Tests
 
                 new Transacao(1, DateTime.Now.AddMonths(2), "Cafe", 5M, 1)
             };
-            var mes = new Mes(mesTransacao, saldo, transacoes);
+            var mes = new MesOld(mesTransacao, saldo, transacoes);
 
             // assert
             Assert.AreEqual(2, mes.Dias.Count);
@@ -49,7 +49,7 @@ namespace Neptune.Domain.Tests
         public void QuandoNaoTiveremTransacoesDoMes_NaoDeveTerDiasDeTransacao()
         {
             // arrange & act
-            var mesTransacao = new MesTransacao(2022, 1);
+            var mesTransacao = new DataMes(2022, 1);
             var saldoConta1 = new SaldoUltimoDiaMesAnteriorConta(1, 100);
             var saldoConta2 = new SaldoUltimoDiaMesAnteriorConta(2, 100);
             var saldoContas = new List<SaldoUltimoDiaMesAnteriorConta> { saldoConta1, saldoConta2 };
@@ -68,7 +68,7 @@ namespace Neptune.Domain.Tests
                 new Transacao(7, DateTime.Now.AddMonths(2), "Cafe", 1M, 1),
                 new Transacao(8, DateTime.Now.AddMonths(2), "Cafe", 1M, 2)
             };
-            var mes = new Mes(mesTransacao, saldo, transacoes);
+            var mes = new MesOld(mesTransacao, saldo, transacoes);
          
             // assert
             Assert.AreEqual(0, mes.Dias.Count);

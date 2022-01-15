@@ -5,12 +5,12 @@ using System.Linq;
 
 namespace Neptune.Domain
 {
-    public struct MesTransacao
+    public struct DataMes
     {
         public int Ano { get; private set; }
         public int Mes { get; private set; }
 
-        public MesTransacao(int ano, int mes)
+        public DataMes(int ano, int mes)
         {
             Ano = ano;
             Mes = mes;
@@ -26,12 +26,12 @@ namespace Neptune.Domain
             get => Mes == 12 ? 1 : Mes + 1;
         }
 
-        public int NumAnoMesAnterior
+        public int NumAnoDoMesAnterior
         {
             get => new DateTime(Ano, Mes, 1).AddMonths(-1).Year;
         }
 
-        public int NumAnoMesSeguinte
+        public int NumAnoDoMesSeguinte
         {
             get => new DateTime(Ano, Mes, 1).AddMonths(1).Year;
         }

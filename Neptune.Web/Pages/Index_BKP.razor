@@ -1,11 +1,11 @@
-﻿@page "/"
+﻿@page "/bkp"
 
 @inject NavigationManager NavManager
 @inject PagesService _pagesService
 
 <div>
     <a href="@navMesAnterior" target="_top">anterior</a>
-    <span>Mês nº @mesAtual.NumMes</span>
+    <span>Mês nº @mesModel.NumMes</span>
     <a href="@navMesSeguinte" target="_top">próximo</a>
 </div>
 
@@ -15,6 +15,7 @@
             Contas
         </div>
             
+        
         <ul style="float: left;" >            
             @foreach (var contaModel in contasModel)
             {
@@ -25,13 +26,15 @@
                             <input 
                             type="checkbox" 
                             checked
-                            name="@contaModel.Id" />
+                            name="@contaModel.Id" 
+                            @onchange="@(() => ContaClick(contaModel.Id, false))" />
                         }
                         else
                         {
                             <input 
                             type="checkbox" 
-                            name="@contaModel.Id" />
+                            name="@contaModel.Id" 
+                            @onchange="@(() => ContaClick(contaModel.Id, true))" />
                         }
 
                         @contaModel.Id - @contaModel.Nome
@@ -39,6 +42,7 @@
                 </EditForm>
             }
         </ul>
+
     </div>
 
     <div class="col-6" style="float: left;">
@@ -56,13 +60,12 @@
             <tbody>
                 <tr>
                     <th colspan="6" style="text-align: right;">
-                        Saldo no dia @mesAtual.UltimoDiaMesAnterior: @mesAtual.SaldoUltimoDiaMesAnterior
+                        Saldo no dia @mesModel.UltimoDiaMesAnterior: @mesModel.SaldoUltimoDiaMesAnterior2
                     </th>
                 </tr>
-
-                @if (mesAtual.Dias != null && mesAtual.Dias != null && mesAtual.Dias.Any())
+                @if (mesModel.Dias != null && mesModel.Dias != null && mesModel.Dias.Any())
                 {
-                    @foreach (var dia in mesAtual.Dias)
+                    @foreach (var dia in mesModel.Dias)
                     {
                         <tr>
                             <td colspan="6">@dia.Data.ToString("dd/MM/yyyy")</td>
@@ -79,7 +82,7 @@
                             </tr>
                         }
                         <tr>
-                            <td colspan="6" style="text-align: right;">Saldo do dia: @dia.SaldoFinal</td>
+                            <td colspan="6" style="text-align: right;">Saldo do dia: @dia.SaldoDoDia</td>
                         </tr>
                     }
                 }
@@ -89,17 +92,14 @@
 </div>
 
 @code {
-    private Meses meses;
+    private MesModel mesModel;
     private List<ContaModel> contasModel;
 
     private int ano;
     private int mes;
 
-    private string navMesAnterior => (NavManager.BaseUri + mesAtual.NavMesAnterior);
-    private string navMesSeguinte => (NavManager.BaseUri + mesAtual.NavMesSeguinte);
-
-    private Mes mesAtual { get { return meses.ObterMes(new DataMes(ano, mes)); }}
-
+    private string navMesAnterior => (NavManager.BaseUri + mesModel.NavMesAnterior);
+    private string navMesSeguinte => (NavManager.BaseUri + mesModel.NavMesSeguinte);
 
     protected override async Task OnInitializedAsync()
     {
@@ -112,11 +112,19 @@
         }
 
         contasModel = await _pagesService.ObterContas();
-        meses = await _pagesService.ObterMeses();
+        mesModel = await _pagesService.ObterMes(ano, mes, contasModel.Where(x => x.Ativo).ToList());
     }
 
     protected override async Task OnParametersSetAsync()
     {
-       await OnInitializedAsync();
+        await OnInitializedAsync();
+    }
+
+    async void ContaClick(int id, bool ativo)
+    {
+        var contaModel = contasModel.First(x => x.Id == id);
+        contaModel.Ativo = ativo;
+
+        mesModel = await _pagesService.ObterMes(ano, mes, contasModel.Where(x => x.Ativo).ToList());
     }
 }

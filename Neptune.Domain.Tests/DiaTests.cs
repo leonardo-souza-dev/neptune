@@ -6,11 +6,6 @@ namespace Neptune.Domain.Tests
 {
     public class DiaTests
     {
-        [SetUp]
-        public void Setup()
-        {
-        }
-
         [Test]
         public void QuandoUmaTransacao_DeveSerValido()
         {
@@ -21,7 +16,7 @@ namespace Neptune.Domain.Tests
             {
                 new Transacao(1, data, "Pao", valor, 1)
             };
-            var sut = new Dia(data, transacoes, 0);
+            var sut = new DiaOld(data, transacoes, 0);
 
             // assert
             Assert.AreEqual(sut.SaldoDoDia, -2M);
@@ -41,7 +36,7 @@ namespace Neptune.Domain.Tests
                 new Transacao(1, data, "Pao", 2M, 1),
                 new Transacao(1, data, "Cafe", 4M, 1)
             };
-            var sut = new Dia(data, transacoes, 0);
+            var sut = new DiaOld(data, transacoes, 0);
 
             // assert
             Assert.AreEqual(sut.SaldoDoDia, -6M);

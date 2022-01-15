@@ -17,7 +17,7 @@ namespace Neptune.Web.Data.Models
             Mes = mes;
         }
 
-        public MesTransacaoModel(MesTransacao mesTransacao)
+        public MesTransacaoModel(DataMes mesTransacao)
         {
             Ano = mesTransacao.Ano;
             Mes = mesTransacao.Mes;

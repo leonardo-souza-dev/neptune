@@ -20,7 +20,7 @@ namespace Neptune.Web.Data.Models
         public string NavMesAnterior => $"?ano={AnoDoMesAnterior}&mes={MesAnterior}";
         public string NavMesSeguinte => $"?ano={AnoDoMesSeguinte}&mes={MesSeguinte}";
 
-        public MesModel(Mes mes)
+        public MesModel(MesOld mes)
         {
             NumMes = mes.MesTransacao.Mes;
 
@@ -30,9 +30,9 @@ namespace Neptune.Web.Data.Models
             mes.Dias.ForEach(dia => Dias.Add(new DiaModel(dia)));
             UltimoDiaMesAnterior = mes.UltimoDiaMesAnterior.ToString("dd/MM/yyyy");
 
-            AnoDoMesAnterior = mes.MesTransacao.NumAnoMesAnterior;
+            AnoDoMesAnterior = mes.MesTransacao.NumAnoDoMesAnterior;
             MesAnterior = mes.MesTransacao.NumMesAnterior;
-            AnoDoMesSeguinte = mes.MesTransacao.NumAnoMesSeguinte;
+            AnoDoMesSeguinte = mes.MesTransacao.NumAnoDoMesSeguinte;
             MesSeguinte = mes.MesTransacao.NumMesSeguinte;
         }
     }

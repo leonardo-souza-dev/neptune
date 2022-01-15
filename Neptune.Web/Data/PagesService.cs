@@ -21,10 +21,17 @@ namespace Neptune.Web.Data
             var contas = new List<Conta>();
             contasModel.ForEach(x => contas.Add(x.ToDomain()));
 
-            var mes = await _transacaoService.ObterMes(new MesTransacao(numAno, numMes), contas);
+            var mes = await _transacaoService.ObterMes(new DataMes(numAno, numMes), contas);
             var mesModel = new MesModel(mes);
 
             return mesModel;
+        }
+
+        public async Task<Meses> ObterMeses()
+        {
+            var meses = await _transacaoService.ObterMeses();
+
+            return meses;
         }
 
         public async Task<List<ContaModel>> ObterContas()

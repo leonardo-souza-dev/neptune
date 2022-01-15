@@ -24,13 +24,13 @@ namespace Neptune.Application
             return await _transacaoRepository.ObterTodas();
         }
 
-        public async Task<Mes> ObterMes(MesTransacao mesTransacao, List<Conta> contas)
+        public async Task<MesOld> ObterMes(DataMes mesTransacao, List<Conta> contas)
         {
             var transacoes = await _transacaoRepository.ObterMesContas(mesTransacao.Ano, mesTransacao.Mes, contas.Select(x => x.Id).ToList());
 
             var saldoUltimoDiaMesAnterior = await ObterSaldoUltimoDiaMesAnterior(mesTransacao, contas);
 
-            var mes = new Mes(mesTransacao, saldoUltimoDiaMesAnterior, transacoes);
+            var mes = new MesOld(mesTransacao, saldoUltimoDiaMesAnterior, transacoes);
 
             return mes;
         }
@@ -45,7 +45,17 @@ namespace Neptune.Application
             return _transacaoRepository.Atualizar(transacao);
         }
 
-        private async Task<SaldoUltimoDiaMesAnterior> ObterSaldoUltimoDiaMesAnterior(MesTransacao mesTransacao, List<Conta> contas)
+        public async Task<Meses> ObterMeses()
+        {
+            var todasTransacoes = await ObterTodas();
+            var todasContas = await _contaRepository.ObterTodas();
+
+            var meses = new Meses(todasTransacoes, todasContas);
+
+            return meses;
+        }
+
+        private async Task<SaldoUltimoDiaMesAnterior> ObterSaldoUltimoDiaMesAnterior(DataMes mesTransacao, List<Conta> contas)
         {
             var primeiroDiaDoMes = new DateTime(mesTransacao.Ano, mesTransacao.Mes, 1);
 

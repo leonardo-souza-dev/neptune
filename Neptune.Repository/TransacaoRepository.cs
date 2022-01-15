@@ -12,6 +12,10 @@ namespace Neptune.Infra
 
         public TransacaoRepository()
         {
+            // setembro
+            _transacoes.Add(new Transacao(1, DateTime.Now.AddMonths(-4), "Lorem SETEmbro 2021 😉", 1M, 1));
+            _transacoes.Add(new Transacao(1, DateTime.Now.AddMonths(-4), "Lorem SETEMBRO 2021 😉", 1M, 2));
+
             // novembro
             _transacoes.Add(new Transacao(1, DateTime.Now.AddMonths(-2), "Lorem NOVEMBRO 2021", 1M, 1));
             _transacoes.Add(new Transacao(1, DateTime.Now.AddMonths(-2), "Lorem NOVEMBRO 2021", 1M, 2));

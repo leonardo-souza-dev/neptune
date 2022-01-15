@@ -8,7 +8,7 @@ namespace Neptune.Web.Data.Models
         public decimal SaldoDoDia { get; set; }
         public DateTime Data { get; set; }
 
-        public DiaModel(Dia dia)
+        public DiaModel(DiaOld dia)
         {
             dia.Transacoes.ForEach(t => Transacoes.Add(new TransacaoModel(t)));
             SaldoDoDia = dia.SaldoDoDia;
