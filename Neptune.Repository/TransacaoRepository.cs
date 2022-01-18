@@ -16,37 +16,39 @@ namespace Neptune.Infra
             _contaRepository = contaRepository;
 
             var contas = _contaRepository.ObterTodas();
-            var conta1 = contas[0];
-            var conta2 = contas[1];
+            var corrente = contas[0];
+            var poupanca = contas[1];
+            var cartaoCredito = contas[2];
 
             // setembro
-            _transacoes.Add(new Transacao(1, DateTime.Now.AddMonths(-4), "Lorem SETEmbro 2021 😉", -1, conta1));
-            _transacoes.Add(new Transacao(2, DateTime.Now.AddMonths(-4), "Deposito SETEMBRO", 100, conta2));
+            _transacoes.Add(new Transacao(1, DateTime.Now.AddMonths(-4), "Lorem SETEmbro 2021 😉", -1, corrente));
+            _transacoes.Add(new Transacao(2, DateTime.Now.AddMonths(-4), "Deposito SETEMBRO", 100, poupanca));
 
             //// novembro
-            _transacoes.Add(new Transacao(3, DateTime.Now.AddMonths(-2), "Lorem NOVEMBRO 2021", -1, conta1));
-            _transacoes.Add(new Transacao(4, DateTime.Now.AddMonths(-2), "Lorem NOVEMBRO 2021", -1, conta2));
+            _transacoes.Add(new Transacao(3, DateTime.Now.AddMonths(-2), "Lorem NOVEMBRO 2021", -1, corrente));
+            _transacoes.Add(new Transacao(4, DateTime.Now.AddMonths(-2), "Lorem NOVEMBRO 2021", -1, poupanca));
 
             //// dezembro
-            _transacoes.Add(new Transacao(5, DateTime.Now.AddMonths(-1), "Lorem DEZEMBRO 2021 🎅", -1, conta1));
-            _transacoes.Add(new Transacao(6, DateTime.Now.AddMonths(-1), "Lorem DEZEMBRO 2021 🎅", -1, conta2));
+            _transacoes.Add(new Transacao(5, DateTime.Now.AddMonths(-1), "Lorem DEZEMBRO 2021 🎅", -1, corrente));
+            _transacoes.Add(new Transacao(6, DateTime.Now.AddMonths(-1), "Lorem DEZEMBRO 2021 🎅", -1, poupanca));
 
             //// TEMP - janeiro
             //// hoje
-            _transacoes.Add(new Transacao(7, DateTime.Now, "estorno JANEIRO conta1", 5, conta1));
-            _transacoes.Add(new Transacao(8, DateTime.Now, "Lorem JANEIRO conta2", -1, conta2));
-            
+            _transacoes.Add(new Transacao(7, DateTime.Now, "estorno compra", 5, corrente));
+            _transacoes.Add(new Transacao(8, DateTime.Now, "Aplicacao", 10, poupanca));
+            _transacoes.Add(new Transacao(8, DateTime.Now, "Compra", -100, cartaoCredito));
+
             //// amanha
-            _transacoes.Add(new Transacao(9, DateTime.Now.AddDays(1), "Lorem", -1, conta1));
-            _transacoes.Add(new Transacao(10, DateTime.Now.AddDays(1), "Lorem", -1, conta2));
+            _transacoes.Add(new Transacao(9, DateTime.Now.AddDays(1), "Lorem", -1, corrente));
+            _transacoes.Add(new Transacao(10, DateTime.Now.AddDays(1), "Lorem", -1, poupanca));
 
             //// depois de amanha
-            _transacoes.Add(new Transacao(11, DateTime.Now.AddDays(2), "Lorem", -1, conta1));
-            _transacoes.Add(new Transacao(12, DateTime.Now.AddDays(2), "Lorem", -1, conta2));
+            _transacoes.Add(new Transacao(11, DateTime.Now.AddDays(2), "Lorem", -1, corrente));
+            _transacoes.Add(new Transacao(12, DateTime.Now.AddDays(2), "Lorem", -1, poupanca));
 
             //// fevereiro
-            _transacoes.Add(new Transacao(13, DateTime.Now.AddMonths(1), "Lorem", -1, conta1));
-            _transacoes.Add(new Transacao(14, DateTime.Now.AddMonths(1), "Lorem", -1, conta2));
+            _transacoes.Add(new Transacao(13, DateTime.Now.AddMonths(1), "Lorem", -1, corrente));
+            _transacoes.Add(new Transacao(14, DateTime.Now.AddMonths(1), "Lorem", -1, poupanca));
         }
 
         public async Task<List<Transacao>> ObterTodas()
