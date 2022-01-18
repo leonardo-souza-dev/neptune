@@ -15,9 +15,9 @@ namespace Neptune.Web.Data
             _contaService = contaService;
         }
 
-        public async Task<Meses> ObterMeses()
+        public async Task<Meses> ObterMeses(List<Conta> contas)
         {
-            var meses = await _transacaoService.ObterMeses();
+            var meses = await _transacaoService.ObterMeses(contas);
 
             return meses;
         }

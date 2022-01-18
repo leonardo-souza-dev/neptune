@@ -9,7 +9,19 @@ namespace Neptune.Domain
         public int Id { get; private set; }
         public string Nome { get; private set; }
         public decimal SaldoInicial { get; private set; }
-        public bool Selecionada { get; set; }
+
+        private bool _selecionada = true;
+        public bool Selecionada 
+        { 
+            get
+            {
+                return _selecionada;
+            }
+            set
+            {
+                _selecionada = value;
+            }
+        }
 
         public Conta(int id, string nome, decimal saldoInicial)
         {

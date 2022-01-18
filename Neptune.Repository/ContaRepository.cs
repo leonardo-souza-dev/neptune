@@ -16,14 +16,9 @@ namespace Neptune.Infra
             new Conta(2, "Poupanca", 100M)
         };
 
-        public async Task<List<Conta>> ObterTodas()
+        public List<Conta> ObterTodas()
         {
             return Contas;
-        }
-
-        public async Task<List<Conta>> Obter(int[] ids)
-        {
-            return Contas.Where(x => ids.Contains(x.Id)).ToList();
         }
 
         public Conta Obter(int id)

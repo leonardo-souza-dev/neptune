@@ -17,7 +17,7 @@ namespace Neptune.Application
 
         public async Task<List<Conta>> ObterTodas()
         {
-            return await _contaRepository.ObterTodas();
+            return _contaRepository.ObterTodas();
         }
 
         public Conta Obter(int id)

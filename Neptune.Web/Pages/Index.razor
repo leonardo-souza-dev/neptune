@@ -58,7 +58,7 @@
             <tbody>
                 <tr>
                     <th colspan="6" style="text-align: right;">
-                        Saldo no dia @MesAtual.UltimoDiaMesAnterior: @MesAtual.SaldoUltimoDiaMesAnterior
+                        Saldo no dia @MesAtual.UltimoDiaMesAnterior: @MesAtual.ObterValorSaldoFinalUltimoDiaMesAnterior()
                     </th>
                 </tr>
 
@@ -69,7 +69,7 @@
                         <tr>
                             <td colspan="6">@dia.Data.ToString("dd/MM/yyyy")</td>
                         </tr>
-                        @foreach (var transacao in dia.Transacoes)
+                        @foreach (var transacao in dia.Transacoes.Where(x => x.Conta.Selecionada))
                         {
                             <tr style="background-color: #cccccc">
                                 <td>@transacao.Id</td>
@@ -81,7 +81,7 @@
                             </tr>
                         }
                         <tr>
-                            <td colspan="6" style="text-align: right;">Saldo do dia: @dia.SaldoFinal</td>
+                            <td colspan="6" style="text-align: right;">Saldo do dia: @dia.SaldoFinalDoDia.Valor</td>
                         </tr>
                     }
                 }
@@ -109,7 +109,7 @@
 
         contas = await _pagesService.ObterContas();
         contas.ForEach(x => x.Selecionada = true);
-        meses = await _pagesService.ObterMeses();
+        meses = await _pagesService.ObterMeses(contas);
     }
 
     protected override async Task OnParametersSetAsync()
@@ -135,7 +135,5 @@
     {
         var conta = contas.First(x => x.Id == id);
         conta.Selecionada = selecionada;
-
-        //TODO: pendente
     }
 }

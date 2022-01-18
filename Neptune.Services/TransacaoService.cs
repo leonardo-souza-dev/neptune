@@ -24,12 +24,11 @@ namespace Neptune.Application
             return await _transacaoRepository.ObterTodas();
         }
 
-        public async Task<Meses> ObterMeses()
+        public async Task<Meses> ObterMeses(List<Conta> contas)
         {
             var todasTransacoes = await ObterTodas();
-            var todasContas = await _contaRepository.ObterTodas();
 
-            var meses = new Meses(todasTransacoes, todasContas);
+            var meses = new Meses(todasTransacoes, contas);
 
             return meses;
         }
