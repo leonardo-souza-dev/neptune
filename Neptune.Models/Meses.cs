@@ -9,28 +9,30 @@ namespace Neptune.Domain
     public class Meses
     {
         public List<Transacao> TodasTransacoes { get; private set; }
-        public List<Transacao> TransacoesExibicao { get; private set; }
+        //public List<Transacao> TransacoesExibicao { get; private set; }
         public List<Conta> Contas { get; private set; }
         public List<Mes> MesList { get; set; } = new List<Mes>();        
-        public decimal TotalSaldoInicialContas { get; set; }
+        public Saldo SaldoInicial { get; set; }
 
         public Meses(List<Transacao> todasTransacoes, List<Conta> contas)
         {
             TodasTransacoes = todasTransacoes;
             Contas = contas;
 
-            TransacoesExibicao = TodasTransacoes;
-            TransacoesExibicao.Sort((x, y) => x.Data.CompareTo(y.Data));
+            //TransacoesExibicao = TodasTransacoes;
+            //TransacoesExibicao.Sort((x, y) => x.Data.CompareTo(y.Data));
 
-            TotalSaldoInicialContas = Contas.Where(x => x.Selecionada).Sum(x => x.SaldoInicial);
+            var saldoContas = new List<SaldoConta>();
+            contas.ForEach(x => saldoContas.Add(new SaldoConta(x, x.SaldoInicial)));
+            SaldoInicial = new Saldo(saldoContas);
 
-            foreach (var transacao in TransacoesExibicao)
+            foreach (var transacao in TodasTransacoes)
             {
                 var mes = MesList.FirstOrDefault(x => x.DataMes.Ano == transacao.Data.Year && x.DataMes.Mes == transacao.Data.Month);
 
                 if (mes == null)
                 {
-                    decimal saldoUltimoDiaMesAnterior = 0;
+                    Saldo saldoUltimoDiaMesAnterior = null;
 
                     if (MesList.Any())
                     {
@@ -38,7 +40,7 @@ namespace Neptune.Domain
                     }
                     else
                     {
-                        saldoUltimoDiaMesAnterior = TotalSaldoInicialContas;
+                        saldoUltimoDiaMesAnterior = SaldoInicial;
                     }
 
                     var novoMes = new Mes(new DataMes(transacao.Data.Year, transacao.Data.Month), saldoUltimoDiaMesAnterior);
@@ -59,14 +61,14 @@ namespace Neptune.Domain
             if (mes == null)
             {
                 var mesesAnteriores = MesList.Where(x => x.DataMes.ObterData() < dataMes.ObterData());
-                decimal saldo = 0;
+                Saldo saldo = null;
                 if (mesesAnteriores.Any())
                 {
                     saldo = mesesAnteriores.Last().SaldoFinalUltimoDia;
                 }
                 else
                 {
-                    saldo = TotalSaldoInicialContas;
+                    saldo = SaldoInicial;
                 }
 
                 mes = new Mes(dataMes, saldo);

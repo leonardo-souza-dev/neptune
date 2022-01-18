@@ -6,46 +6,40 @@ namespace Neptune.Domain.Tests
 {
     public class MesTests
     {
-        private Conta _conta1 = new Conta(1, "corrente", 100);
+        private Conta _cc = new Conta(1, "corrente", 1000000);
+        private Conta _cp = new Conta(1, "poupanca", 2000000);
 
         [Test]
-        public void QuandoUmaTransacaoNova_DeveTerSaldoFinalUltimoDiaValido()
+        public void QuandoUmaContaEUmaTransacaoNova_DeveTerSaldoFinalUltimoDiaValido()
         {
             // arrange 
-            var sut = new Mes(new DataMes(2022, 1), 100);
+            var saldoFinalUltimoDiaMesAnterior = new Saldo(new List<SaldoConta> { new SaldoConta(_cc, -1000) });
+            var sut = new Mes(new DataMes(2022, 1), saldoFinalUltimoDiaMesAnterior);
 
             // act
-            sut.AdicionarTransacao(new Transacao(1, DateTime.Now, "Lorem", 1, _conta1));
+            sut.AdicionarTransacao(new Transacao(1, new DateTime(2022, 1, 1), "pao", -10, _cc));
 
             // assert
-            Assert.AreEqual(sut.SaldoFinalUltimoDia, 99);
+            Assert.AreEqual(sut.SaldoFinalUltimoDia.Valor, -1010);
         }
 
-        [Test]
-        public void QuandoAdicionarSegundaTransacao_DeveTerSaldoFinalUltimoDiaValido()
-        {
-            // arrange 
-            var sut = new Mes(new DataMes(2022, 1), 100);
-            sut.AdicionarTransacao(new Transacao(1, DateTime.Now, "Lorem1", 1, _conta1));
+        //[Test]
+        //public void QuandoUmaTransacaoNova_DeveTerSaldoFinalUltimoDiaValido()
+        //{
+        //    // arrange 
+        //    var saldoContas = new SaldoContas(new List<SaldoConta>
+        //    {
+        //        new SaldoConta(_cc, -1000),
+        //        new SaldoConta(_cp, 2000M)
+        //    });
+        //    var sut = new Mes(new DataMes(2022, 1), saldoContas);
 
-            // act
-            sut.AdicionarTransacao(new Transacao(2, DateTime.Now, "Lorem2", 1, _conta1));
+        //    // act
+        //    sut.AdicionarTransacao(new Transacao(1, new DateTime(2022, 1, 1), "investimento", 100, _cp));
+        //    sut.AdicionarTransacao(new Transacao(2, new DateTime(2022, 1, 2), "pao", -10, _cc));
 
-            // assert
-            Assert.AreEqual(sut.SaldoFinalUltimoDia, 98);
-        }
-
-        [Test]
-        public void QuandoTresTransacoesDiasDiferentes_DeveTerTresDiasValidos()
-        {
-            // arrange & act
-            var sut = new Mes(new DataMes(2022, 1), 100);
-            sut.AdicionarTransacao(new Transacao(1, DateTime.Now, "Lorem1", 1, _conta1));
-            sut.AdicionarTransacao(new Transacao(2, DateTime.Now.AddDays(1), "Lorem2", 1, _conta1));
-            sut.AdicionarTransacao(new Transacao(3, DateTime.Now.AddDays(2), "Lorem3", 1, _conta1));
-
-            // assert
-            Assert.AreEqual(sut.Dias.Count, 3);
-        }
+        //    // assert
+        //    Assert.AreEqual(sut.SaldoFinalUltimoDia, 1090);
+        //}
     }
 }
