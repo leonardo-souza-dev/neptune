@@ -9,30 +9,48 @@ namespace Neptune.Domain
     public class Mes
     {
         public DataMes DataMes { get; private set; }
-        public decimal SaldoUltimoDiaMesAnterior { get; private set; }
+
+        private Saldo _saldoFinalUltimoDiaMesAnterior;
+        public Saldo SaldoFinalUltimoDiaMesAnterior 
+        { 
+            get
+            {
+                return _saldoFinalUltimoDiaMesAnterior;
+            }
+
+            private set
+            {
+                _saldoFinalUltimoDiaMesAnterior = value;
+            }
+        }
+
+        public decimal ObterValorSaldoFinalUltimoDiaMesAnterior()
+        {
+            return _saldoFinalUltimoDiaMesAnterior.Valor;
+        }
+
+        public Mes(DataMes dataMes, Saldo saldoFinalUltimoDiaMesAnterior)
+        {
+            DataMes = dataMes;
+            SaldoFinalUltimoDiaMesAnterior = saldoFinalUltimoDiaMesAnterior;
+        }
+
         public string UltimoDiaMesAnterior => DataMes.UltimoDiaDoMesAnterior.ToString("dd/MM/yyyy");
         public List<Dia> Dias { get; private set; } = new List<Dia>();
-        public decimal SaldoFinalUltimoDia
+        public Saldo SaldoFinalUltimoDia
         {
             get
             {
                 var ultimoDia = Dias.LastOrDefault();
                 if (ultimoDia != null)
-                    return ultimoDia.SaldoFinal;
+                    return ultimoDia.SaldoFinalDoDia;
                 else
-                    return SaldoUltimoDiaMesAnterior;
+                    return SaldoFinalUltimoDiaMesAnterior;
             }
         }
-
         public string NumMes => DataMes.Mes.ToString();
         public string NavMesAnterior => $"?ano={DataMes.NumAnoDoMesAnterior}&mes={DataMes.NumMesAnterior}";
         public string NavMesSeguinte => $"?ano={DataMes.NumAnoDoMesSeguinte}&mes={DataMes.NumMesSeguinte}";
-
-        public Mes(DataMes dataMes, decimal saldoUltimoDiaMesAnterior)
-        {
-            DataMes = dataMes;
-            SaldoUltimoDiaMesAnterior = saldoUltimoDiaMesAnterior;
-        }
 
         public void AdicionarTransacao(Transacao transacao)
         {
@@ -44,21 +62,21 @@ namespace Neptune.Domain
             if (dia == null)
             {
                 var diasAnteriores = Dias.Where(x => x.Data < transacao.Data);
-                decimal saldo = 0;
+                Saldo saldoFinalDiaAnterior = null;
                 
                 if (diasAnteriores.Any())
                 {
-                    saldo = diasAnteriores.Last().SaldoFinal;
+                    saldoFinalDiaAnterior = diasAnteriores.Last().SaldoFinalDoDia;
                 }
                 else
                 {
-                    saldo = SaldoUltimoDiaMesAnterior;
+                    saldoFinalDiaAnterior = SaldoFinalUltimoDiaMesAnterior;
                 }
 
-                var primeiroDia = new Dia(transacao.Data, 
-                                           new List<Transacao> { transacao }, 
-                                           saldo);
-                Dias.Add(primeiroDia);
+                var diaNovo = new Dia(transacao.Data, 
+                                      new List<Transacao> { transacao },
+                                      saldoFinalDiaAnterior);
+                Dias.Add(diaNovo);
             }
             else
             {

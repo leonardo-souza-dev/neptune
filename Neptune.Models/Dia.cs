@@ -10,20 +10,26 @@ namespace Neptune.Domain
     {
         public DateTime Data { get; private set; }
         public List<Transacao> Transacoes { get; private set; } = new List<Transacao>();
-        public decimal SaldoDiaAnterior { get; private set; }
-        public decimal SaldoFinal => SaldoDiaAnterior - Transacoes.Sum(x => x.Valor);
+        public Saldo SaldoDiaAnterior { get; private set; }
+        public Saldo SaldoFinalDoDia { get; }
 
-        public Dia(DateTime data, List<Transacao> transacoes, decimal saldoDiaAnterior)
+        public Dia(DateTime data, List<Transacao> transacoes, Saldo saldoDiaAnterior)
         {
             Data = data;
             Transacoes = transacoes;
             SaldoDiaAnterior = saldoDiaAnterior;
+
+            //SaldoFinalDoDia = new Saldo(transacoes).Adicionar(SaldoDiaAnterior);
+            SaldoFinalDoDia = new Saldo(saldoDiaAnterior);
+            SaldoFinalDoDia.AdicionarValor(transacoes);
         }
 
         public void AdicionarTransacao(Transacao transacao)
         {
             Transacoes.Add(transacao);
             Transacoes.Sort((x, y) => x.Data.CompareTo(y.Data));
+
+            SaldoFinalDoDia.AdicionarValor(transacao);
         }
     }
 }
