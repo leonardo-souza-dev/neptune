@@ -101,8 +101,6 @@
 
     public Mes MesAtual => meses.ObterMes(dataMes);
 
-    private bool firstRender;
-
     protected override async Task OnInitializedAsync()
     {
         dataMes = new DataMes(DateTime.Now.Year, DateTime.Now.Month);
