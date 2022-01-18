@@ -3,90 +3,94 @@
 @inject NavigationManager NavManager
 @inject PagesService _pagesService
 
-<div>
-    <button @onclick="IrParaMesAnterior" >anterior</button>
-    <span>Mês nº @MesAtual.NumMes</span>
-    <button @onclick="IrParaMesSeguinte" >seguinte</button>
+<div id="selecao-contas" style="display: block;float: left;width: 210px;">
+    <div>
+        Contas
+    </div>
+            
+    <ul style="float: left;" >            
+        @foreach (var conta in contas)
+        {
+            <EditForm Model="conta">
+                <li>
+                    @if (conta.Selecionada)
+                    {
+                        <input 
+                        type="checkbox" 
+                        checked
+                        name="@conta.Id"
+                        @onchange="@(() => ContaClick(conta.Id, false))"/>
+                    }
+                    else
+                    {
+                        <input 
+                        type="checkbox" 
+                        name="@conta.Id"
+                        @onchange="@(() => ContaClick(conta.Id, true))"/>
+                    }
+
+                    @conta.Id - @conta.Nome
+                </li>
+            </EditForm>
+        }
+    </ul>
 </div>
 
 <div style="display: block;">
-    <div>
-        <div class="col-2" style="">
-            Contas
+    <div id="navegacao-e-transacoes" style="margin: 8px;">
+        <div id="navegacao">
+            <button @onclick="IrParaMesAnterior" >anterior</button>
+            <span>Mês nº @MesAtual.NumMes</span>
+            <button @onclick="IrParaMesSeguinte" >seguinte</button>
         </div>
-            
-        <ul style="float: left;" >            
-            @foreach (var conta in contas)
-            {
-                <EditForm Model="conta">
-                    <li>
-                        @if (conta.Selecionada)
-                        {
-                            <input 
-                            type="checkbox" 
-                            checked
-                            name="@conta.Id"
-                            @onchange="@(() => ContaClick(conta.Id, false))"/>
-                        }
-                        else
-                        {
-                            <input 
-                            type="checkbox" 
-                            name="@conta.Id"
-                            @onchange="@(() => ContaClick(conta.Id, true))"/>
-                        }
+        <div id="adicionar-transacao" style="margin: 8px;">
+            <button @onclick="AdicionarTransacao" >+ transacao</button>
+        </div>
+        <div id="transacoes" style="float: left;margin: 8px;width: 50%;">
+            <table class="table transacoes">
+                <thead>
+                    <tr>
+                        <th>Id</th>
+                        <th>Descricao</th>
+                        <th>Categoria</th>
+                        <th>Valor</th>
+                        <th>Conta</th>
+                        <th>Editar</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr>
+                        <th colspan="6" style="text-align: right;">
+                            Saldo no dia @MesAtual.UltimoDiaMesAnterior: @MesAtual.SaldoFinalUltimoDiaMesAnterior.Valor
+                        </th>
+                    </tr>
 
-                        @conta.Id - @conta.Nome
-                    </li>
-                </EditForm>
-            }
-        </ul>
-    </div>
-
-    <div class="col-6" style="float: left;">
-        <table class="table transacoes">
-            <thead>
-                <tr>
-                    <th>Id</th>
-                    <th>Descricao</th>
-                    <th>Categoria</th>
-                    <th>Valor</th>
-                    <th>Conta</th>
-                    <th>Editar</th>
-                </tr>
-            </thead>
-            <tbody>
-                <tr>
-                    <th colspan="6" style="text-align: right;">
-                        Saldo no dia @MesAtual.UltimoDiaMesAnterior: @MesAtual.SaldoFinalUltimoDiaMesAnterior.Valor
-                    </th>
-                </tr>
-
-                @if (MesAtual.Dias != null && MesAtual.Dias != null && MesAtual.Dias.Any())
-                {
-                    @foreach (var dia in MesAtual.Dias)
+                    @if (MesAtual.Dias != null && MesAtual.Dias != null && MesAtual.Dias.Any())
                     {
-                        <tr>
-                            <td colspan="6">@dia.Data.ToString("dd/MM/yyyy")</td>
-                        </tr>
-                        @foreach (var transacao in dia.Transacoes.Where(x => x.Conta.Selecionada))
+                        @foreach (var dia in MesAtual.Dias.Where(x => x.Transacoes.All(t => t.Conta.Selecionada)))
                         {
-                            <tr style="background-color: #cccccc">
-                                <td>@transacao.Id</td>
-                                <td>@transacao.Descricao</td>
-                                <td>@transacao.Categoria</td>
-                                <td>@transacao.Valor</td>
-                                <td>@transacao.Conta.Id</td>
-                                <td><a href="/editar-transacao/@transacao.Id">Editar</a></td>
+                            <tr>
+                                <td colspan="6">@dia.Data.ToString("dd/MM/yyyy")</td>
+                            </tr>
+                            @foreach (var transacao in dia.Transacoes.Where(x => x.Conta.Selecionada))
+                            {
+                                <tr style="background-color: #cccccc">
+                                    <td>@transacao.Id</td>
+                                    <td>@transacao.Descricao</td>
+                                    <td>@transacao.Categoria</td>
+                                    <td>@transacao.Valor</td>
+                                    <td>@transacao.Conta.Id</td>
+                                    <td><a href="/editar-transacao/@transacao.Id">Editar</a></td>
+                                </tr>
+                            }
+                            <tr>
+                                <td colspan="6" style="text-align: right;">Saldo do dia: @dia.SaldoFinalDoDia.Valor</td>
                             </tr>
                         }
-                        <tr>
-                            <td colspan="6" style="text-align: right;">Saldo do dia: @dia.SaldoFinalDoDia.Valor</td>
-                        </tr>
                     }
-                }
-            </tbody>
-        </table>
+                </tbody>
+            </table>
+        </div>
     </div>
 </div>
 
@@ -133,5 +137,9 @@
     {
         var conta = contas.First(x => x.Id == id);
         conta.Selecionada = selecionada;
+    }
+
+    async void AdicionarTransacao()
+    {
     }
 }

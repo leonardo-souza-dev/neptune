@@ -21,8 +21,9 @@ namespace Neptune.Infra
             var cartaoCredito = contas[2];
 
             // setembro
-            _transacoes.Add(new Transacao(1, DateTime.Now.AddMonths(-4), "Lorem SETEmbro 2021 😉", -1, corrente));
-            _transacoes.Add(new Transacao(2, DateTime.Now.AddMonths(-4), "Deposito SETEMBRO", 100, poupanca));
+            _transacoes.Add(new Transacao(1, DateTime.Now.AddMonths(-4), "Pgto conta", -20, corrente));
+            _transacoes.Add(new Transacao(2, DateTime.Now.AddMonths(-4).AddDays(1), "Deposito", 100, poupanca));
+            _transacoes.Add(new Transacao(2, DateTime.Now.AddMonths(-4).AddDays(2), "Compra", -500, cartaoCredito));
 
             //// novembro
             _transacoes.Add(new Transacao(3, DateTime.Now.AddMonths(-2), "Lorem NOVEMBRO 2021", -1, corrente));
