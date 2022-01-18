@@ -9,7 +9,11 @@ namespace Neptune.Domain
     public class Mes
     {
         public DataMes DataMes { get; private set; }
-
+        public string UltimoDiaMesAnterior => DataMes.UltimoDiaDoMesAnterior.ToString("dd/MM/yyyy");
+        public List<Dia> Dias { get; private set; } = new List<Dia>();
+        public string NumMes => DataMes.Mes.ToString();
+        public string NavMesAnterior => $"?ano={DataMes.NumAnoDoMesAnterior}&mes={DataMes.NumMesAnterior}";
+        public string NavMesSeguinte => $"?ano={DataMes.NumAnoDoMesSeguinte}&mes={DataMes.NumMesSeguinte}";
         private Saldo _saldoFinalUltimoDiaMesAnterior;
         public Saldo SaldoFinalUltimoDiaMesAnterior 
         { 
@@ -23,20 +27,6 @@ namespace Neptune.Domain
                 _saldoFinalUltimoDiaMesAnterior = value;
             }
         }
-
-        public decimal ObterValorSaldoFinalUltimoDiaMesAnterior()
-        {
-            return _saldoFinalUltimoDiaMesAnterior.Valor;
-        }
-
-        public Mes(DataMes dataMes, Saldo saldoFinalUltimoDiaMesAnterior)
-        {
-            DataMes = dataMes;
-            SaldoFinalUltimoDiaMesAnterior = saldoFinalUltimoDiaMesAnterior;
-        }
-
-        public string UltimoDiaMesAnterior => DataMes.UltimoDiaDoMesAnterior.ToString("dd/MM/yyyy");
-        public List<Dia> Dias { get; private set; } = new List<Dia>();
         public Saldo SaldoFinalUltimoDia
         {
             get
@@ -48,9 +38,22 @@ namespace Neptune.Domain
                     return SaldoFinalUltimoDiaMesAnterior;
             }
         }
-        public string NumMes => DataMes.Mes.ToString();
-        public string NavMesAnterior => $"?ano={DataMes.NumAnoDoMesAnterior}&mes={DataMes.NumMesAnterior}";
-        public string NavMesSeguinte => $"?ano={DataMes.NumAnoDoMesSeguinte}&mes={DataMes.NumMesSeguinte}";
+
+
+
+
+        public Mes(DataMes dataMes, Saldo saldoFinalUltimoDiaMesAnterior)
+        {
+            DataMes = dataMes;
+            SaldoFinalUltimoDiaMesAnterior = saldoFinalUltimoDiaMesAnterior;
+        }
+
+
+
+        public decimal ObterValorSaldoFinalUltimoDiaMesAnterior()
+        {
+            return _saldoFinalUltimoDiaMesAnterior.Valor;
+        }
 
         public void AdicionarTransacao(Transacao transacao)
         {

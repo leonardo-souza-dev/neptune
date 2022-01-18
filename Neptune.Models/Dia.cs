@@ -19,7 +19,6 @@ namespace Neptune.Domain
             Transacoes = transacoes;
             SaldoDiaAnterior = saldoDiaAnterior;
 
-            //SaldoFinalDoDia = new Saldo(transacoes).Adicionar(SaldoDiaAnterior);
             SaldoFinalDoDia = new Saldo(saldoDiaAnterior);
             SaldoFinalDoDia.AdicionarValor(transacoes);
         }

@@ -22,7 +22,10 @@ namespace Neptune.Domain
 
         public Saldo(Saldo saldo)
         {
-            SaldoContas = saldo.SaldoContas;
+            foreach (var item in saldo.SaldoContas)
+            {
+                SaldoContas.Add(new SaldoConta(item.Conta, item.Valor));
+            }
         }
 
         public Saldo(List<Transacao> transacoes)
