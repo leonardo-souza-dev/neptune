@@ -36,67 +36,83 @@
     </ul>
 </div>
 
-<div style="display: block;">
-    <div id="navegacao-e-transacoes" style="margin: 8px;">
-        <div id="navegacao">
-            <button @onclick="IrParaMesAnterior" >anterior</button>
-            <span>Mês nº @MesAtual.NumMes</span>
-            <button @onclick="IrParaMesSeguinte" >seguinte</button>
-        </div>
-        <div id="adicionar-transacao" style="margin: 8px;">
-            <button @onclick="AdicionarTransacao" >+ transacao</button>
-        </div>
-        <div id="transacoes" style="float: left;margin: 8px;width: 50%;">
+<div id="navegacao-e-transacoes" style="margin:8px;display: grid;">
+    <div id="navegacao">
+        <button @onclick="IrParaMesAnterior" >anterior</button>
+        <span>Mês nº @MesAtual.NumMes</span>
+        <button @onclick="IrParaMesSeguinte" >seguinte</button>
+    </div>
+    <div id="adicionar-transacao" style="margin: 8px;">
+        <button @onclick="AdicionarTransacao" >+ transacao</button>
+    </div>
+        
+    @if (modoAdicionarTransacao)
+    {
+        <div id="transacoes" style="float: left;margin: 8px;width: 100%;">
             <table class="table transacoes">
-                <thead>
-                    <tr>
-                        <th>Id</th>
-                        <th>Descricao</th>
-                        <th>Categoria</th>
-                        <th>Valor</th>
-                        <th>Conta</th>
-                        <th>Editar</th>
+                <tbody>     
+                    <tr style="background-color: #cccccc">
+                        <td>Id</td>
+                        <td><input type="text" placeholder="descricao"/></td>
+                        <td>Categoria</td>
+                        <td><input type="number" placeholder="contaId"/></td>
+                        <td><input type="number" placeholder="valor"/></td>
                     </tr>
-                </thead>
-                <tbody>
-                    <tr>
-                        <th colspan="6" style="text-align: right;">
-                            Saldo no dia @MesAtual.UltimoDiaMesAnterior: @MesAtual.SaldoFinalUltimoDiaMesAnterior.Valor
-                        </th>
-                    </tr>
-
-                    @if (MesAtual.Dias != null && MesAtual.Dias != null && MesAtual.Dias.Any())
-                    {
-                        @foreach (var dia in MesAtual.Dias.Where(x => x.Transacoes.All(t => t.Conta.Selecionada)))
-                        {
-                            <tr>
-                                <td colspan="6">@dia.Data.ToString("dd/MM/yyyy")</td>
-                            </tr>
-                            @foreach (var transacao in dia.Transacoes.Where(x => x.Conta.Selecionada))
-                            {
-                                <tr style="background-color: #cccccc">
-                                    <td>@transacao.Id</td>
-                                    <td>@transacao.Descricao</td>
-                                    <td>@transacao.Categoria</td>
-                                    <td>@transacao.Valor</td>
-                                    <td>@transacao.Conta.Id</td>
-                                    <td><a href="/editar-transacao/@transacao.Id">Editar</a></td>
-                                </tr>
-                            }
-                            <tr>
-                                <td colspan="6" style="text-align: right;">Saldo do dia: @dia.SaldoFinalDoDia.Valor</td>
-                            </tr>
-                        }
-                    }
                 </tbody>
             </table>
         </div>
+    }
+
+    <div id="transacoes" style="float: left;margin: 8px;width: 100%;">
+        <table class="table transacoes">
+            <thead>
+                <tr>
+                    <th>Id</th>
+                    <th>Descricao</th>
+                    <th>Categoria</th>
+                    <th>Conta</th>
+                    <th>Valor</th>
+                </tr>
+            </thead>
+            <tbody>
+                <tr>
+                    <th colspan="6" style="text-align: right;">
+                        Saldo no dia @MesAtual.UltimoDiaMesAnterior: @MesAtual.SaldoFinalUltimoDiaMesAnterior.Valor
+                    </th>
+                </tr>
+
+                @if (MesAtual.Dias != null && MesAtual.Dias != null && MesAtual.Dias.Any())
+                {
+                    @foreach (var dia in MesAtual.Dias.Where(x => x.Transacoes.All(t => t.Conta.Selecionada)))
+                    {
+                        <tr>
+                            <td colspan="6">@dia.Data.ToString("dd/MM/yyyy")</td>
+                        </tr>
+                        @foreach (var transacao in dia.Transacoes.Where(x => x.Conta.Selecionada))
+                        {
+                            <tr style="background-color: #cccccc">
+                                <td>@transacao.Id</td>
+                                <td>@transacao.Descricao</td>
+                                <td>@transacao.Categoria</td>
+                                <td>@transacao.Conta.Id</td>
+                                <td>@transacao.Valor</td>
+                            </tr>
+                        }
+                        <tr>
+                            <td colspan="6" style="text-align: right;">Saldo do dia: @dia.SaldoFinalDoDia.Valor</td>
+                        </tr>
+                    }
+                }
+            </tbody>
+        </table>
     </div>
 </div>
 
 @code {
     private Meses meses;
     private List<Conta> contas;
+
+    private bool modoAdicionarTransacao = false;
 
     private DataMes dataMes;
 
@@ -141,5 +157,6 @@
 
     async void AdicionarTransacao()
     {
+        modoAdicionarTransacao = true;
     }
 }
