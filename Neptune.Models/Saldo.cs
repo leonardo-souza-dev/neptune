@@ -9,7 +9,7 @@ namespace Neptune.Domain
     public class Saldo
     {
         public List<SaldoConta> SaldoContas { get; set; } = new();
-        public decimal Valor => SaldoContas.Sum(x => x.Valor);
+        public decimal Valor => SaldoContas.Where(x => x.Conta.Selecionada).Sum(x => x.Valor);
 
 
         public Guid Guid { get; private set; } = Guid.NewGuid();

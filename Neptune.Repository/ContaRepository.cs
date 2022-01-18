@@ -13,7 +13,7 @@ namespace Neptune.Infra
         private readonly List<Conta> Contas = new()
         {
             new Conta(1, "Conta corrente", 100M),
-            new Conta(2, "Poupanca", 100M)
+            new Conta(2, "Poupanca", 1000M)
         };
 
         public List<Conta> ObterTodas()

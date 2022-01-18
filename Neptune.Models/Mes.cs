@@ -14,19 +14,7 @@ namespace Neptune.Domain
         public string NumMes => DataMes.Mes.ToString();
         public string NavMesAnterior => $"?ano={DataMes.NumAnoDoMesAnterior}&mes={DataMes.NumMesAnterior}";
         public string NavMesSeguinte => $"?ano={DataMes.NumAnoDoMesSeguinte}&mes={DataMes.NumMesSeguinte}";
-        private Saldo _saldoFinalUltimoDiaMesAnterior;
-        public Saldo SaldoFinalUltimoDiaMesAnterior 
-        { 
-            get
-            {
-                return _saldoFinalUltimoDiaMesAnterior;
-            }
-
-            private set
-            {
-                _saldoFinalUltimoDiaMesAnterior = value;
-            }
-        }
+        public Saldo SaldoFinalUltimoDiaMesAnterior { get; private set;}
         public Saldo SaldoFinalUltimoDia
         {
             get
@@ -40,20 +28,12 @@ namespace Neptune.Domain
         }
 
 
-
-
         public Mes(DataMes dataMes, Saldo saldoFinalUltimoDiaMesAnterior)
         {
             DataMes = dataMes;
             SaldoFinalUltimoDiaMesAnterior = saldoFinalUltimoDiaMesAnterior;
         }
 
-
-
-        public decimal ObterValorSaldoFinalUltimoDiaMesAnterior()
-        {
-            return _saldoFinalUltimoDiaMesAnterior.Valor;
-        }
 
         public void AdicionarTransacao(Transacao transacao)
         {
