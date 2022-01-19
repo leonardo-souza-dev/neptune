@@ -1,5 +1,5 @@
 # neptune-blazor
 Front Blazor App
 
-* .Net 5.0
+* .Net 6.0
 * Blazor Server Side
