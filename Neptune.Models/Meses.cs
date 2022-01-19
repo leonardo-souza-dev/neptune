@@ -57,6 +57,7 @@ namespace Neptune.Domain
             if (mes == null)
             {
                 var mesesAnteriores = MesList.Where(x => x.DataMes.ObterData() < dataMes.ObterData());
+
                 Saldo saldo = null;
                 if (mesesAnteriores.Any())
                 {

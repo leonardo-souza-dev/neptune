@@ -10,6 +10,7 @@ namespace Neptune.Domain
     {
         public DateTime Data { get; private set; }
         public List<Transacao> Transacoes { get; private set; } = new List<Transacao>();
+        public List<Transacao> TransacoesExibicao => Transacoes.Where(x => x.Conta.Selecionada).ToList();
         public Saldo SaldoDiaAnterior { get; private set; }
         public Saldo SaldoFinalDoDia { get; }
 

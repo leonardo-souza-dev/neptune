@@ -81,14 +81,14 @@
                     </th>
                 </tr>
 
-                @if (MesAtual.Dias != null && MesAtual.Dias != null && MesAtual.Dias.Any())
+                @if (MesAtual.Dias != null && MesAtual.Dias.Any())
                 {
-                    @foreach (var dia in MesAtual.Dias.Where(x => x.Transacoes.All(t => t.Conta.Selecionada)))
+                    @foreach (var dia in MesAtual.DiasExibicao)
                     {
                         <tr>
                             <td colspan="6">@dia.Data.ToString("dd/MM/yyyy")</td>
                         </tr>
-                        @foreach (var transacao in dia.Transacoes.Where(x => x.Conta.Selecionada))
+                        @foreach (var transacao in dia.TransacoesExibicao)
                         {
                             <tr style="background-color: #cccccc">
                                 <td>@transacao.Id</td>
@@ -126,7 +126,7 @@
         dataMes = new DataMes(DateTime.Now.Year, DateTime.Now.Month);
 
         contas = await _pagesService.ObterContas();
-        contas.ForEach(x => x.Selecionada = true);
+        contas.ForEach(x => x.SetarSelecionada(true));
         meses = await _pagesService.ObterMeses(contas);
     }
 
@@ -152,7 +152,7 @@
     async void ContaClick(int id, bool selecionada)
     {
         var conta = contas.First(x => x.Id == id);
-        conta.Selecionada = selecionada;
+        conta.SetarSelecionada(selecionada);
     }
 
     async void AdicionarTransacao()

@@ -11,6 +11,7 @@ namespace Neptune.Domain
         public DataMes DataMes { get; private set; }
         public string UltimoDiaMesAnterior => DataMes.UltimoDiaDoMesAnterior.ToString("dd/MM/yyyy");
         public List<Dia> Dias { get; private set; } = new List<Dia>();
+        public List<Dia> DiasExibicao => Dias.Where(x => x.Transacoes.Where(t => t.Conta.Selecionada).Any()).ToList(); 
         public string NumMes => DataMes.Mes.ToString();
         public string NavMesAnterior => $"?ano={DataMes.NumAnoDoMesAnterior}&mes={DataMes.NumMesAnterior}";
         public string NavMesSeguinte => $"?ano={DataMes.NumAnoDoMesSeguinte}&mes={DataMes.NumMesSeguinte}";
