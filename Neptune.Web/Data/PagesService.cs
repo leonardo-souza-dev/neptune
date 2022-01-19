@@ -22,6 +22,32 @@ namespace Neptune.Web.Data
             return meses;
         }
 
+        public async Task<string> AdicionarTransacao(Mes mes, Transacao novaTransacao)
+        {
+            string mensagem = "";
+            Transacao transacaoPersistida = null;
+            try
+            {
+                transacaoPersistida = await _transacaoService.AdicionarTransacao(novaTransacao);
+
+                if (transacaoPersistida.Id > 0)
+                {
+                    mes.AdicionarTransacao(novaTransacao);
+
+                    mes.LimparNovaTransacao();
+
+                    return mensagem;
+                }
+            }
+            catch (Exception ex)
+            {
+                mensagem = ex.Message;
+            }
+            
+            
+            return mensagem;
+        }
+
         public async Task<List<Conta>> ObterContas()
         {
             return await _contaService.ObterTodas();

@@ -69,7 +69,7 @@ namespace Neptune.Infra
             return _transacoes.Where(x => x.Data.Month == mes && x.Data.Year == ano && contaIds.Contains(x.Conta.Id)).ToList();
         }
 
-        public Transacao Criar(Transacao transacao)
+        public async Task<Transacao> Criar(Transacao transacao)
         {
             var novaEntidade = new Transacao(GetNextId(),
                                          transacao.Data,

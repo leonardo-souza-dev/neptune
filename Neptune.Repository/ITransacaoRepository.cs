@@ -9,7 +9,7 @@ namespace Neptune.Infra
         Task<List<Transacao>> ObterTodas();
         Transacao Obter(int id);
         Task<List<Transacao>> ObterMesContas(int ano, int mes, List<int> contaIds);
-        Transacao Criar(Transacao transacao);
+        Task<Transacao> Criar(Transacao transacao);
         Transacao Atualizar(Transacao transacao);
     }
 }

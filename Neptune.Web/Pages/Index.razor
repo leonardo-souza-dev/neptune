@@ -38,31 +38,33 @@
         <div id="adicionar-transacao" style="margin: 8px;">
             <button @onclick="AdicionarTransacao" >+ transacao</button>
         </div>
+        <div id="mensagem">
+            @mensagem 
+        </div>
         
         @if (modoAdicionarTransacao)
         {
-            <div id="nova-transacao" style="float:left;margin:8px;width:100%;" 
-                @onmouseover="@(() => mouseOverNovaTransacao = true)" 
-                @onmouseout="@(() => mouseOverNovaTransacao = false)" >
-                <table class="table transacoes">
-                    <tbody>     
-                        <tr style="background-color: #cccccc">
-                            <td>Id</td>
-                            <td><input type="text" placeholder="descricao"/></td>
-                            <td>Categoria</td>
-                            <td><input type="number" placeholder="contaId"/></td>
-                            <td><input type="number" placeholder="valor"/></td>
-                        </tr>
-                    </tbody>
-                </table>
-            </div>
+            <EditForm Model="mesAtual.NovaTransacao">
+                <div id="nova-transacao" style="float:left;margin:8px;width:100%;" @onmouseover="@(() => mouseOverNovaTransacao = true)" @onmouseout="@(() => mouseOverNovaTransacao = false)" >
+                    <table class="table transacoes">
+                        <tbody>
+                            <tr style="background-color: #efefef">
+                                <td><input type="text" id="nova-transacao-descricao" @bind-value="mesAtual.NovaTransacao.Descricao" /></td>
+                                <td>Categoria</td>
+                                <td><input type="number" id="nova-transacao-contaid" @bind-value="mesAtual.NovaTransacao.ContaId" /></td>
+                                <td><InputNumberListener @bind-Value="mesAtual.NovaTransacao.Valor" /></td>
+                                @* TODO: fazer aceitar valor negativo *@
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+            </EditForm>
         }
 
         <div id="transacoes" style="float: left;margin: 8px;width: 100%;">
             <table class="table transacoes">
                 <thead>
                     <tr>
-                        <th>Id</th>
                         <th>Descricao</th>
                         <th>Categoria</th>
                         <th>Conta</th>
@@ -81,12 +83,11 @@
                         @foreach (var dia in mesAtual.DiasExibicao)
                         {
                             <tr>
-                                <td colspan="6">@dia.Data.ToString("dd/MM/yyyy")</td>
+                                <td colspan="4">@dia.Data.ToString("dd/MM/yyyy")</td>
                             </tr>
                             @foreach (var transacao in dia.TransacoesExibicao)
                             {
                                 <tr style="background-color: #cccccc">
-                                    <td>@transacao.Id</td>
                                     <td>@transacao.Descricao</td>
                                     <td>@transacao.Categoria</td>
                                     <td>@transacao.Conta.Id</td>
@@ -94,7 +95,7 @@
                                 </tr>
                             }
                             <tr>
-                                <td colspan="6" style="text-align: right;">Saldo do dia: @dia.SaldoFinalDoDia.Valor</td>
+                                <td colspan="4" style="text-align: right;">Saldo do dia: @dia.SaldoFinalDoDia.Valor</td>
                             </tr>
                         }
                     }
@@ -102,6 +103,7 @@
             </table>
         </div>
     </div>
+
 </div>
 
 @code {
@@ -118,6 +120,8 @@
 
     private bool mouseOverNovaTransacao;
     private bool modoAdicionarTransacao = false;
+
+    private string mensagem;
 
     protected override async Task OnInitializedAsync()
     {
@@ -162,7 +166,13 @@
     {
         if (!mouseOverNovaTransacao && modoAdicionarTransacao)
         {
-            //salvar
+            var conta = contas.First(x => x.Id == mesAtual.NovaTransacao.ContaId);
+            mesAtual.NovaTransacao.Conta = conta;
+            var resultadoMensagem = await _pagesService.AdicionarTransacao(mesAtual, mesAtual.NovaTransacao);
+
+            if (!string.IsNullOrEmpty(resultadoMensagem))
+                mensagem = $"Ocorreu um erro ao adicionar a transacao {resultadoMensagem}";
+
             modoAdicionarTransacao = false;
         }
     }

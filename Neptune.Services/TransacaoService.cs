@@ -32,5 +32,10 @@ namespace Neptune.Application
 
             return meses;
         }
+
+        public async Task<Transacao> AdicionarTransacao(Transacao transacao)
+        {
+            return await _transacaoRepository.Criar(transacao);
+        }
     }
 }
