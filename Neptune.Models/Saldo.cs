@@ -47,22 +47,6 @@ namespace Neptune.Domain
             }
         }
 
-        public Saldo Subtrair(Saldo saldo)
-        {
-            foreach(var thisItem in SaldoContas)
-            {
-                foreach (var item in saldo.SaldoContas)
-                {
-                    if (thisItem.Conta.Id == item.Conta.Id)
-                    {
-                        thisItem.Adicionar(item);
-                    }
-                }
-            }
-
-            return this;
-        }
-
         public Saldo AdicionarValor(List<Transacao> transacoes)
         {
             for (int i = 0; i < SaldoContas.Count; i++)

@@ -15,20 +15,12 @@
                 <li>
                     @if (conta.Selecionada)
                     {
-                        <input 
-                        type="checkbox" 
-                        checked
-                        name="@conta.Id"
-                        @onchange="@(() => ContaClick(conta.Id, false))"/>
+                        <input type="checkbox" checked name="@conta.Id" @onchange="@(() => ContaClick(conta.Id, false))"/>
                     }
                     else
                     {
-                        <input 
-                        type="checkbox" 
-                        name="@conta.Id"
-                        @onchange="@(() => ContaClick(conta.Id, true))"/>
+                        <input type="checkbox" name="@conta.Id" @onchange="@(() => ContaClick(conta.Id, true))"/>
                     }
-
                     @conta.Id - @conta.Nome
                 </li>
             </EditForm>
@@ -39,7 +31,7 @@
 <div id="navegacao-e-transacoes" style="margin:8px;display: grid;">
     <div id="navegacao">
         <button @onclick="IrParaMesAnterior" >anterior</button>
-        <span>Mês nº @MesAtual.NumMes</span>
+        <span>Mês nº @mesAtual.NumMes</span>
         <button @onclick="IrParaMesSeguinte" >seguinte</button>
     </div>
     <div id="adicionar-transacao" style="margin: 8px;">
@@ -77,13 +69,13 @@
             <tbody>
                 <tr>
                     <th colspan="6" style="text-align: right;">
-                        Saldo no dia @MesAtual.UltimoDiaMesAnterior: @MesAtual.SaldoFinalUltimoDiaMesAnterior.Valor
+                        Saldo no dia @mesAtual.UltimoDiaMesAnterior: @mesAtual.SaldoFinalUltimoDiaMesAnterior.Valor
                     </th>
                 </tr>
 
-                @if (MesAtual.Dias != null && MesAtual.Dias.Any())
+                @if (mesAtual.Dias != null && mesAtual.Dias.Any())
                 {
-                    @foreach (var dia in MesAtual.DiasExibicao)
+                    @foreach (var dia in mesAtual.DiasExibicao)
                     {
                         <tr>
                             <td colspan="6">@dia.Data.ToString("dd/MM/yyyy")</td>
@@ -116,10 +108,10 @@
 
     private DataMes dataMes;
 
-    private string navMesAnterior => (NavManager.BaseUri + MesAtual.NavMesAnterior);
-    private string navMesSeguinte => (NavManager.BaseUri + MesAtual.NavMesSeguinte);
+    private string navMesAnterior => (NavManager.BaseUri + mesAtual.NavMesAnterior);
+    private string navMesSeguinte => (NavManager.BaseUri + mesAtual.NavMesSeguinte);
 
-    public Mes MesAtual => meses.ObterMes(dataMes);
+    private Mes mesAtual => meses.ObterMes(dataMes);
 
     protected override async Task OnInitializedAsync()
     {
@@ -137,15 +129,15 @@
 
     void IrParaMesAnterior()
     {
-        var numMesAnterior = MesAtual.DataMes.NumMesAnterior;
-        var numAnoMesAnteior = MesAtual.DataMes.NumAnoDoMesAnterior;
+        var numMesAnterior = mesAtual.DataMes.NumMesAnterior;
+        var numAnoMesAnteior = mesAtual.DataMes.NumAnoDoMesAnterior;
         dataMes = new DataMes(numAnoMesAnteior, numMesAnterior);
     }
 
     void IrParaMesSeguinte()
     {
-        var numMesSeguinte = MesAtual.DataMes.NumMesSeguinte;
-        var numAnoMesSeguinte = MesAtual.DataMes.NumAnoDoMesSeguinte;
+        var numMesSeguinte = mesAtual.DataMes.NumMesSeguinte;
+        var numAnoMesSeguinte = mesAtual.DataMes.NumAnoDoMesSeguinte;
         dataMes = new DataMes(numAnoMesSeguinte, numMesSeguinte);
     }
 

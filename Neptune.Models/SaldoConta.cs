@@ -17,11 +17,6 @@ namespace Neptune.Domain
             Valor = valor;
         }
 
-        public void Adicionar(SaldoConta saldoConta)
-        {
-            Valor += saldoConta.Valor;
-        }
-
         public void Adicionar(decimal valor)
         {
             Valor += valor;

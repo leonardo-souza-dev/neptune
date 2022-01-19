@@ -12,9 +12,9 @@ namespace Neptune.Infra
 
         private readonly List<Conta> Contas = new()
         {
-            new Conta(1, "Conta corrente", 0),
-            new Conta(2, "Poupanca", 0),
-            new Conta(3, "Cartao de Credito", 0)
+            new Conta(1, "Conta corrente", 0, true),
+            new Conta(2, "Poupanca", 0, true),
+            new Conta(3, "Cartao de Credito", 0, true)
         };
 
         public List<Conta> ObterTodas()
@@ -29,7 +29,7 @@ namespace Neptune.Infra
 
         public Conta Criar(Conta conta)
         {
-            var novaEntidade = new Conta(GetNextId(), conta.Nome, conta.SaldoInicial);
+            var novaEntidade = new Conta(GetNextId(), conta.Nome, conta.SaldoInicial, conta.Selecionada);
 
             Contas.Add(novaEntidade);
 

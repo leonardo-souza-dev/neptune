@@ -6,20 +6,20 @@ namespace Neptune.Domain.Tests
 {
     public class DiaTests
     {
-        private Conta _cartao = new Conta(1, "cartao", 100000000);
-        private Conta _poupanca = new Conta(2, "poupanca", 200000000);
+        private Conta _cartao = new Conta(1, "cartao", 100000000, true);
+        private Conta _poupanca = new Conta(2, "poupanca", 200000000, true);
 
         [Test]
-        public void QuandoUmaContaUmaTransacao_DeveSerValido()
+        public void QuandoUmaContaSelecionadaEUmaTransacaoDaMesmaConta_DeveSerValido()
         {
             // arrange & act
+            var poupanca = new Conta(2, "poupanca", 200000000, true);
             var dia = new DateTime(2022, 1, 1);
-            var transacoes = new List<Transacao> { new Transacao(1, dia, "viagem", -2000, _poupanca) };
-            var saldoContaPoupanca = new SaldoConta(_poupanca, 5000M);
-            var sut = new Dia(
-                dia,
-                transacoes,
-                new Saldo(new List<SaldoConta> { saldoContaPoupanca }));
+            var transacoes = new List<Transacao> { new Transacao(1, dia, "viagem", -2000, poupanca) };
+            var saldoPoupanca = new SaldoConta(poupanca, 5000M);
+            var saldoDiaAnterior = new Saldo(new List<SaldoConta> { saldoPoupanca });
+            
+            var sut = new Dia(dia, transacoes, saldoDiaAnterior);
 
             // assert
             Assert.AreEqual(sut.Transacoes.Count, 1);
@@ -27,12 +27,13 @@ namespace Neptune.Domain.Tests
         }
 
         [Test]
-        public void QuandoUmaContaDuasTransacoes_DeveSerValido()
+        public void QuandoUmaContaSelecionadaEDuasTransacoesDaMesmaConta_DeveSerValido()
         {
             // arrange & act
+            var poupanca = new Conta(2, "poupanca", 200000000, true);
             var dia = new DateTime(2022, 1, 1);
-            var transacoes = new List<Transacao> { new Transacao(1, dia, "viagem", -2000, _poupanca) };
-            var saldoContaPoupanca = new SaldoConta(_poupanca, 5000M);
+            var transacoes = new List<Transacao> { new Transacao(1, dia, "viagem", -2000, poupanca) };
+            var saldoContaPoupanca = new SaldoConta(poupanca, 5000M);
             var sut = new Dia(
                 dia,
                 transacoes,
@@ -47,38 +48,42 @@ namespace Neptune.Domain.Tests
             Assert.AreEqual(2000, sut.SaldoFinalDoDia.Valor);
         }
 
-        //[Test]
-        //public void QuandoAdicionarTransacao_DeveSerValido()
-        //{
-        //    // arrange 
-        //    var sut = new Dia(
-        //        new DateTime(2022, 1, 1),
-        //        new List<Transacao> { new Transacao(1, new DateTime(2022, 1, 1), "Lorem1", 1, _conta1) },
-        //        100);
+        [Test]
+        public void QuandoAdicionarTransacao_DeveSerValido()
+        {
+            // arrange 
+            var poupanca = new Conta(2, "poupanca", 200000000, true);
+            var saldoContaPoupanca = new SaldoConta(poupanca, 5000M);
+            var sut = new Dia(
+                new DateTime(2022, 1, 1),
+                new List<Transacao> { new Transacao(1, new DateTime(2022, 1, 1), "Lorem1", 1, poupanca) },
+                new Saldo(new List<SaldoConta> { saldoContaPoupanca }));
 
-        //    // act
-        //    sut.AdicionarTransacao(new Transacao(2, new DateTime(2022, 1, 1), "Lorem2", 1, _conta1));
+            // act
+            sut.AdicionarTransacao(new Transacao(2, new DateTime(2022, 1, 1), "Lorem2", 1, poupanca));
 
-        //    // assert
-        //    Assert.AreEqual(sut.Transacoes.Count, 2);
-        //}
+            // assert
+            Assert.AreEqual(sut.Transacoes.Count, 2);
+        }
 
-        //[Test]
-        //public void QuandoAdicionarTransacaoDesordenadas_DeveOrdernar()
-        //{
-        //    // arrange 
-        //    var sut = new Dia(
-        //        new DateTime(2022, 1, 1),
-        //        new List<Transacao> { new Transacao(1, new DateTime(2022, 1, 31), "Lorem1", 1, _conta1) },
-        //        100);
+        [Test]
+        public void QuandoAdicionarTransacaoDesordenadas_DeveOrdernar()
+        {
+            // arrange 
+            var poupanca = new Conta(2, "poupanca", 200000000, true);
+            var saldoContaPoupanca = new SaldoConta(poupanca, 5000M);
+            var sut = new Dia(
+                new DateTime(2022, 1, 1),
+                new List<Transacao> { new Transacao(1, new DateTime(2022, 1, 31), "Lorem1", 1, poupanca) },
+                new Saldo(new List<SaldoConta> { saldoContaPoupanca }));
 
-        //    // act
-        //    sut.AdicionarTransacao(new Transacao(2, new DateTime(2022, 1, 15), "Lorem2", 1, _conta1));
-        //    sut.AdicionarTransacao(new Transacao(2, new DateTime(2022, 1, 1), "Lorem2", 1, _conta1));
+            // act
+            sut.AdicionarTransacao(new Transacao(2, new DateTime(2022, 1, 15), "Lorem2", 1, poupanca));
+            sut.AdicionarTransacao(new Transacao(2, new DateTime(2022, 1, 1), "Lorem2", 1, poupanca));
 
-        //    // assert
-        //    Assert.AreEqual(sut.Transacoes[0].Data.Day, 1);
-        //    Assert.AreEqual(sut.Transacoes[2].Data.Day, 31);
-        //}
+            // assert
+            Assert.AreEqual(sut.Transacoes[0].Data.Day, 1);
+            Assert.AreEqual(sut.Transacoes[2].Data.Day, 31);
+        }
     }
 }
