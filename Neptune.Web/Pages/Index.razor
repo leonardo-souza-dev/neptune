@@ -3,100 +3,104 @@
 @inject NavigationManager NavManager
 @inject PagesService _pagesService
 
-<div id="selecao-contas" style="display: block;float: left;width: 210px;">
-    <div>
-        Contas
-    </div>
+<div id="tudo" style="height: 100vh;" @onmousedown="MouseDown">
+    <div id="selecao-contas" style="display: block;float: left;width: 210px;">
+        <div>
+            Contas
+        </div>
             
-    <ul style="float: left;" >            
-        @foreach (var conta in contas)
-        {
-            <EditForm Model="conta">
-                <li>
-                    @if (conta.Selecionada)
-                    {
-                        <input type="checkbox" checked name="@conta.Id" @onchange="@(() => ContaClick(conta.Id, false))"/>
-                    }
-                    else
-                    {
-                        <input type="checkbox" name="@conta.Id" @onchange="@(() => ContaClick(conta.Id, true))"/>
-                    }
-                    @conta.Id - @conta.Nome
-                </li>
-            </EditForm>
-        }
-    </ul>
-</div>
+        <ul style="float: left;" >            
+            @foreach (var conta in contas)
+            {
+                <EditForm Model="conta">
+                    <li>
+                        @if (conta.Selecionada)
+                        {
+                            <input type="checkbox" checked name="@conta.Id" @onchange="@(() => ContaClick(conta.Id, false))"/>
+                        }
+                        else
+                        {
+                            <input type="checkbox" name="@conta.Id" @onchange="@(() => ContaClick(conta.Id, true))"/>
+                        }
+                        @conta.Id - @conta.Nome
+                    </li>
+                </EditForm>
+            }
+        </ul>
+    </div>
 
-<div id="navegacao-e-transacoes" style="margin:8px;display: grid;">
-    <div id="navegacao">
-        <button @onclick="IrParaMesAnterior" >anterior</button>
-        <span>Mês nº @mesAtual.NumMes</span>
-        <button @onclick="IrParaMesSeguinte" >seguinte</button>
-    </div>
-    <div id="adicionar-transacao" style="margin: 8px;">
-        <button @onclick="AdicionarTransacao" >+ transacao</button>
-    </div>
+    <div id="navegacao-e-transacoes" style="margin:8px;display: grid;"  >
+        <div id="navegacao">
+            <button @onclick="IrParaMesAnterior" >anterior</button>
+            <span>Mês nº @mesAtual.NumMes</span>
+            <button @onclick="IrParaMesSeguinte" >seguinte</button>
+        </div>
+        <div id="adicionar-transacao" style="margin: 8px;">
+            <button @onclick="AdicionarTransacao" >+ transacao</button>
+        </div>
         
-    @if (modoAdicionarTransacao)
-    {
+        @if (modoAdicionarTransacao)
+        {
+            <div id="nova-transacao" style="float:left;margin:8px;width:100%;" 
+                @onmouseover="@(() => mouseOverNovaTransacao = true)" 
+                @onmouseout="@(() => mouseOverNovaTransacao = false)" >
+                <table class="table transacoes">
+                    <tbody>     
+                        <tr style="background-color: #cccccc">
+                            <td>Id</td>
+                            <td><input type="text" placeholder="descricao"/></td>
+                            <td>Categoria</td>
+                            <td><input type="number" placeholder="contaId"/></td>
+                            <td><input type="number" placeholder="valor"/></td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+        }
+
         <div id="transacoes" style="float: left;margin: 8px;width: 100%;">
             <table class="table transacoes">
-                <tbody>     
-                    <tr style="background-color: #cccccc">
-                        <td>Id</td>
-                        <td><input type="text" placeholder="descricao"/></td>
-                        <td>Categoria</td>
-                        <td><input type="number" placeholder="contaId"/></td>
-                        <td><input type="number" placeholder="valor"/></td>
+                <thead>
+                    <tr>
+                        <th>Id</th>
+                        <th>Descricao</th>
+                        <th>Categoria</th>
+                        <th>Conta</th>
+                        <th>Valor</th>
                     </tr>
+                </thead>
+                <tbody>
+                    <tr>
+                        <th colspan="6" style="text-align: right;">
+                            Saldo no dia @mesAtual.UltimoDiaMesAnterior: @mesAtual.SaldoFinalUltimoDiaMesAnterior.Valor
+                        </th>
+                    </tr>
+
+                    @if (mesAtual.Dias != null && mesAtual.Dias.Any())
+                    {
+                        @foreach (var dia in mesAtual.DiasExibicao)
+                        {
+                            <tr>
+                                <td colspan="6">@dia.Data.ToString("dd/MM/yyyy")</td>
+                            </tr>
+                            @foreach (var transacao in dia.TransacoesExibicao)
+                            {
+                                <tr style="background-color: #cccccc">
+                                    <td>@transacao.Id</td>
+                                    <td>@transacao.Descricao</td>
+                                    <td>@transacao.Categoria</td>
+                                    <td>@transacao.Conta.Id</td>
+                                    <td>@transacao.Valor</td>
+                                </tr>
+                            }
+                            <tr>
+                                <td colspan="6" style="text-align: right;">Saldo do dia: @dia.SaldoFinalDoDia.Valor</td>
+                            </tr>
+                        }
+                    }
                 </tbody>
             </table>
         </div>
-    }
-
-    <div id="transacoes" style="float: left;margin: 8px;width: 100%;">
-        <table class="table transacoes">
-            <thead>
-                <tr>
-                    <th>Id</th>
-                    <th>Descricao</th>
-                    <th>Categoria</th>
-                    <th>Conta</th>
-                    <th>Valor</th>
-                </tr>
-            </thead>
-            <tbody>
-                <tr>
-                    <th colspan="6" style="text-align: right;">
-                        Saldo no dia @mesAtual.UltimoDiaMesAnterior: @mesAtual.SaldoFinalUltimoDiaMesAnterior.Valor
-                    </th>
-                </tr>
-
-                @if (mesAtual.Dias != null && mesAtual.Dias.Any())
-                {
-                    @foreach (var dia in mesAtual.DiasExibicao)
-                    {
-                        <tr>
-                            <td colspan="6">@dia.Data.ToString("dd/MM/yyyy")</td>
-                        </tr>
-                        @foreach (var transacao in dia.TransacoesExibicao)
-                        {
-                            <tr style="background-color: #cccccc">
-                                <td>@transacao.Id</td>
-                                <td>@transacao.Descricao</td>
-                                <td>@transacao.Categoria</td>
-                                <td>@transacao.Conta.Id</td>
-                                <td>@transacao.Valor</td>
-                            </tr>
-                        }
-                        <tr>
-                            <td colspan="6" style="text-align: right;">Saldo do dia: @dia.SaldoFinalDoDia.Valor</td>
-                        </tr>
-                    }
-                }
-            </tbody>
-        </table>
     </div>
 </div>
 
@@ -104,7 +108,6 @@
     private Meses meses;
     private List<Conta> contas;
 
-    private bool modoAdicionarTransacao = false;
 
     private DataMes dataMes;
 
@@ -112,6 +115,9 @@
     private string navMesSeguinte => (NavManager.BaseUri + mesAtual.NavMesSeguinte);
 
     private Mes mesAtual => meses.ObterMes(dataMes);
+
+    private bool mouseOverNovaTransacao;
+    private bool modoAdicionarTransacao = false;
 
     protected override async Task OnInitializedAsync()
     {
@@ -150,5 +156,14 @@
     async void AdicionarTransacao()
     {
         modoAdicionarTransacao = true;
+    }
+
+    async void MouseDown()
+    {
+        if (!mouseOverNovaTransacao && modoAdicionarTransacao)
+        {
+            //salvar
+            modoAdicionarTransacao = false;
+        }
     }
 }
