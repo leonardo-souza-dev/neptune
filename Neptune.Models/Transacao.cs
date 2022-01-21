@@ -25,5 +25,10 @@ namespace Neptune.Domain
         public Transacao()
         {
         }
+
+        public bool EhValida()
+        {
+            return Id > 0 && !string.IsNullOrEmpty(Descricao) && ContaId > 0;
+        }
     }
 }

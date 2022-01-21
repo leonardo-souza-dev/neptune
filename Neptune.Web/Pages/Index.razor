@@ -188,16 +188,24 @@
 
     async void MouseDown()
     {
-        if (!mouseOverNovaTransacao && modoAdicionarTransacao && mesAtual.NovaTransacao.ContaId > 0)
+        if (!mouseOverNovaTransacao && modoAdicionarTransacao)
         {
-            var conta = contas.First(x => x.Id == mesAtual.NovaTransacao.ContaId);
-            mesAtual.NovaTransacao.Conta = conta;
-            var resultadoMensagem = await _pagesService.AdicionarTransacao(mesAtual, mesAtual.NovaTransacao);
+            if ( mesAtual.NovaTransacao.EhValida())
+            {
+                var conta = contas.First(x => x.Id == mesAtual.NovaTransacao.ContaId);
+                mesAtual.NovaTransacao.Conta = conta;
+                var resultadoMensagem = await _pagesService.AdicionarTransacao(mesAtual, mesAtual.NovaTransacao);
 
-            if (!string.IsNullOrEmpty(resultadoMensagem))
-                mensagem = $"Ocorreu um erro ao adicionar a transacao {resultadoMensagem}";
+                if (!string.IsNullOrEmpty(resultadoMensagem))
+                    mensagem = $"Ocorreu um erro ao adicionar a transacao {resultadoMensagem}";
 
-            modoAdicionarTransacao = false;
+                modoAdicionarTransacao = false;
+            }
+            else
+            {
+                mesAtual.NovaTransacao = new();
+                modoAdicionarTransacao = false;
+            }
         }
     }
 }
