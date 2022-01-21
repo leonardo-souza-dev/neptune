@@ -29,7 +29,6 @@ namespace Neptune.Domain
         }
         public Transacao NovaTransacao { get; set; } = new();
 
-
         public Mes(DataMes dataMes, Saldo saldoFinalUltimoDiaMesAnterior)
         {
             DataMes = dataMes;

@@ -11,13 +11,6 @@ namespace Neptune.Domain
         public decimal SaldoInicial { get; private set; }
         public bool Selecionada { get; private set; }
 
-        //public Conta(int id, string nome, decimal saldoInicial)
-        //{
-        //    Id = id;
-        //    Nome = nome;
-        //    SaldoInicial = saldoInicial;
-        //}
-
         public Conta(int id, string nome, decimal saldoInicial, bool selecionada)
         {
             Id = id;

@@ -51,7 +51,16 @@
                             <tr style="background-color: #efefef">
                                 <td><input type="text" id="nova-transacao-descricao" @bind-value="mesAtual.NovaTransacao.Descricao" /></td>
                                 <td>Categoria</td>
-                                <td><input type="number" id="nova-transacao-contaid" @bind-value="mesAtual.NovaTransacao.ContaId" /></td>
+                                <td>
+                                    <select @bind="mesAtual.NovaTransacao.ContaId">
+                                        <option selected value="0">Selecione</option>
+                                        @foreach(var c in contas)
+                                        {
+                                            <option value="@c.Id">@c.Nome</option>
+                                        }
+                                    </select>
+                                    
+                                </td>
                                 <td><InputNumberListener @bind-Value="mesAtual.NovaTransacao.Valor" /></td>
                                 @* TODO: fazer aceitar valor negativo *@
                             </tr>
@@ -91,7 +100,7 @@
                                     <td>@transacao.Descricao</td>
                                     <td>@transacao.Categoria</td>
                                     <td>
-                                        <select style="background: #cccccc;color: #000;border: 2px solid #cccccc;" >
+                                        <select style="background: #cccccc;color: #000;border: 2px solid #cccccc;-webkit-appearance: none;" disabled="true">
                                             @foreach(var c in contas)
                                             {
                                                 if (c.Id == transacao.Conta.Id)
@@ -142,6 +151,7 @@
         dataMes = new DataMes(DateTime.Now.Year, DateTime.Now.Month);
 
         contas = await _pagesService.ObterContas();
+        //contas.Add(new Conta(0, "Selecione", 0, false));
         contas.ForEach(x => x.SetarSelecionada(true));
         meses = await _pagesService.ObterMeses(contas);
     }
@@ -178,7 +188,7 @@
 
     async void MouseDown()
     {
-        if (!mouseOverNovaTransacao && modoAdicionarTransacao)
+        if (!mouseOverNovaTransacao && modoAdicionarTransacao && mesAtual.NovaTransacao.ContaId > 0)
         {
             var conta = contas.First(x => x.Id == mesAtual.NovaTransacao.ContaId);
             mesAtual.NovaTransacao.Conta = conta;
