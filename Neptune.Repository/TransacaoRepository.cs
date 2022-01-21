@@ -30,15 +30,15 @@ namespace Neptune.Infra
             //_transacoes.Add(new Transacao(4, DateTime.Now.AddMonths(-2), "Lorem NOVEMBRO 2021", 0, poupanca));
 
             //// dezembro
-            _transacoes.Add(new Transacao(5, DateTime.Now.AddMonths(-1), "conta", -10, corrente));
-            _transacoes.Add(new Transacao(6, DateTime.Now.AddMonths(-1), "aplicacao", 10, poupanca));
-            _transacoes.Add(new Transacao(6, DateTime.Now.AddMonths(-1), "compra", -10, cartaoCredito));
+            //_transacoes.Add(new Transacao(5, DateTime.Now.AddMonths(-1), "conta", -10, corrente));
+            //_transacoes.Add(new Transacao(6, DateTime.Now.AddMonths(-1), "aplicacao", 10, poupanca));
+            //_transacoes.Add(new Transacao(6, DateTime.Now.AddMonths(-1), "compra", -10, cartaoCredito));
 
             ////// TEMP - janeiro
             ////// hoje
             _transacoes.Add(new Transacao(GetNextId(), DateTime.Now, "estorno conta", 1, corrente));
-            _transacoes.Add(new Transacao(GetNextId(), DateTime.Now, "aplicacao", 1, poupanca));
-            _transacoes.Add(new Transacao(GetNextId(), DateTime.Now, "compra", 0, cartaoCredito));
+            //_transacoes.Add(new Transacao(GetNextId(), DateTime.Now, "aplicacao", 1, poupanca));
+            //_transacoes.Add(new Transacao(GetNextId(), DateTime.Now, "compra", 0, cartaoCredito));
 
 
             ////// amanha
