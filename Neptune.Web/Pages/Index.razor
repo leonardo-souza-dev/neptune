@@ -49,6 +49,7 @@
                     <table class="table transacoes">
                         <tbody>
                             <tr style="background-color: #efefef">
+                                <td><input type="date" id="meeting-time" name="meeting-time" @bind-value="mesAtual.NovaTransacao.Data" min="2015-01-01" max="2050-01-01"></td>
                                 <td><input type="text" id="nova-transacao-descricao" @bind-value="mesAtual.NovaTransacao.Descricao" /></td>
                                 <td>Categoria</td>
                                 <td>
@@ -190,22 +191,20 @@
     {
         if (!mouseOverNovaTransacao && modoAdicionarTransacao)
         {
-            if ( mesAtual.NovaTransacao.EhValida())
+            if ( mesAtual.NovaTransacao.NovaTransacaoEhValida())
             {
                 var conta = contas.First(x => x.Id == mesAtual.NovaTransacao.ContaId);
                 mesAtual.NovaTransacao.Conta = conta;
-                var resultadoMensagem = await _pagesService.AdicionarTransacao(mesAtual, mesAtual.NovaTransacao);
+                var resultadoMensagem = await _pagesService.AdicionarTransacao(meses, mesAtual.NovaTransacao);
 
                 if (!string.IsNullOrEmpty(resultadoMensagem))
                     mensagem = $"Ocorreu um erro ao adicionar a transacao {resultadoMensagem}";
-
-                modoAdicionarTransacao = false;
             }
             else
             {
                 mesAtual.NovaTransacao = new();
-                modoAdicionarTransacao = false;
             }
+            modoAdicionarTransacao = false;
         }
     }
 }

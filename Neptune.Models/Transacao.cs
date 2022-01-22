@@ -26,9 +26,9 @@ namespace Neptune.Domain
         {
         }
 
-        public bool EhValida()
+        public bool NovaTransacaoEhValida()
         {
-            return Id > 0 && !string.IsNullOrEmpty(Descricao) && ContaId > 0;
+            return !string.IsNullOrEmpty(Descricao) && ContaId > 0;
         }
     }
 }
