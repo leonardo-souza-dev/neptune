@@ -1,4 +1,6 @@
 ﻿@page "/"
+@using System.Text
+@using System.Diagnostics
 
 @inject NavigationManager NavManager
 @inject PagesService _pagesService
@@ -63,6 +65,13 @@
                                     
                                 </td>
                                 <td><InputNumberListener @bind-Value="mesAtual.NovaTransacao.Valor" /></td>
+                                <td>
+                                    <input type="text" id="ndfdfdfdf" value="@valorrr" 
+                                    @onkeydown="((e) => DigitandoValor(e))"
+                                    @onkeyup="((e) => DigitouValor(e))"                                    
+                                    />
+                                </td>
+
                                 @* TODO: fazer aceitar valor negativo *@
                             </tr>
                         </tbody>
@@ -101,7 +110,7 @@
                                     <td>@transacao.Descricao</td>
                                     <td>@transacao.Categoria</td>
                                     <td>
-                                        <select style="background: #cccccc;color: #000;border: 2px solid #cccccc;-webkit-appearance: none;" disabled="true">
+                                        <select style="background: #cccccc;color: #000;border: 2px solid #cccccc;-webkit-appearance: none;" disabled="disabled">
                                             @foreach(var c in contas)
                                             {
                                                 if (c.Id == transacao.Conta.Id)
@@ -134,6 +143,69 @@
     private Meses meses;
     private List<Conta> contas;
 
+    private List<string> digitosValor = new List<string>();
+    private string valorrr = "0,00";
+
+    async Task DigitouValor(KeyboardEventArgs e)
+    {
+        await Task.Run(() =>
+        {
+        });
+    }
+    async Task DigitandoValor(KeyboardEventArgs e)
+    {
+        await Task.Run(() =>
+        {
+            if (!int.TryParse(e.Key, out int n))
+            {
+
+                string valor2 = valorrr;
+                valorrr = valor2;
+                return;
+            }
+
+            string texto = e.Key;
+            valorrr = valorrr + texto;
+
+            var sb = new StringBuilder();
+            var valorrrSemVirgula = valorrr.Replace(",", "");
+            var tamanho = valorrrSemVirgula.Count();
+            for (var i = 0; i < tamanho; i++)
+            {
+                if (i == tamanho - 2)
+                    sb.Append(",");
+
+                sb.Append(valorrrSemVirgula[i]);
+            }
+            var parteInteira = sb.ToString().Split(",")[0].ToCharArray();
+
+            var novaParteInteira = sb.ToString().Split(",")[0].TrimStart('0');
+
+            if (string.IsNullOrEmpty(novaParteInteira))
+            {
+                novaParteInteira = "0";
+            }
+
+            valorrr = novaParteInteira.ToString() + "," + sb.ToString().Split(",")[1];
+
+
+            //var novaParteInteiraSb = new StringBuilder();
+
+            //for(var i = 0; i < parteInteira.Length - 1; i++)
+            //{
+            //    if (i < parteInteira.Length - 1 && parteInteira[i] == '0' && parteInteira[i+1] == '0')
+            //    {
+            //        novaParteInteiraSb.Append("0");                
+            //    }
+            //    else
+            //    {
+            //        novaParteInteiraSb.Append(parteInteira[i].ToString());
+            //    }
+            //}
+
+            //valorrr = novaParteInteiraSb.ToString() + "," + sb.ToString().Split(",")[1];
+        });
+    }
 
     private DataMes dataMes;
 
@@ -152,7 +224,6 @@
         dataMes = new DataMes(DateTime.Now.Year, DateTime.Now.Month);
 
         contas = await _pagesService.ObterContas();
-        //contas.Add(new Conta(0, "Selecione", 0, false));
         contas.ForEach(x => x.SetarSelecionada(true));
         meses = await _pagesService.ObterMeses(contas);
     }
@@ -176,22 +247,28 @@
         dataMes = new DataMes(numAnoMesSeguinte, numMesSeguinte);
     }
 
-    async void ContaClick(int id, bool selecionada)
+    async Task ContaClick(int id, bool selecionada)
     {
-        var conta = contas.First(x => x.Id == id);
-        conta.SetarSelecionada(selecionada);
+        await Task.Run(() =>
+        {
+            var conta = contas.First(x => x.Id == id);
+            conta.SetarSelecionada(selecionada);
+        });
     }
 
-    async void AdicionarTransacao()
+    async Task AdicionarTransacao()
     {
-        modoAdicionarTransacao = true;
+        await Task.Run(() =>
+        {
+            modoAdicionarTransacao = true;
+        });
     }
 
-    async void MouseDown()
+    async Task MouseDown()
     {
         if (!mouseOverNovaTransacao && modoAdicionarTransacao)
         {
-            if ( mesAtual.NovaTransacao.NovaTransacaoEhValida())
+            if (mesAtual.NovaTransacao.NovaTransacaoEhValida())
             {
                 var conta = contas.First(x => x.Id == mesAtual.NovaTransacao.ContaId);
                 mesAtual.NovaTransacao.Conta = conta;
@@ -206,5 +283,5 @@
             }
             modoAdicionarTransacao = false;
         }
-    }
+    } 
 }

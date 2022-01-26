@@ -38,7 +38,5 @@ namespace Neptune.Web.Util
             value = default;
             return false;
         }
-
-        //public static string UriSemQ
     }
 }

@@ -44,7 +44,7 @@ namespace Neptune.Domain.Tests
         }
 
         [Test]
-        public void DeveSomar()
+        public void DeveAdicionarAPartirDeSaldo()
         {
             // arrange
             var contaCorrente = new Conta(1, "corrente", 100, true);
@@ -64,6 +64,37 @@ namespace Neptune.Domain.Tests
             // assert
             Assert.AreEqual(2, actual.SaldoContas.Count, 2);
             Assert.AreEqual(6, actual.Valor);
+        }
+
+        [Test]
+        [TestCase(1, 1, 1, 1, 4)]
+        [TestCase(-1, -1, -1, -1, -4)]
+        [TestCase(-1, 1, -1, 1, 0)]
+        [TestCase(10, 10, -10, -10, 0)]
+        public void DeveAdicionarValorAPartirDeTransacoes(int t1antes, int t2antes, int t3nova, int t4nova, int valorFinal)
+        {
+            // arrange
+            var contaCorrente = new Conta(1, "corrente", 100, true);
+            var contaPoupanca = new Conta(2, "poupanca", 100, true);
+            var transacao1 = new Transacao(1, DateTime.Now, "pao", t1antes, contaCorrente);
+            var transacao2 = new Transacao(2, DateTime.Now, "rendimento", t2antes, contaPoupanca);
+            
+            var sut = new Saldo(new List<Transacao> 
+            { 
+                new Transacao(3, DateTime.Now, "pao", t3nova, contaCorrente),
+                new Transacao(4, DateTime.Now, "rendimento", t4nova, contaPoupanca)
+            });
+
+            // act
+            sut.AdicionarValor(new List<Transacao> 
+            { 
+                transacao1,
+                transacao2
+            });
+
+
+            // assert
+            Assert.AreEqual(valorFinal, sut.Valor);
         }
     }
 }

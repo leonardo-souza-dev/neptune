@@ -9,7 +9,7 @@ namespace Neptune.Domain
     public class SaldoConta
     {
         public Conta Conta { get; set; }
-        public decimal Valor { get; set; }
+        public decimal Valor { get; private set; }
 
         public SaldoConta(Conta conta, decimal valor)
         {

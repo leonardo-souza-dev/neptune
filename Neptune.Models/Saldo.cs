@@ -76,13 +76,13 @@ namespace Neptune.Domain
             return this;
         }
 
-        public Saldo Adicionar(Saldo saldoContas)
+        public Saldo Adicionar(Saldo saldo)
         {
             for (int i = 0; i < SaldoContas.Count; i++)
             {
-                for (int j = 0; j < saldoContas.SaldoContas.Count; j++)
+                for (int j = 0; j < saldo.SaldoContas.Count; j++)
                 {
-                    var contaSaldoContas = saldoContas.SaldoContas[j];
+                    var contaSaldoContas = saldo.SaldoContas[j];
                     if (SaldoContas[i].Conta.Id == contaSaldoContas.Conta.Id)
                     {
                         SaldoContas[i].Adicionar(contaSaldoContas.Valor);

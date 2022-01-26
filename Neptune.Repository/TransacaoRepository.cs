@@ -56,7 +56,7 @@ namespace Neptune.Infra
 
         public async Task<List<Transacao>> ObterTodas()
         {
-            return _transacoes;
+            return _transacoes;            
         }
 
         public Transacao Obter(int id)
