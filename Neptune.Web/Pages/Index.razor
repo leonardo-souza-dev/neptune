@@ -64,12 +64,32 @@
                                     </select>
                                     
                                 </td>
-                                <td><InputNumberListener @bind-Value="mesAtual.NovaTransacao.Valor" /></td>
+                                @*<td><InputNumberListener @bind-Value="mesAtual.NovaTransacao.Valor" /></td>*@
                                 <td>
-                                    <input type="text" id="ndfdfdfdf" value="@valorrr" 
-                                    @onkeydown="((e) => DigitandoValor(e))"
-                                    @onkeyup="((e) => DigitouValor(e))"                                    
-                                    />
+                                    <input type="text" id="meu-campo-valor" value="0,01" onkeydown="if (/^[0-9]$/i.test(event.key)) { 
+                                                                                                        console.log(event);
+                                                                                                        let valor = this.value.replace(/[^0-9.]/g, '').replace(/(\..*?)\..*/g, '$1');   
+                                                                                                        let valorFloat = parseFloat(valor.replace(',', '.'));                           
+                                                                                                        let valorFloatD10 = valorFloat / 10;                                            
+                                                                                                        let valorFloatD10Round2 = (Math.round(valorFloatD10 * 100) / 100).toFixed(2);   
+                                                                                                        let input = event.key;                                                          
+                                                                                                        let inputInt = parseInt(event.key);                                             
+                                                                                                        let inputIntDiv100 = parseInt(event.key) / 100;                                 
+                                                                                                        let inputIntDiv100Round2 = (Math.round(inputIntDiv100 * 100) / 100).toFixed(2); 
+                                                                                                        let soma = parseFloat(valorFloatD10Round2) + parseFloat(inputIntDiv100Round2);  
+                                                                                                        let somaRound2 = (Math.round(soma * 100) / 100).toFixed(2);                     
+                                                                                                        this.value = somaRound2.toString().replace('.', ',')
+                                                                                                        return false;
+                                                                                                    }
+                                                                                                    else if (event.which == '8') {
+                                                                                                        console.log('backsapce');
+                                                                                                        console.log(event);
+                                                                                                        this.value = ((Math.floor((parseFloat(this.value.replace(',','.')) / 10) * 100) / 100).toFixed(2)).toString().replace('.', ',');
+                                                                                                        return false;
+                                                                                                    }
+                                                                                                    else {
+                                                                                                        return false;
+                                                                                                    }" />
                                 </td>
 
                                 @* TODO: fazer aceitar valor negativo *@
@@ -135,11 +155,18 @@
                 </tbody>
             </table>
         </div>
+
     </div>
 
 </div>
 
 @code {
+    [JSInvokable("valorListener")]
+    public void ValorListener(object obj)
+    {
+        mesAtual.NovaTransacao.Valor = (decimal)obj;
+    }
+
     private Meses meses;
     private List<Conta> contas;
 
