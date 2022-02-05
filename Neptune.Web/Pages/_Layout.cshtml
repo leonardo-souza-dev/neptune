@@ -29,12 +29,14 @@
 
     <script src="_framework/blazor.server.js"></script>
     <script>
-        //window.valorListener = () => {    
-        //    DotNet.invokeMethod('Neptune.Web', 'valorListener')
-        //        .then(data => {
-        //            console.log(data);
-        //        });
-        //    };
+        window.chamaDotNet = () => {    
+            let valor = document.getElementById("meu-campo-valor").value;
+            debugger;
+            DotNet.invokeMethodAsync('Neptune.Web', 'ChamaDotNet', valor)
+                .then(data => {
+                    console.log(data);
+                });
+            };
 
         
     </script>
