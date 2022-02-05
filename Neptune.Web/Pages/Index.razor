@@ -64,30 +64,129 @@
                                     </select>
                                     
                                 </td>
-                                @*<td><InputNumberListener @bind-Value="mesAtual.NovaTransacao.Valor" /></td>*@
                                 <td>
-                                    <input type="text" id="meu-campo-valor" value="0,01" onkeydown="if (/^[0-9]$/i.test(event.key)) { 
-                                                                                                        console.log(event);
-                                                                                                        let valor = this.value.replace(/[^0-9.]/g, '').replace(/(\..*?)\..*/g, '$1');   
-                                                                                                        let valorFloat = parseFloat(valor.replace(',', '.'));                           
-                                                                                                        let valorFloatD10 = valorFloat / 10;                                            
-                                                                                                        let valorFloatD10Round2 = (Math.round(valorFloatD10 * 100) / 100).toFixed(2);   
+                                    <input type="text" id="meu-campo-valor" value="0,01" onkeydown="if ([48,49,50,51,52,53,54,55,56,57,96,97,98,99,100,101,102,103,104,105].includes(event.which)) { 
+                                                                                                        console.log(event)
+                                                                                                        //let valor = this.value.replace(/[^0-9.]/g, '').replace(/(\..*?)\..*/g, '$1');   
+                                                                                                        let valor = this.value; 
+                                                                                                        console.log('');
+                                                                                                        console.log('valor');
+                                                                                                        console.log(valor);
+                                                                                                        console.log('');
+                                                                                                        
+                                                                                                        let valorFloat = parseFloat(valor.replace(',', '.'));      
+                                                                                                        console.log('');
+                                                                                                        console.log('valorFloat');
+                                                                                                        console.log(valorFloat);
+                                                                                                        console.log('');           
+                                                                                                                  
+                                                                                                        let valorFloatM10 = valorFloat * 10; 
+                                                                                                        console.log('');
+                                                                                                        console.log('valorFloatM10');
+                                                                                                        console.log(valorFloatM10);
+                                                                                                        console.log(''); 
+                                                                                                                                            
+                                                                                                        let valorFloatD10Round2 = (Math.round(valorFloatM10 * 100) / 100).toFixed(2); 
+                                                                                                        console.log('');
+                                                                                                        console.log('valorFloatD10Round2');
+                                                                                                        console.log(valorFloatD10Round2);
+                                                                                                        console.log(''); 
+
                                                                                                         let input = event.key;                                                          
                                                                                                         let inputInt = parseInt(event.key);                                             
                                                                                                         let inputIntDiv100 = parseInt(event.key) / 100;                                 
                                                                                                         let inputIntDiv100Round2 = (Math.round(inputIntDiv100 * 100) / 100).toFixed(2); 
-                                                                                                        let soma = parseFloat(valorFloatD10Round2) + parseFloat(inputIntDiv100Round2);  
-                                                                                                        let somaRound2 = (Math.round(soma * 100) / 100).toFixed(2);                     
-                                                                                                        this.value = somaRound2.toString().replace('.', ',')
+                                                                                                        
+                                                                                                        let ehNegativo = valorFloatD10Round2 < 0;
+                                                                                                        console.log('');
+                                                                                                        console.log('ehNegativo');
+                                                                                                        console.log(ehNegativo);
+                                                                                                        console.log(''); 
+                                                                                                        
+                                                                                                        let soma = parseFloat(Math.abs(valorFloatD10Round2)) + parseFloat(inputIntDiv100Round2); 
+                                                                                                        let somaRound2 = (Math.round(soma * 100) / 100).toFixed(2);
+                                                                                                        let sinal = ehNegativo ? '-' : '';
+                                                                                                        this.value = sinal + somaRound2.toString().replace('.', ',')
                                                                                                         return false;
                                                                                                     }
-                                                                                                    else if (event.which == '8') {
-                                                                                                        console.log('backsapce');
-                                                                                                        console.log(event);
-                                                                                                        this.value = ((Math.floor((parseFloat(this.value.replace(',','.')) / 10) * 100) / 100).toFixed(2)).toString().replace('.', ',');
+                                                                                                    else if (event.which == 8) { // backspace
+                                                                                                        console.log('======================= backspace =======================');
+                                                                                                        console.log('======================= backspace =======================');
+                                                                                                        console.log('======================= backspace =======================');
+                                                                                                        let valorReplaceVirgulaPorPonto = this.value.replace(',','.');
+                                                                                                        console.log('');
+                                                                                                        console.log('valorReplaceVirgulaPorPonto');
+                                                                                                        console.log(valorReplaceVirgulaPorPonto);
+                                                                                                        console.log(''); 
+                                                                                                        
+                                                                                                        let valorReplaceVirgulaPorPontoFloat = parseFloat(valorReplaceVirgulaPorPonto);
+                                                                                                        console.log('');
+                                                                                                        console.log('valorReplaceVirgulaPorPontoFloat');
+                                                                                                        console.log(valorReplaceVirgulaPorPontoFloat);
+                                                                                                        console.log(''); 
+                                                                                                        
+                                                                                                        let valorReplaceVirgulaPorPontoFloatD10 = valorReplaceVirgulaPorPontoFloat / 10;
+                                                                                                        console.log('');
+                                                                                                        console.log('valorReplaceVirgulaPorPontoFloatD10');
+                                                                                                        console.log(valorReplaceVirgulaPorPontoFloatD10);
+                                                                                                        console.log(''); 
+
+                                                                                                        let valorReplaceVirgulaPorPontoFloatD10R2 = 0;
+                                                                                                        
+                                                                                                        let ehNegativo = valorReplaceVirgulaPorPontoFloatD10 < 0;
+                                                                                                        console.log('');
+                                                                                                        console.log('ehNegativo');
+                                                                                                        console.log(ehNegativo);
+                                                                                                        console.log(''); 
+                                                                                                        
+                                                                                                        if (ehNegativo){
+                                                                                                            valorReplaceVirgulaPorPontoFloatD10R2 = (Math.ceil(valorReplaceVirgulaPorPontoFloatD10 * 100) / 100).toFixed(2);
+                                                                                                            console.log('');
+                                                                                                            console.log('valorReplaceVirgulaPorPontoFloatD10R2');
+                                                                                                            console.log(valorReplaceVirgulaPorPontoFloatD10R2);
+                                                                                                            console.log(''); 
+                                                                                                        } else {
+                                                                                                            valorReplaceVirgulaPorPontoFloatD10R2 = (Math.floor(valorReplaceVirgulaPorPontoFloatD10 * 100) / 100).toFixed(2);
+                                                                                                            console.log('');
+                                                                                                            console.log('valorReplaceVirgulaPorPontoFloatD10R2');
+                                                                                                            console.log(valorReplaceVirgulaPorPontoFloatD10R2);
+                                                                                                            console.log(''); 
+                                                                                                        }
+                                                                                                        
+                                                                                                        this.value = valorReplaceVirgulaPorPontoFloatD10R2.toString().replace('.', ',');
+                                                                                                        return false;
+                                                                                                    }
+                                                                                                    else if (event.which == 109 || event.which == 189) { //minus
+                                                                                                        console.log('======================= MINUS =======================');
+                                                                                                        console.log('======================= MINUS =======================');
+                                                                                                        console.log('======================= MINUS =======================');
+                                                                                                        let valor = this.value;
+                                                                                                        console.log('');
+                                                                                                        console.log('valor');
+                                                                                                        console.log(valor);
+                                                                                                        console.log(''); 
+                                                                                                        
+                                                                                                        let ehNegativo = this.value[0] == '-';
+                                                                                                        console.log('');
+                                                                                                        console.log('ehNegativo');
+                                                                                                        console.log(ehNegativo);
+                                                                                                        console.log(''); 
+
+                                                                                                        if (!ehNegativo) {
+                                                                                                            this.value = ((Math.floor((parseFloat(this.value.replace(',','.')) * -1) * 100) / 100).toFixed(2)).toString().replace('.', ',');;
+                                                                                                        }
+                                                                                                        return false;
+                                                                                                    }
+                                                                                                    else if (event.which == 107 || event.which == 187) { // plus
+                                                                                                        let ehNegativo = this.value[0] == '-';
+
+                                                                                                        if (ehNegativo) {
+                                                                                                            this.value = ((Math.floor((parseFloat(this.value.replace(',','.')) * -1) * 100) / 100).toFixed(2)).toString().replace('.', ',');;
+                                                                                                        }
                                                                                                         return false;
                                                                                                     }
                                                                                                     else {
+                                                                                                        console.log(event)
                                                                                                         return false;
                                                                                                     }" />
                                 </td>
