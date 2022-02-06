@@ -66,7 +66,7 @@
                                     </select>
                                     
                                 </td>
-                                <td>
+                                <td>R$ 
                                     <input type="text" id="meu-campo-valor" value="0,00" onkeyup="chamaDotNet()" 
                                                                                          onkeydown="if ([48,49,50,51,52,53,54,55,56,57,96,97,98,99,100,101,102,103,104,105].includes(event.which)) { 
                                                                                                         let valor = this.value; 
@@ -117,8 +117,6 @@
                                                                                                         return false;
                                                                                                     }" />
                                 </td>
-
-                                @* TODO: fazer aceitar valor negativo *@
                             </tr>
                         </tbody>
                     </table>
@@ -139,7 +137,7 @@
                 <tbody>
                     <tr>
                         <th colspan="6" style="text-align: right;">
-                            Saldo no dia @mesAtual.UltimoDiaMesAnterior: @mesAtual.SaldoFinalUltimoDiaMesAnterior.Valor
+                            Saldo no dia @mesAtual.UltimoDiaMesAnterior: R$ @FormatarMoeda(mesAtual.SaldoFinalUltimoDiaMesAnterior.Valor)
                         </th>
                     </tr>
 
@@ -170,11 +168,11 @@
                                             }
                                         </select>
                                     </td>
-                                    <td>@transacao.Valor</td>
+                                    <td>R$ @FormatarMoeda(transacao.Valor)</td>
                                 </tr>
                             }
                             <tr>
-                                <td colspan="4" style="text-align: right;">Saldo do dia: @dia.SaldoFinalDoDia.Valor</td>
+                                <td colspan="4" style="text-align: right;">Saldo do dia: R$ @FormatarMoeda(dia.SaldoFinalDoDia.Valor)</td>
                             </tr>
                         }
                     }
@@ -194,6 +192,11 @@
         novaTransacaoValor = Convert.ToDecimal(valorAdjust, new CultureInfo("pt-BR"));
     }
 
+    public string FormatarMoeda(decimal valor)
+    {
+        return (valor.ToString().Contains(".") || valor.ToString().Contains(",")) ? valor.ToString() : valor + ",00";
+    }
+
     private Meses meses;
     private List<Conta> contas;
 
@@ -208,6 +211,7 @@
         {
         });
     }
+
     async Task DigitandoValor(KeyboardEventArgs e)
     {
         await Task.Run(() =>
@@ -243,23 +247,6 @@
             }
 
             valorrr = novaParteInteira.ToString() + "," + sb.ToString().Split(",")[1];
-
-
-        //var novaParteInteiraSb = new StringBuilder();
-
-        //for(var i = 0; i < parteInteira.Length - 1; i++)
-        //{
-        //    if (i < parteInteira.Length - 1 && parteInteira[i] == '0' && parteInteira[i+1] == '0')
-        //    {
-        //        novaParteInteiraSb.Append("0");                
-        //    }
-        //    else
-        //    {
-        //        novaParteInteiraSb.Append(parteInteira[i].ToString());
-        //    }
-        //}
-
-        //valorrr = novaParteInteiraSb.ToString() + "," + sb.ToString().Split(",")[1];
     });
     }
 

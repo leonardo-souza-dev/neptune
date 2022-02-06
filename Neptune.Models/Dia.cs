@@ -31,5 +31,10 @@ namespace Neptune.Domain
 
             SaldoFinalDoDia.AdicionarValor(transacao);
         }
+
+        public void SetarSaldoDiaAnterior(Saldo saldo)
+        {
+            SaldoDiaAnterior = saldo;
+        }
     }
 }

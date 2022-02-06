@@ -71,6 +71,8 @@ namespace Neptune.Domain
             {
                 dia.AdicionarTransacao(transacao);
             }
+
+            Dias.Sort((x, y) => x.Data.CompareTo(y.Data));
         }
     }
 }
