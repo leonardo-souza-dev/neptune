@@ -7,26 +7,26 @@
 @inject NavigationManager NavManager
 @inject PagesService _pagesService
 
-<div id="tudo" style="height: 100vh;" @onmousedown="MouseDown">
+<div id="tudo" style="height: 100vh;"@onmousedown="MouseDown" >
     <div id="selecao-contas" style="display: block;float: left;width: 210px;">
         <div>
             Contas
         </div>
             
         <ul style="float: left;" >            
-            @foreach (var conta in contas)
+            @foreach (var conta in _contas)
             {
                 <EditForm Model="conta">
                     <li>
                         @if (conta.Selecionada)
                         {
-                            <input type="checkbox" checked name="@conta.Id" @onchange="@(() => ContaClick(conta.Id, false))"/>
+                            <input type="checkbox" checked name="@conta.Id" @onchange="@(() => { conta.SetarSelecionada(false);})"/>
                         }
                         else
                         {
-                            <input type="checkbox" name="@conta.Id" @onchange="@(() => ContaClick(conta.Id, true))"/>
+                            <input type="checkbox" name="@conta.Id" @onchange="@(() => { conta.SetarSelecionada(true);})"/>
                         }
-                        @conta.Id - @conta.Nome
+                        @conta.Id - @conta.Nome - @conta.Guid
                     </li>
                 </EditForm>
             }
@@ -36,7 +36,7 @@
     <div id="navegacao-e-transacoes" style="margin:8px;display: grid;"  >
         <div id="navegacao">
             <button @onclick="IrParaMesAnterior" >anterior</button>
-            <span>Mês nº @mesAtual.NumMes</span>
+            <span>Mês nº @_dataMes.Mes</span>
             <button @onclick="IrParaMesSeguinte" >seguinte</button>
         </div>
         <div id="adicionar-transacao" style="margin: 8px;">
@@ -48,18 +48,18 @@
         
         @if (modoAdicionarTransacao)
         {
-            <EditForm Model="mesAtual.NovaTransacao">
+            <EditForm Model="_novaTransacao">
                 <div id="nova-transacao" style="float:left;margin:8px;width:100%;" @onmouseover="@(() => mouseOverNovaTransacao = true)" @onmouseout="@(() => mouseOverNovaTransacao = false)" >
                     <table class="table transacoes">
                         <tbody>
                             <tr style="background-color: #efefef">
-                                <td><input type="date" id="meeting-time" name="meeting-time" @bind-value="mesAtual.NovaTransacao.Data" min="2015-01-01" max="2050-01-01"></td>
-                                <td><input type="text" id="nova-transacao-descricao" @bind-value="mesAtual.NovaTransacao.Descricao" /></td>
+                                <td><input type="date" id="meeting-time" name="meeting-time" @bind-value="_novaTransacao.Data" min="2015-01-01" max="2050-01-01"></td>
+                                <td><input type="text" id="nova-transacao-descricao" @bind-value="_novaTransacao.Descricao" /></td>
                                 <td>Categoria</td>
                                 <td>
-                                    <select @bind="mesAtual.NovaTransacao.ContaId">
+                                    <select @bind="_novaTransacao.Conta.Id">
                                         <option selected value="0">Selecione</option>
-                                        @foreach(var c in contas)
+                                        @foreach(var c in _contas)
                                         {
                                             <option value="@c.Id">@c.Nome</option>
                                         }
@@ -135,47 +135,59 @@
                     </tr>
                 </thead>
                 <tbody>
-                    <tr>
-                        <th colspan="6" style="text-align: right;">
-                            Saldo no dia @mesAtual.UltimoDiaMesAnterior: R$ @FormatarMoeda(mesAtual.SaldoFinalUltimoDiaMesAnterior.Valor)
-                        </th>
-                    </tr>
+                    @{
+                        var transacoesAnteriores = _transacoes.Where(x => x.Data.Year == _dataMes.Ano && x.Data.Month < _dataMes.Mes && x.Conta.Selecionada);
+                        var somaTransacoesAnteriores = transacoesAnteriores.Sum(x => x.Valor);
+                        var saldoInicialContas = _contas.Where(x => x.Selecionada).Sum(x => x.SaldoInicial);
+                        var saldoFinalUltimoDiaMesAnterior = saldoInicialContas + somaTransacoesAnteriores;
 
-                    @if (mesAtual.Dias != null && mesAtual.Dias.Any())
-                    {
-                        @foreach (var dia in mesAtual.DiasExibicao)
+                        <tr>
+                            <th colspan="6" style="text-align: right;">
+                                Saldo no dia @_dataMes.UltimoDiaDoMesAnteriorFormat: R$ @FormatarMoeda(saldoFinalUltimoDiaMesAnterior)
+                            </th>
+                        </tr>
+                        
+                        decimal saldoTemp = saldoFinalUltimoDiaMesAnterior;
+
+                        @foreach (var diaTransacoes in _transacoesMesContas.GroupBy(x => x.Data))
                         {
                             <tr>
-                                <td colspan="4">@dia.Data.ToString("dd/MM/yyyy")</td>
+                                <td colspan="4">@diaTransacoes.Key.ToString("dd/MM/yyyy")</td>
                             </tr>
-                            @foreach (var transacao in dia.TransacoesExibicao)
+
+                            decimal somaTransacoesDia = diaTransacoes.Sum(x => x.Valor);
+                            saldoTemp += somaTransacoesDia; 
+
+                            @foreach (var t in diaTransacoes)
                             {
                                 <tr style="background-color: #cccccc">
-                                    <td>@transacao.Descricao</td>
-                                    <td>@transacao.Categoria</td>
+                                    <td>@t.Descricao --- GUID-Conta @t.Conta.Guid --- TransacaoId @t.Id</td>
+                                    <td>@t.Categoria</td>
                                     <td>
                                         <select style="background: #cccccc;color: #000;border: 2px solid #cccccc;-webkit-appearance: none;" disabled="disabled">
-                                            @foreach(var c in contas)
+                                            @foreach (var c in _contas)
                                             {
-                                                if (c.Id == transacao.Conta.Id)
+                                                if (c.Id == t.Conta.Id)
                                                 {
                                                     <option selected>@c.Nome</option>
                                                 }
                                                 else
                                                 {
-                                                    <option>@c.Nome</option>                                                    
+                                                    <option>@c.Nome</option>
                                                 }
                                             }
                                         </select>
                                     </td>
-                                    <td>R$ @FormatarMoeda(transacao.Valor)</td>
+                                    <td>R$ @FormatarMoeda(t.Valor)</td>
                                 </tr>
                             }
+
+
                             <tr>
-                                <td colspan="4" style="text-align: right;">Saldo do dia: R$ @FormatarMoeda(dia.SaldoFinalDoDia.Valor)</td>
+                                <td colspan="4" style="text-align: right;">Saldo do dia: R$ @FormatarMoeda(saldoTemp)</td>
                             </tr>
                         }
-                    }
+                }
                 </tbody>
             </table>
         </div>
@@ -185,25 +197,34 @@
 </div>
 
 @code {
-    [JSInvokable]
-    public static void ChamaDotNet(JsonElement valor)
-    {
-        string valorAdjust = valor.GetRawText().Replace("\"", "");
-        novaTransacaoValor = Convert.ToDecimal(valorAdjust, new CultureInfo("pt-BR"));
-    }
+    private List<Transacao> _transacoes;
+    private IEnumerable<Transacao> _transacoesMesContas => _transacoes.DistinctBy(x => x.Id).Where(t => t.Data.Year == _dataMes.Ano && t.Data.Month == _dataMes.Mes && t.Conta.Selecionada).Distinct();
+    private List<Conta> _contas;
 
-    public string FormatarMoeda(decimal valor)
-    {
-        return (valor.ToString().Contains(".") || valor.ToString().Contains(",")) ? valor.ToString() : valor + ",00";
-    }
+    private bool mouseOverNovaTransacao;
+    private bool modoAdicionarTransacao = false;
 
-    private Meses meses;
-    private List<Conta> contas;
+    private string mensagem;
 
     private static decimal novaTransacaoValor;
 
     private List<string> digitosValor = new List<string>();
     private string valorrr = "0,00";
+    private DataMes _dataMes;
+
+    private Transacao? _novaTransacao = new Transacao().ObterNovaTransacao();
+
+    private string navMesAnterior => (NavManager.BaseUri + $"?ano={_dataMes.NumAnoDoMesAnterior}&mes={_dataMes.NumMesAnterior}");
+    private string navMesSeguinte => (NavManager.BaseUri + $"?ano={_dataMes.NumAnoDoMesSeguinte}&mes={_dataMes.NumMesSeguinte}");
+
+    protected override async Task OnInitializedAsync()
+    {
+        _dataMes = new DataMes(DateTime.Now.Year, DateTime.Now.Month);
+
+        _contas = await _pagesService.ObterContas();
+        _contas.ForEach(x => x.SetarSelecionada(true));
+        _transacoes = await _pagesService.ObterTodasTransacoes();
+    }
 
     async Task DigitouValor(KeyboardEventArgs e)
     {
@@ -247,28 +268,7 @@
             }
 
             valorrr = novaParteInteira.ToString() + "," + sb.ToString().Split(",")[1];
-    });
-    }
-
-    private DataMes dataMes;
-
-    private string navMesAnterior => (NavManager.BaseUri + mesAtual.NavMesAnterior);
-    private string navMesSeguinte => (NavManager.BaseUri + mesAtual.NavMesSeguinte);
-
-    private Mes mesAtual => meses.ObterMes(dataMes);
-
-    private bool mouseOverNovaTransacao;
-    private bool modoAdicionarTransacao = false;
-
-    private string mensagem;
-
-    protected override async Task OnInitializedAsync()
-    {
-        dataMes = new DataMes(DateTime.Now.Year, DateTime.Now.Month);
-
-        contas = await _pagesService.ObterContas();
-        contas.ForEach(x => x.SetarSelecionada(true));
-        meses = await _pagesService.ObterMeses(contas);
+        });
     }
 
     protected override async Task OnParametersSetAsync()
@@ -278,25 +278,16 @@
 
     void IrParaMesAnterior()
     {
-        var numMesAnterior = mesAtual.DataMes.NumMesAnterior;
-        var numAnoMesAnteior = mesAtual.DataMes.NumAnoDoMesAnterior;
-        dataMes = new DataMes(numAnoMesAnteior, numMesAnterior);
+        var numMesAnterior = _dataMes.NumMesAnterior;
+        var numAnoMesAnteior = _dataMes.NumAnoDoMesAnterior;
+        _dataMes = new DataMes(numAnoMesAnteior, numMesAnterior);
     }
 
     void IrParaMesSeguinte()
     {
-        var numMesSeguinte = mesAtual.DataMes.NumMesSeguinte;
-        var numAnoMesSeguinte = mesAtual.DataMes.NumAnoDoMesSeguinte;
-        dataMes = new DataMes(numAnoMesSeguinte, numMesSeguinte);
-    }
-
-    async Task ContaClick(int id, bool selecionada)
-    {
-        await Task.Run(() =>
-        {
-            var conta = contas.First(x => x.Id == id);
-            conta.SetarSelecionada(selecionada);
-        });
+        var numMesSeguinte = _dataMes.NumMesSeguinte;
+        var numAnoMesSeguinte = _dataMes.NumAnoDoMesSeguinte;
+        _dataMes = new DataMes(numAnoMesSeguinte, numMesSeguinte);
     }
 
     async Task AdicionarTransacao()
@@ -307,24 +298,48 @@
         });
     }
 
-    async Task MouseDown()
+    private decimal ObterSaldoFinalDoDia(object x)
+    {
+        return 0.2M;
+    }
+
+    [JSInvokable]
+    public static void ChamaDotNet(JsonElement valor)
+    {
+        string valorAdjust = valor.GetRawText().Replace("\"", "");
+        novaTransacaoValor = Convert.ToDecimal(valorAdjust, new CultureInfo("pt-BR"));
+    }
+
+    public string FormatarMoeda(decimal valor)
+    {
+        return (valor.ToString().Contains(".") || valor.ToString().Contains(",")) ? valor.ToString() : valor + ",00";
+    }
+
+    void MouseDown()
     {
         if (!mouseOverNovaTransacao && modoAdicionarTransacao)
         {
-            if (mesAtual.NovaTransacao.NovaTransacaoEhValida())
+            if (_novaTransacao != null && _novaTransacao.NovaTransacaoEhValida())
             {
-                var conta = contas.First(x => x.Id == mesAtual.NovaTransacao.ContaId);
-                mesAtual.NovaTransacao.Conta = conta;
-                mesAtual.NovaTransacao.Valor = novaTransacaoValor;
-                var resultadoMensagem = await _pagesService.AdicionarTransacao(meses, mesAtual.NovaTransacao);
+                var conta = _contas.First(x => x.Id == _novaTransacao.Conta.Id);
+                _novaTransacao.Conta = conta;
+                _novaTransacao.Valor = novaTransacaoValor;
+                var resultadoMensagem = _pagesService.AdicionarTransacao(_novaTransacao).Result;
 
-                if (!string.IsNullOrEmpty(resultadoMensagem))
+                if (resultadoMensagem == null)
+                {
                     mensagem = $"Ocorreu um erro ao adicionar a transacao {resultadoMensagem}";
+                    Console.WriteLine(mensagem);
+                    Debug.WriteLine(mensagem);
+                }
+                else
+                {
+                    Console.WriteLine("TRANSACAO ADICIONADA Id: " + resultadoMensagem.Id);
+                    Debug.WriteLine("TRANSACAO ADICIONADA Id: " + resultadoMensagem.Id);
+                    _novaTransacao = new Transacao().ObterNovaTransacao();
+                }
             }
-            else
-            {
-                mesAtual.NovaTransacao = new();
-            }
+
             modoAdicionarTransacao = false;
         }
     } 

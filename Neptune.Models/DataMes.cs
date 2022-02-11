@@ -5,7 +5,7 @@ using System.Linq;
 
 namespace Neptune.Domain
 {
-    public struct DataMes
+    public struct DataMes : IComparable
     {
         public int Ano { get; private set; }
         public int Mes { get; private set; }
@@ -36,9 +36,21 @@ namespace Neptune.Domain
             get => new DateTime(Ano, Mes, 1).AddMonths(1).Year;
         }
 
-        public DateTime UltimoDiaDoMesAnterior 
-        { 
+        public DateTime UltimoDiaDoMesAnterior
+        {
             get => new DateTime(Ano, Mes, 1).AddDays(-1);
+        }
+
+        public string UltimoDiaDoMesAnteriorFormat
+        {
+            get => UltimoDiaDoMesAnterior.ToString("dd/MM/yyyy");
+        }
+
+        public int CompareTo(object obj)
+        {
+            if (((DataMes)obj).Ano == this.Ano && ((DataMes)obj).Mes == this.Mes)
+                return 0;
+            return -1;
         }
     }
 }
