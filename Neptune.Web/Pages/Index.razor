@@ -36,7 +36,7 @@
     <div id="navegacao-e-transacoes" style="margin:8px;display: grid;"  >
         <div id="navegacao">
             <button @onclick="IrParaMesAnterior" >anterior</button>
-            @*<span>Mês nº @mesAtual.NumMes</span>*@
+            <span>Mês nº @_dataMes.Mes</span>
             <button @onclick="IrParaMesSeguinte" >seguinte</button>
         </div>
         <div id="adicionar-transacao" style="margin: 8px;">
@@ -136,14 +136,14 @@
                 </thead>
                 <tbody>
                     @{
-                        var transacoesAnteriores = _transacoes.Where(x => x.Data.Year == dataMes.Ano && x.Data.Month < dataMes.Mes && x.Conta.Selecionada);
+                        var transacoesAnteriores = _transacoes.Where(x => x.Data.Year == _dataMes.Ano && x.Data.Month < _dataMes.Mes && x.Conta.Selecionada);
                         var somaTransacoesAnteriores = transacoesAnteriores.Sum(x => x.Valor);
                         var saldoInicialContas = _contas.Where(x => x.Selecionada).Sum(x => x.SaldoInicial);
                         var saldoFinalUltimoDiaMesAnterior = saldoInicialContas + somaTransacoesAnteriores;
 
                         <tr>
                             <th colspan="6" style="text-align: right;">
-                                Saldo no dia @dataMes.UltimoDiaDoMesAnterior: R$ @FormatarMoeda(saldoFinalUltimoDiaMesAnterior)
+                                Saldo no dia @_dataMes.UltimoDiaDoMesAnteriorFormat: R$ @FormatarMoeda(saldoFinalUltimoDiaMesAnterior)
                             </th>
                         </tr>
                         
@@ -198,7 +198,7 @@
 
 @code {
     private List<Transacao> _transacoes;
-    private IEnumerable<Transacao> _transacoesMesContas => _transacoes.DistinctBy(x => x.Id).Where(t => t.Data.Year == dataMes.Ano && t.Data.Month == dataMes.Mes && t.Conta.Selecionada).Distinct();
+    private IEnumerable<Transacao> _transacoesMesContas => _transacoes.DistinctBy(x => x.Id).Where(t => t.Data.Year == _dataMes.Ano && t.Data.Month == _dataMes.Mes && t.Conta.Selecionada).Distinct();
     private List<Conta> _contas;
 
     private bool mouseOverNovaTransacao;
@@ -210,31 +210,20 @@
 
     private List<string> digitosValor = new List<string>();
     private string valorrr = "0,00";
-    private DataMes dataMes;
+    private DataMes _dataMes;
 
     private Transacao? _novaTransacao = new Transacao().ObterNovaTransacao();
 
-
-    //private string navMesAnterior => (NavManager.BaseUri + mesAtual.NavMesAnterior);
-    //private string navMesSeguinte => (NavManager.BaseUri + mesAtual.NavMesSeguinte);
-
-    //private Mes mesAtual => meses.MesList.FirstOrDefault(x => x.DataMes.Equals(dataMes));
+    private string navMesAnterior => (NavManager.BaseUri + $"?ano={_dataMes.NumAnoDoMesAnterior}&mes={_dataMes.NumMesAnterior}");
+    private string navMesSeguinte => (NavManager.BaseUri + $"?ano={_dataMes.NumAnoDoMesSeguinte}&mes={_dataMes.NumMesSeguinte}");
 
     protected override async Task OnInitializedAsync()
     {
-        dataMes = new DataMes(DateTime.Now.Year, DateTime.Now.Month);
+        _dataMes = new DataMes(DateTime.Now.Year, DateTime.Now.Month);
 
         _contas = await _pagesService.ObterContas();
         _contas.ForEach(x => x.SetarSelecionada(true));
         _transacoes = await _pagesService.ObterTodasTransacoes();
-
-        //foreach(var t in _transacoes.Where(t => t.Data.Year == dataMes.Ano && t.Data.Month == dataMes.Mes))
-        //{
-        //    if (!_transacoesMes.Select(x => x.Id).Contains(t.Id))
-        //    {
-        //        _transacoesMes.Add(t);
-        //    }
-        //}
     }
 
     async Task DigitouValor(KeyboardEventArgs e)
@@ -289,16 +278,16 @@
 
     void IrParaMesAnterior()
     {
-        //var numMesAnterior = mesAtual.DataMes.NumMesAnterior;
-        //var numAnoMesAnteior = mesAtual.DataMes.NumAnoDoMesAnterior;
-        //dataMes = new DataMes(numAnoMesAnteior, numMesAnterior);
+        var numMesAnterior = _dataMes.NumMesAnterior;
+        var numAnoMesAnteior = _dataMes.NumAnoDoMesAnterior;
+        _dataMes = new DataMes(numAnoMesAnteior, numMesAnterior);
     }
 
     void IrParaMesSeguinte()
     {
-        //var numMesSeguinte = mesAtual.DataMes.NumMesSeguinte;
-        //var numAnoMesSeguinte = mesAtual.DataMes.NumAnoDoMesSeguinte;
-        //dataMes = new DataMes(numAnoMesSeguinte, numMesSeguinte);
+        var numMesSeguinte = _dataMes.NumMesSeguinte;
+        var numAnoMesSeguinte = _dataMes.NumAnoDoMesSeguinte;
+        _dataMes = new DataMes(numAnoMesSeguinte, numMesSeguinte);
     }
 
     async Task AdicionarTransacao()
@@ -347,7 +336,6 @@
                 {
                     Console.WriteLine("TRANSACAO ADICIONADA Id: " + resultadoMensagem.Id);
                     Debug.WriteLine("TRANSACAO ADICIONADA Id: " + resultadoMensagem.Id);
-                    //_transacoes.Add(_novaTransacao);
                     _novaTransacao = new Transacao().ObterNovaTransacao();
                 }
             }

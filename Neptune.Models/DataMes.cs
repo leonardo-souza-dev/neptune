@@ -36,9 +36,14 @@ namespace Neptune.Domain
             get => new DateTime(Ano, Mes, 1).AddMonths(1).Year;
         }
 
-        public DateTime UltimoDiaDoMesAnterior 
-        { 
+        public DateTime UltimoDiaDoMesAnterior
+        {
             get => new DateTime(Ano, Mes, 1).AddDays(-1);
+        }
+
+        public string UltimoDiaDoMesAnteriorFormat
+        {
+            get => UltimoDiaDoMesAnterior.ToString("dd/MM/yyyy");
         }
 
         public int CompareTo(object obj)
