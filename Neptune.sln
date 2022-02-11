@@ -13,17 +13,17 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Util", "Util\Util.csproj", 
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Neptune.Web", "Neptune.Web\Neptune.Web.csproj", "{E906CC44-DC0D-4221-89E0-04EE20ED24F3}"
 EndProject
-Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "1-ui", "1-ui", "{7C95933B-23B4-4886-9464-52B556158FFC}"
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "1 - ui", "1 - ui", "{7C95933B-23B4-4886-9464-52B556158FFC}"
 EndProject
-Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "2-app", "2-app", "{838D81D5-0E63-4676-B061-D9C18D28BE53}"
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "2 - app", "2 - app", "{838D81D5-0E63-4676-B061-D9C18D28BE53}"
 EndProject
-Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "3-infra", "3-infra", "{96B19AB1-8B01-475F-9E9B-D1974A760F09}"
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "3 - infra", "3 - infra", "{96B19AB1-8B01-475F-9E9B-D1974A760F09}"
 EndProject
-Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "4-domain", "4-domain", "{E3B6EF1B-D29D-4233-A2C6-87FC86704927}"
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "4 - domain", "4 - domain", "{E3B6EF1B-D29D-4233-A2C6-87FC86704927}"
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Neptune.Domain.Tests", "Neptune.Domain.Tests\Neptune.Domain.Tests.csproj", "{FDD8DE59-0990-4B1D-A4EA-92A850E7282B}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Neptune.Application.Tests", "Neptune.Application.Tests\Neptune.Application.Tests.csproj", "{A801E2FA-50BC-439D-8F50-5F5D48F6B421}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Neptune.Application.Tests", "Neptune.Application.Tests\Neptune.Application.Tests.csproj", "{A801E2FA-50BC-439D-8F50-5F5D48F6B421}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution

@@ -1,5 +1,4 @@
 ﻿using System;
-using System.ComponentModel.DataAnnotations;
 
 namespace Neptune.Domain
 {
@@ -13,19 +12,9 @@ namespace Neptune.Domain
         public Conta Conta { get; set; }
         public int ContaId => Conta.Id;
 
-        public Guid Guid { get; set; } = Guid.NewGuid();
-
         public Transacao(int id, DateTime data, string descricao, decimal valor, Conta conta)
         {
             Id = id;
-            Data = data;
-            Descricao = descricao;
-            Valor = valor;
-            Conta = conta;
-        }
-
-        public Transacao(DateTime data, string descricao, decimal valor, Conta conta)
-        {
             Data = data;
             Descricao = descricao;
             Valor = valor;

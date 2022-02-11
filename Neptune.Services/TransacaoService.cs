@@ -22,15 +22,6 @@ namespace Neptune.Application
             return await _transacaoRepository.ObterTodas();
         }
 
-        public async Task<Meses2> ObterMeses(List<Conta> contas)
-        {
-            var todasTransacoes = await ObterTodas();
-
-            var meses = new Meses2(todasTransacoes, contas);
-
-            return meses;
-        }
-
         public async Task<Transacao> AdicionarTransacao(Transacao transacao)
         {
             return await _transacaoRepository.Criar(transacao);
