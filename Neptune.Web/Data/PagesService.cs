@@ -28,6 +28,7 @@ namespace Neptune.Web.Data
 
             return meses;
         }
+
         public async Task<List<Transacao>> ObterTodasTransacoes()
         {
             var transacoes = await _transacaoService.ObterTodas();

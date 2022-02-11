@@ -27,7 +27,7 @@ namespace Neptune.Infra
 
             ////// jan
             //_transacoes.Add(new Transacao(3, DateTime.Now.AddMonths(-2), "Lorem NOVEMBRO 2021", 0, corrente));
-            _transacoes.Add(new Transacao(GetNextId(), DateTime.Now.AddMonths(-1), "transacaoooo", -10, corrente));
+            //_transacoes.Add(new Transacao(GetNextId(), DateTime.Now.AddMonths(-1), "transacaoooo", -10, corrente));
 
             //// fev
             _transacoes.Add(new Transacao(GetNextId(), DateTime.Now, "descricao", -10, corrente));
@@ -35,10 +35,10 @@ namespace Neptune.Infra
             _transacoes.Add(new Transacao(GetNextId(), DateTime.Now.AddDays(1), "transacao", 5, cartaoCredito));
 
             ////// mar
-            _transacoes.Add(new Transacao(GetNextId(), DateTime.Now.AddMonths(1).AddDays(-1), "xo xo xo xoxo", 11, poupanca));
-            _transacoes.Add(new Transacao(GetNextId(), DateTime.Now.AddMonths(1), "abcdef", -7, corrente));
-            _transacoes.Add(new Transacao(GetNextId(), DateTime.Now.AddMonths(1), "qwerty", 2, cartaoCredito));
-            _transacoes.Add(new Transacao(GetNextId(), DateTime.Now.AddMonths(1).AddDays(1), "qwerty", 2, cartaoCredito));
+            //_transacoes.Add(new Transacao(GetNextId(), DateTime.Now.AddMonths(1).AddDays(-1), "xo xo xo xoxo", 11, poupanca));
+            //_transacoes.Add(new Transacao(GetNextId(), DateTime.Now.AddMonths(1), "abcdef", -7, corrente));
+            //_transacoes.Add(new Transacao(GetNextId(), DateTime.Now.AddMonths(1), "qwerty", 2, cartaoCredito));
+            //_transacoes.Add(new Transacao(GetNextId(), DateTime.Now.AddMonths(1).AddDays(1), "qwerty", 2, cartaoCredito));
             //_transacoes.Add(new Transacao(GetNextId(), DateTime.Now, "compra", 0, cartaoCredito));
 
 
