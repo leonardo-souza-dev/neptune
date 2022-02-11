@@ -4,6 +4,7 @@
 
 @inject ITransacaoService _transacaoService
 @inject IContaService _contaService
+@inject ICategoriaService _categoriaService
 
 <div id="tudo" style="height: 100vh;width:60%;"@onmousedown="MouseDown" >
     <div id="coluna" style="width: 190px;">
@@ -38,11 +39,22 @@
             </div>
             
             <ul style="float: left;" >
-                <li style="font: normal 11px arial,tahoma,helvetica,sans-serif;">adasd</li>
-                <li style="font: normal 11px arial,tahoma,helvetica,sans-serif;">adasd</li>
-                <li style="font: normal 11px arial,tahoma,helvetica,sans-serif;">adasd</li>
-                <li style="font: normal 11px arial,tahoma,helvetica,sans-serif;">adasd</li>
-                <li style="font: normal 11px arial,tahoma,helvetica,sans-serif;">adasd</li>
+                @foreach(var nivel1 in _categorias.Where(x => x.CategoriaPai == null))
+                {
+                    <li style="font: normal 11px arial,tahoma,helvetica,sans-serif;">@nivel1.Descricao</li>
+                    <ul style="float: left;" >
+                    @foreach(var nivel2 in _categorias.Where(x => x.CategoriaPai == nivel1.Id))
+                    {
+                        <li style="font: normal 11px arial,tahoma,helvetica,sans-serif;">@nivel2.Descricao</li>
+                        <ul style="float: left;" >
+                        @foreach(var nivel3 in _categorias.Where(x => x.CategoriaPai == nivel2.Id))
+                        {
+                            <li style="font: normal 11px arial,tahoma,helvetica,sans-serif;">@nivel3.Descricao</li>
+                        }
+                        </ul>
+                    }
+                    </ul>
+                }
             </ul>
         </div>
     </div>
@@ -224,8 +236,10 @@
 
 @code {
     private List<Transacao> _transacoes;
-    private IEnumerable<Transacao> _transacoesMesContas => _transacoes.DistinctBy(x => x.Id).Where(t => t.Data.Year == _dataMes.Ano && t.Data.Month == _dataMes.Mes && t.Conta.Selecionada).Distinct();
+    private List<Categoria> _categorias;    
     private List<Conta> _contas;
+
+    private IEnumerable<Transacao> _transacoesMesContas => _transacoes.DistinctBy(x => x.Id).Where(t => t.Data.Year == _dataMes.Ano && t.Data.Month == _dataMes.Mes && t.Conta.Selecionada).Distinct();
 
     private bool mouseOverNovaTransacao;
     private bool modoAdicionarTransacao = false;
@@ -252,6 +266,7 @@
         _contas = await _contaService.ObterTodas();
         _contas.ForEach(x => x.SetarSelecionada(true));
         _transacoes = await _transacaoService.ObterTodas();
+        _categorias = await _categoriaService.ObterTodas();
     }
 
     protected override async Task OnParametersSetAsync()

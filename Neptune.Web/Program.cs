@@ -12,6 +12,7 @@ builder.Services.AddSingleton<ITransacaoService, TransacaoService>();
 builder.Services.AddSingleton<IContaService, ContaService>();
 builder.Services.AddSingleton<ITransacaoRepository, TransacaoRepository>();
 builder.Services.AddSingleton<IContaRepository, ContaRepository>();
+builder.Services.AddSingleton<ICategoriaService, CategoriaService>();
 
 var app = builder.Build();
 
