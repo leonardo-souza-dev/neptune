@@ -15,14 +15,27 @@ namespace Neptune.Web.Data
             _contaService = contaService;
         }
 
-        public async Task<Meses> ObterMeses(List<Conta> contas)
+        public async Task<Meses> ObterMeses_old(List<Conta> contas)
+        {
+            var meses = await _transacaoService.ObterMeses_old(contas);
+
+            return meses;
+        }
+
+        public async Task<Meses2> ObterMeses(List<Conta> contas)
         {
             var meses = await _transacaoService.ObterMeses(contas);
 
             return meses;
         }
+        public async Task<List<Transacao>> ObterTodasTransacoes()
+        {
+            var transacoes = await _transacaoService.ObterTodas();
 
-        public async Task<string> AdicionarTransacao(Meses meses, Transacao novaTransacao)
+            return transacoes;
+        }
+
+        public async Task<string> AdicionarTransacao_old(Meses meses, Transacao novaTransacao)
         {
             string mensagem = "";
             try
@@ -42,8 +55,32 @@ namespace Neptune.Web.Data
             catch (Exception ex)
             {
                 mensagem = ex.Message;
-            }            
-            
+            }
+
+            return mensagem;
+        }
+        public async Task<string> AdicionarTransacao(Meses2 meses, Transacao novaTransacao)
+        {
+            string mensagem = "";
+            try
+            {
+                Transacao transacaoPersistida = await _transacaoService.AdicionarTransacao(novaTransacao);
+
+                if (transacaoPersistida.Id > 0)
+                {
+                    var mes = meses.ObterMes(new DataMes(novaTransacao.Data.Year, novaTransacao.Data.Month));
+                    mes.AdicionarTransacao(novaTransacao);
+
+                    mes.LimparNovaTransacao();
+
+                    return mensagem;
+                }
+            }
+            catch (Exception ex)
+            {
+                mensagem = ex.Message;
+            }
+
             return mensagem;
         }
 

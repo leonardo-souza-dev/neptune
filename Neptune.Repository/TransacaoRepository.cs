@@ -20,29 +20,32 @@ namespace Neptune.Infra
             var poupanca = contas[1];
             var cartaoCredito = contas[2];
 
-            //// setembro
+            //// dez
             //_transacoes.Add(new Transacao(1, DateTime.Now.AddMonths(-4), "Pgto conta", 0, corrente));
             //_transacoes.Add(new Transacao(2, DateTime.Now.AddMonths(-4).AddDays(1), "Deposito", 0, poupanca));
             //_transacoes.Add(new Transacao(2, DateTime.Now.AddMonths(-4).AddDays(2), "Compra", 0, cartaoCredito));
 
-            ////// novembro
+            ////// jan
             //_transacoes.Add(new Transacao(3, DateTime.Now.AddMonths(-2), "Lorem NOVEMBRO 2021", 0, corrente));
-            //_transacoes.Add(new Transacao(4, DateTime.Now.AddMonths(-2), "Lorem NOVEMBRO 2021", 0, poupanca));
+            _transacoes.Add(new Transacao(GetNextId(), DateTime.Now.AddMonths(-1), "Lorem JAN 2021", -10, corrente));
 
-            //// dezembro
+            //// fev
             //_transacoes.Add(new Transacao(5, DateTime.Now.AddMonths(-1), "conta", -10, corrente));
             //_transacoes.Add(new Transacao(6, DateTime.Now.AddMonths(-1), "aplicacao", 10, poupanca));
-            //_transacoes.Add(new Transacao(6, DateTime.Now.AddMonths(-1), "compra", -10, cartaoCredito));
+            _transacoes.Add(new Transacao(GetNextId(), DateTime.Now, "compra FEV", 5, corrente));
 
-            ////// TEMP - janeiro
+            ////// mar
+            ////// ontem
+            _transacoes.Add(new Transacao(GetNextId(), DateTime.Now.AddMonths(1).AddDays(-1), "estorno MAR", 11, corrente));
+
             ////// hoje
-            _transacoes.Add(new Transacao(GetNextId(), DateTime.Now, "estorno conta", 1, corrente));
-            //_transacoes.Add(new Transacao(GetNextId(), DateTime.Now, "aplicacao", 1, poupanca));
+            _transacoes.Add(new Transacao(GetNextId(), DateTime.Now.AddMonths(1), "transacao x MAR", -7, corrente));
+            _transacoes.Add(new Transacao(GetNextId(), DateTime.Now.AddMonths(1), "aplicacao MAR", 2, corrente));
             //_transacoes.Add(new Transacao(GetNextId(), DateTime.Now, "compra", 0, cartaoCredito));
 
 
             ////// amanha
-            //_transacoes.Add(new Transacao(9, DateTime.Now.AddDays(1), "Lorem", 0, corrente));
+            //_transacoes.Add(new Transacao(GetNextId(), DateTime.Now.AddDays(1), "Lorem", 1, corrente));
             //_transacoes.Add(new Transacao(10, DateTime.Now.AddDays(1), "Lorem", 0, poupanca));
 
             ////// depois de amanha

@@ -1,4 +1,4 @@
-﻿@page "/"
+﻿@page "/bkp"
 @using System.Text
 @using System.Diagnostics
 @using System.Text.Json
@@ -7,14 +7,14 @@
 @inject NavigationManager NavManager
 @inject PagesService _pagesService
 
-<div id="tudo" style="height: 100vh;" >
+<div id="tudo" style="height: 100vh;" @onmousedown="MouseDown">
     <div id="selecao-contas" style="display: block;float: left;width: 210px;">
         <div>
             Contas
         </div>
             
         <ul style="float: left;" >            
-            @foreach (var conta in _contas)
+            @foreach (var conta in contas)
             {
                 <EditForm Model="conta">
                     <li>
@@ -36,7 +36,7 @@
     <div id="navegacao-e-transacoes" style="margin:8px;display: grid;"  >
         <div id="navegacao">
             <button @onclick="IrParaMesAnterior" >anterior</button>
-            @*<span>Mês nº @mesAtual.NumMes</span>*@
+            <span>Mês nº @mesAtual.NumMes</span>
             <button @onclick="IrParaMesSeguinte" >seguinte</button>
         </div>
         <div id="adicionar-transacao" style="margin: 8px;">
@@ -46,7 +46,7 @@
             @mensagem 
         </div>
         
-        @*@if (modoAdicionarTransacao)
+        @if (modoAdicionarTransacao)
         {
             <EditForm Model="mesAtual.NovaTransacao">
                 <div id="nova-transacao" style="float:left;margin:8px;width:100%;" @onmouseover="@(() => mouseOverNovaTransacao = true)" @onmouseout="@(() => mouseOverNovaTransacao = false)" >
@@ -122,7 +122,7 @@
                     </table>
                 </div>
             </EditForm>
-        }*@
+        }
 
         <div id="transacoes" style="float: left;margin: 8px;width: 100%;">
             <table class="table transacoes">
@@ -135,59 +135,44 @@
                     </tr>
                 </thead>
                 <tbody>
-                    @if (_transacoes != null && _transacoes.Any(x => x.Data.Year == dataMes.Ano && x.Data.Month == dataMes.Mes))
+                    <tr>
+                        <th colspan="6" style="text-align: right;">
+                            Saldo no dia @mesAtual.UltimoDiaMesAnterior: R$ @FormatarMoeda(mesAtual.SaldoFinalUltimoDiaMesAnterior.Valor)
+                        </th>
+                    </tr>
+
+                    @if (mesAtual.Dias != null && mesAtual.Dias.Any())
                     {
-                        var transacoesDesteMes = _transacoes.Where(x => x.Data.Year == dataMes.Ano && x.Data.Month == dataMes.Mes).GroupBy(x => x.Data);
-
-                        var transacoesAnteriores = _transacoes.Where(x => x.Data.Year == dataMes.Ano && x.Data.Month < dataMes.Mes);
-                        var somaTransacoesAnteriores = transacoesAnteriores.Sum(x => x.Valor);
-                        var saldoInicialContas = _contas.Sum(x => x.SaldoInicial);
-                        var saldoFinalUltimoDiaMesAnterior = saldoInicialContas + somaTransacoesAnteriores;
-
-                        <tr>
-                            <th colspan="6" style="text-align: right;">
-                                Saldo no dia @dataMes.UltimoDiaDoMesAnterior: R$ @FormatarMoeda(saldoFinalUltimoDiaMesAnterior)
-                            </th>
-                        </tr>
-                        
-                        decimal saldoTemp = saldoFinalUltimoDiaMesAnterior;
-
-                        @foreach (var dia in transacoesDesteMes)
+                        @foreach (var dia in mesAtual.DiasExibicao)
                         {
                             <tr>
-                                <td colspan="4">@dia.Key.ToString("dd/MM/yyyy")</td>
+                                <td colspan="4">@dia.Data.ToString("dd/MM/yyyy")</td>
                             </tr>
-
-                            decimal somaTransacoesDia = dia.Sum(x => x.Valor);
-                            saldoTemp += somaTransacoesDia; 
-
-                            @foreach (var t in dia)
+                            @foreach (var transacao in dia.TransacoesExibicao)
                             {
                                 <tr style="background-color: #cccccc">
-                                    <td>@t.Descricao</td>
-                                    <td>@t.Categoria</td>
+                                    <td>@transacao.Descricao</td>
+                                    <td>@transacao.Categoria</td>
                                     <td>
                                         <select style="background: #cccccc;color: #000;border: 2px solid #cccccc;-webkit-appearance: none;" disabled="disabled">
-                                            @foreach (var c in _contas)
+                                            @foreach(var c in contas)
                                             {
-                                                if (c.Id == t.Conta.Id)
+                                                if (c.Id == transacao.Conta.Id)
                                                 {
                                                     <option selected>@c.Nome</option>
                                                 }
                                                 else
                                                 {
-                                                    <option>@c.Nome</option>
+                                                    <option>@c.Nome</option>                                                    
                                                 }
                                             }
                                         </select>
                                     </td>
-                                    <td>R$ @FormatarMoeda(t.Valor)</td>
+                                    <td>R$ @FormatarMoeda(transacao.Valor)</td>
                                 </tr>
                             }
-
-
                             <tr>
-                                <td colspan="4" style="text-align: right;">Saldo do dia: R$ @FormatarMoeda(saldoTemp)</td>
+                                <td colspan="4" style="text-align: right;">Saldo do dia: R$ @FormatarMoeda(dia.SaldoFinalDoDia.Valor)</td>
                             </tr>
                         }
                     }
@@ -200,12 +185,6 @@
 </div>
 
 @code {
-
-    private decimal ObterSaldoFinalDoDia(object x)
-    {
-        return 0.2M;
-    }
-
     [JSInvokable]
     public static void ChamaDotNet(JsonElement valor)
     {
@@ -218,15 +197,13 @@
         return (valor.ToString().Contains(".") || valor.ToString().Contains(",")) ? valor.ToString() : valor + ",00";
     }
 
-    private List<Transacao> _transacoes;
-    private List<Conta> _contas;
+    private Meses meses;
+    private List<Conta> contas;
 
     private static decimal novaTransacaoValor;
 
     private List<string> digitosValor = new List<string>();
     private string valorrr = "0,00";
-
-    
 
     async Task DigitouValor(KeyboardEventArgs e)
     {
@@ -270,15 +247,15 @@
             }
 
             valorrr = novaParteInteira.ToString() + "," + sb.ToString().Split(",")[1];
-        });
+    });
     }
 
     private DataMes dataMes;
 
-    //private string navMesAnterior => (NavManager.BaseUri + mesAtual.NavMesAnterior);
-    //private string navMesSeguinte => (NavManager.BaseUri + mesAtual.NavMesSeguinte);
+    private string navMesAnterior => (NavManager.BaseUri + mesAtual.NavMesAnterior);
+    private string navMesSeguinte => (NavManager.BaseUri + mesAtual.NavMesSeguinte);
 
-    //private Mes mesAtual => meses.MesList.FirstOrDefault(x => x.DataMes.Equals(dataMes));
+    private Mes mesAtual => meses.ObterMes(dataMes);
 
     private bool mouseOverNovaTransacao;
     private bool modoAdicionarTransacao = false;
@@ -287,11 +264,11 @@
 
     protected override async Task OnInitializedAsync()
     {
-        dataMes = new DataMes(DateTime.Now.Year, DateTime.Now.Month + 1);
+        dataMes = new DataMes(DateTime.Now.Year, DateTime.Now.Month);
 
-        _contas = await _pagesService.ObterContas();
-        _contas.ForEach(x => x.SetarSelecionada(true));
-        _transacoes = await _pagesService.ObterTodasTransacoes();
+        contas = await _pagesService.ObterContas();
+        contas.ForEach(x => x.SetarSelecionada(true));
+        meses = await _pagesService.ObterMeses_old(contas);
     }
 
     protected override async Task OnParametersSetAsync()
@@ -301,23 +278,23 @@
 
     void IrParaMesAnterior()
     {
-        //var numMesAnterior = mesAtual.DataMes.NumMesAnterior;
-        //var numAnoMesAnteior = mesAtual.DataMes.NumAnoDoMesAnterior;
-        //dataMes = new DataMes(numAnoMesAnteior, numMesAnterior);
+        var numMesAnterior = mesAtual.DataMes.NumMesAnterior;
+        var numAnoMesAnteior = mesAtual.DataMes.NumAnoDoMesAnterior;
+        dataMes = new DataMes(numAnoMesAnteior, numMesAnterior);
     }
 
     void IrParaMesSeguinte()
     {
-        //var numMesSeguinte = mesAtual.DataMes.NumMesSeguinte;
-        //var numAnoMesSeguinte = mesAtual.DataMes.NumAnoDoMesSeguinte;
-        //dataMes = new DataMes(numAnoMesSeguinte, numMesSeguinte);
+        var numMesSeguinte = mesAtual.DataMes.NumMesSeguinte;
+        var numAnoMesSeguinte = mesAtual.DataMes.NumAnoDoMesSeguinte;
+        dataMes = new DataMes(numAnoMesSeguinte, numMesSeguinte);
     }
 
     async Task ContaClick(int id, bool selecionada)
     {
         await Task.Run(() =>
         {
-            var conta = _contas.First(x => x.Id == id);
+            var conta = contas.First(x => x.Id == id);
             conta.SetarSelecionada(selecionada);
         });
     }
@@ -330,25 +307,25 @@
         });
     }
 
-    //async Task MouseDown()
-    //{
-    //    if (!mouseOverNovaTransacao && modoAdicionarTransacao)
-    //    {
-    //        if (mesAtual.NovaTransacao.NovaTransacaoEhValida())
-    //        {
-    //            var conta = contas.First(x => x.Id == mesAtual.NovaTransacao.ContaId);
-    //            mesAtual.NovaTransacao.Conta = conta;
-    //            mesAtual.NovaTransacao.Valor = novaTransacaoValor;
-    //            var resultadoMensagem = await _pagesService.AdicionarTransacao(meses, mesAtual.NovaTransacao);
+    async Task MouseDown()
+    {
+        if (!mouseOverNovaTransacao && modoAdicionarTransacao)
+        {
+            if (mesAtual.NovaTransacao.NovaTransacaoEhValida())
+            {
+                var conta = contas.First(x => x.Id == mesAtual.NovaTransacao.ContaId);
+                mesAtual.NovaTransacao.Conta = conta;
+                mesAtual.NovaTransacao.Valor = novaTransacaoValor;
+                var resultadoMensagem = await _pagesService.AdicionarTransacao_old(meses, mesAtual.NovaTransacao);
 
-    //            if (!string.IsNullOrEmpty(resultadoMensagem))
-    //                mensagem = $"Ocorreu um erro ao adicionar a transacao {resultadoMensagem}";
-    //        }
-    //        else
-    //        {
-    //            mesAtual.NovaTransacao = new();
-    //        }
-    //        modoAdicionarTransacao = false;
-    //    }
-    //} 
+                if (!string.IsNullOrEmpty(resultadoMensagem))
+                    mensagem = $"Ocorreu um erro ao adicionar a transacao {resultadoMensagem}";
+            }
+            else
+            {
+                mesAtual.NovaTransacao = new();
+            }
+            modoAdicionarTransacao = false;
+        }
+    } 
 }
