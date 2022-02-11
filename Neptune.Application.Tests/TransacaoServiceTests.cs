@@ -1,25 +1,16 @@
-using NUnit.Framework;
-using Neptune.Application;
-using Neptune.Infra;
 using Moq;
 using Neptune.Domain;
-using System.Collections.Generic;
+using Neptune.Infra;
+using NUnit.Framework;
 using System;
+using System.Collections.Generic;
 using System.Threading.Tasks;
 
 namespace Neptune.Application.Tests
 {
     public class TransacaoServiceTests
     {
-        private Mock<ITransacaoRepository> _transacaoRepository;
-        private Mock<IContaRepository> _contaRepository;
-
-        [SetUp]
-        public void Setup()
-        {
-            _transacaoRepository = new Mock<ITransacaoRepository>();
-            _contaRepository = new Mock<IContaRepository>();
-        }
+        private readonly Mock<ITransacaoRepository> _transacaoRepository = new();
 
         [Test]
         public async Task DeveObterMeses()
@@ -44,7 +35,7 @@ namespace Neptune.Application.Tests
                 new Transacao(2, new DateTime(numAno, numMes, 25), "rendimento", 100, contaPoupanca)
             };
             _transacaoRepository.Setup(x => x.ObterTodas()).Returns(Task.FromResult(transacoes));
-            var sut = new TransacaoService(_transacaoRepository.Object, _contaRepository.Object);
+            var sut = new TransacaoService(_transacaoRepository.Object);
 
             // act
             var meses = await sut.ObterMeses(contas);
