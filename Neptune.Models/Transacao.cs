@@ -11,7 +11,7 @@ namespace Neptune.Domain
         public string Categoria { get; set; }
         public decimal Valor { get; set; }
         public Conta Conta { get; set; }
-        public int ContaId { get; set; }
+        public int ContaId => Conta.Id;
 
         public Transacao(int id, DateTime data, string descricao, decimal valor, Conta conta)
         {

@@ -36,11 +36,11 @@ namespace Neptune.Infra
 
             ////// mar
             ////// ontem
-            _transacoes.Add(new Transacao(GetNextId(), DateTime.Now.AddMonths(1).AddDays(-1), "estorno MAR", 11, corrente));
+            _transacoes.Add(new Transacao(GetNextId(), DateTime.Now.AddMonths(1).AddDays(-1), "estorno MAR", 11, poupanca));
 
             ////// hoje
             _transacoes.Add(new Transacao(GetNextId(), DateTime.Now.AddMonths(1), "transacao x MAR", -7, corrente));
-            _transacoes.Add(new Transacao(GetNextId(), DateTime.Now.AddMonths(1), "aplicacao MAR", 2, corrente));
+            _transacoes.Add(new Transacao(GetNextId(), DateTime.Now.AddMonths(1), "aplicacao MAR", 2, cartaoCredito));
             //_transacoes.Add(new Transacao(GetNextId(), DateTime.Now, "compra", 0, cartaoCredito));
 
 

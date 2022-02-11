@@ -11,6 +11,8 @@ namespace Neptune.Domain
         public decimal SaldoInicial { get; private set; }
         public bool Selecionada { get; private set; }
 
+        public Guid Guid { get; private set; } = Guid.NewGuid();
+
         public Conta(int id, string nome, decimal saldoInicial, bool selecionada)
         {
             Id = id;
