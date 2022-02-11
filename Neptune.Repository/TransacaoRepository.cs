@@ -32,15 +32,13 @@ namespace Neptune.Infra
             //// fev
             _transacoes.Add(new Transacao(GetNextId(), DateTime.Now, "descricao", -10, corrente));
             _transacoes.Add(new Transacao(GetNextId(), DateTime.Now, "zxcvb", 10, poupanca));
-            _transacoes.Add(new Transacao(GetNextId(), DateTime.Now, "transacao", 5, cartaoCredito));
+            _transacoes.Add(new Transacao(GetNextId(), DateTime.Now.AddDays(1), "transacao", 5, cartaoCredito));
 
             ////// mar
-            ////// ontem
             _transacoes.Add(new Transacao(GetNextId(), DateTime.Now.AddMonths(1).AddDays(-1), "xo xo xo xoxo", 11, poupanca));
-
-            ////// hoje
             _transacoes.Add(new Transacao(GetNextId(), DateTime.Now.AddMonths(1), "abcdef", -7, corrente));
             _transacoes.Add(new Transacao(GetNextId(), DateTime.Now.AddMonths(1), "qwerty", 2, cartaoCredito));
+            _transacoes.Add(new Transacao(GetNextId(), DateTime.Now.AddMonths(1).AddDays(1), "qwerty", 2, cartaoCredito));
             //_transacoes.Add(new Transacao(GetNextId(), DateTime.Now, "compra", 0, cartaoCredito));
 
 
@@ -81,6 +79,7 @@ namespace Neptune.Infra
                                          transacao.Conta);
 
             _transacoes.Add(novaEntidade);
+            _transacoes.Sort((x, y) => x.Data.CompareTo(y.Data));
 
             return novaEntidade;
         }

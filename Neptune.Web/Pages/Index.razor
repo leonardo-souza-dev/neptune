@@ -146,14 +146,21 @@
                                 Saldo no dia @_dataMes.UltimoDiaDoMesAnteriorFormat: R$ @FormatarMoeda(saldoFinalUltimoDiaMesAnterior)
                             </th>
                         </tr>
-                        
-                        decimal saldoTemp = saldoFinalUltimoDiaMesAnterior;
+
+                        var saldoTemp = saldoFinalUltimoDiaMesAnterior;
+                        var dia = 0;
 
                         @foreach (var diaTransacoes in _transacoesMesContas.GroupBy(x => x.Data))
                         {
-                            <tr>
-                                <td colspan="4">@diaTransacoes.Key.ToString("dd/MM/yyyy")</td>
-                            </tr>
+                            var diaDiferente = dia != diaTransacoes.Key.Day;
+                            if (diaDiferente)
+                            {
+                                <tr>
+                                    <td colspan="4">DAtA => @diaTransacoes.Key.ToString("dd/MM/yyyy")</td>
+                                </tr>
+
+                                dia = diaTransacoes.Key.Day;
+                            }
 
                             decimal somaTransacoesDia = diaTransacoes.Sum(x => x.Valor);
                             saldoTemp += somaTransacoesDia; 
@@ -182,10 +189,12 @@
                                 </tr>
                             }
 
-
-                            <tr>
-                                <td colspan="4" style="text-align: right;">Saldo do dia: R$ @FormatarMoeda(saldoTemp)</td>
-                            </tr>
+                            if (diaDiferente)
+                            {
+                                <tr>
+                                    <td colspan="4" style="text-align: right;">Saldo do dia: R$ @FormatarMoeda(saldoTemp)</td>
+                                </tr>
+                            }
                         }
                 }
                 </tbody>
@@ -217,6 +226,8 @@
     private string navMesAnterior => (NavManager.BaseUri + $"?ano={_dataMes.NumAnoDoMesAnterior}&mes={_dataMes.NumMesAnterior}");
     private string navMesSeguinte => (NavManager.BaseUri + $"?ano={_dataMes.NumAnoDoMesSeguinte}&mes={_dataMes.NumMesSeguinte}");
 
+
+
     protected override async Task OnInitializedAsync()
     {
         _dataMes = new DataMes(DateTime.Now.Year, DateTime.Now.Month);
@@ -224,51 +235,6 @@
         _contas = await _pagesService.ObterContas();
         _contas.ForEach(x => x.SetarSelecionada(true));
         _transacoes = await _pagesService.ObterTodasTransacoes();
-    }
-
-    async Task DigitouValor(KeyboardEventArgs e)
-    {
-        await Task.Run(() =>
-        {
-        });
-    }
-
-    async Task DigitandoValor(KeyboardEventArgs e)
-    {
-        await Task.Run(() =>
-        {
-            if (!int.TryParse(e.Key, out int n))
-            {
-
-                string valor2 = valorrr;
-                valorrr = valor2;
-                return;
-            }
-
-            string texto = e.Key;
-            valorrr = valorrr + texto;
-
-            var sb = new StringBuilder();
-            var valorrrSemVirgula = valorrr.Replace(",", "");
-            var tamanho = valorrrSemVirgula.Count();
-            for (var i = 0; i < tamanho; i++)
-            {
-                if (i == tamanho - 2)
-                    sb.Append(",");
-
-                sb.Append(valorrrSemVirgula[i]);
-            }
-            var parteInteira = sb.ToString().Split(",")[0].ToCharArray();
-
-            var novaParteInteira = sb.ToString().Split(",")[0].TrimStart('0');
-
-            if (string.IsNullOrEmpty(novaParteInteira))
-            {
-                novaParteInteira = "0";
-            }
-
-            valorrr = novaParteInteira.ToString() + "," + sb.ToString().Split(",")[1];
-        });
     }
 
     protected override async Task OnParametersSetAsync()
@@ -290,12 +256,9 @@
         _dataMes = new DataMes(numAnoMesSeguinte, numMesSeguinte);
     }
 
-    async Task AdicionarTransacao()
+    void AdicionarTransacao()
     {
-        await Task.Run(() =>
-        {
-            modoAdicionarTransacao = true;
-        });
+        modoAdicionarTransacao = true;
     }
 
     private decimal ObterSaldoFinalDoDia(object x)

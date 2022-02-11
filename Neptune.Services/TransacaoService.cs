@@ -11,12 +11,10 @@ namespace Neptune.Application
     public class TransacaoService : ITransacaoService
     {
         private readonly ITransacaoRepository _transacaoRepository;
-        private readonly IContaRepository _contaRepository;
 
-        public TransacaoService(ITransacaoRepository transacaoRepository, IContaRepository contaRepository)
+        public TransacaoService(ITransacaoRepository transacaoRepository)
         {
             _transacaoRepository = transacaoRepository;
-            _contaRepository = contaRepository;
         }
 
         public async Task<List<Transacao>> ObterTodas()
