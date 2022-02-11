@@ -135,55 +135,58 @@
                     </tr>
                 </thead>
                 <tbody>
-               @{
-                    var saldoFinalUltimoDiaMesAnterior = ObterSaldoFinalUltimoDiaMesAnterior();
+                    @{
+                        var transacoesAnteriores = _transacoes.Where(x => x.Data.Year == dataMes.Ano && x.Data.Month < dataMes.Mes && x.Conta.Selecionada);
+                        var somaTransacoesAnteriores = transacoesAnteriores.Sum(x => x.Valor);
+                        var saldoInicialContas = _contas.Where(x => x.Selecionada).Sum(x => x.SaldoInicial);
+                        var saldoFinalUltimoDiaMesAnterior = saldoInicialContas + somaTransacoesAnteriores;
 
-                    <tr>
-                        <th colspan="6" style="text-align: right;">
-                            Saldo no dia @dataMes.UltimoDiaDoMesAnterior: R$ @FormatarMoeda(ObterSaldoFinalUltimoDiaMesAnterior())
-                        </th>
-                    </tr>
-                        
-                    decimal saldoTemp = saldoFinalUltimoDiaMesAnterior;
-
-                    @foreach (var diaTransacoes in _transacoesMesContas.GroupBy(x => x.Data))
-                    {
                         <tr>
-                            <td colspan="4">@diaTransacoes.Key.ToString("dd/MM/yyyy")</td>
+                            <th colspan="6" style="text-align: right;">
+                                Saldo no dia @dataMes.UltimoDiaDoMesAnterior: R$ @FormatarMoeda(saldoFinalUltimoDiaMesAnterior)
+                            </th>
                         </tr>
+                        
+                        decimal saldoTemp = saldoFinalUltimoDiaMesAnterior;
 
-                        decimal somaTransacoesDia = diaTransacoes.Sum(x => x.Valor);
-                        saldoTemp += somaTransacoesDia; 
-
-                        @foreach (var t in diaTransacoes)
+                        @foreach (var diaTransacoes in _transacoesMesContas.GroupBy(x => x.Data))
                         {
-                            <tr style="background-color: #cccccc">
-                                <td>@t.Descricao --- GUID-Conta @t.Conta.Guid --- TransacaoId @t.Id</td>
-                                <td>@t.Categoria</td>
-                                <td>
-                                    <select style="background: #cccccc;color: #000;border: 2px solid #cccccc;-webkit-appearance: none;" disabled="disabled">
-                                        @foreach (var c in _contas)
-                                        {
-                                            if (c.Id == t.Conta.Id)
+                            <tr>
+                                <td colspan="4">@diaTransacoes.Key.ToString("dd/MM/yyyy")</td>
+                            </tr>
+
+                            decimal somaTransacoesDia = diaTransacoes.Sum(x => x.Valor);
+                            saldoTemp += somaTransacoesDia; 
+
+                            @foreach (var t in diaTransacoes)
+                            {
+                                <tr style="background-color: #cccccc">
+                                    <td>@t.Descricao --- GUID-Conta @t.Conta.Guid --- TransacaoId @t.Id</td>
+                                    <td>@t.Categoria</td>
+                                    <td>
+                                        <select style="background: #cccccc;color: #000;border: 2px solid #cccccc;-webkit-appearance: none;" disabled="disabled">
+                                            @foreach (var c in _contas)
                                             {
-                                                <option selected>@c.Nome</option>
+                                                if (c.Id == t.Conta.Id)
+                                                {
+                                                    <option selected>@c.Nome</option>
+                                                }
+                                                else
+                                                {
+                                                    <option>@c.Nome</option>
+                                                }
                                             }
-                                            else
-                                            {
-                                                <option>@c.Nome</option>
-                                            }
-                                        }
-                                    </select>
-                                </td>
-                                <td>R$ @FormatarMoeda(t.Valor)</td>
+                                        </select>
+                                    </td>
+                                    <td>R$ @FormatarMoeda(t.Valor)</td>
+                                </tr>
+                            }
+
+
+                            <tr>
+                                <td colspan="4" style="text-align: right;">Saldo do dia: R$ @FormatarMoeda(saldoTemp)</td>
                             </tr>
                         }
-
-
-                        <tr>
-                            <td colspan="4" style="text-align: right;">Saldo do dia: R$ @FormatarMoeda(saldoTemp)</td>
-                        </tr>
-                    }
                 }
                 </tbody>
             </table>
@@ -219,7 +222,7 @@
 
     protected override async Task OnInitializedAsync()
     {
-        dataMes = new DataMes(DateTime.Now.Year, DateTime.Now.Month + 1);
+        dataMes = new DataMes(DateTime.Now.Year, DateTime.Now.Month);
 
         _contas = await _pagesService.ObterContas();
         _contas.ForEach(x => x.SetarSelecionada(true));
@@ -304,14 +307,6 @@
         {
             modoAdicionarTransacao = true;
         });
-    }
-
-    private decimal ObterSaldoFinalUltimoDiaMesAnterior()
-    {
-        var transacoesAnteriores = _transacoes.Where(x => x.Data.Year == dataMes.Ano && x.Data.Month < dataMes.Mes);
-        var somaTransacoesAnteriores = transacoesAnteriores.Sum(x => x.Valor);
-        var saldoInicialContas = _contas.Sum(x => x.SaldoInicial);
-        return saldoInicialContas + somaTransacoesAnteriores;        
     }
 
     private decimal ObterSaldoFinalDoDia(object x)

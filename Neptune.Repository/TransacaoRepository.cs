@@ -23,24 +23,24 @@ namespace Neptune.Infra
             //// dez
             //_transacoes.Add(new Transacao(1, DateTime.Now.AddMonths(-4), "Pgto conta", 0, corrente));
             //_transacoes.Add(new Transacao(2, DateTime.Now.AddMonths(-4).AddDays(1), "Deposito", 0, poupanca));
-            //_transacoes.Add(new Transacao(2, DateTime.Now.AddMonths(-4).AddDays(2), "Compra", 0, cartaoCredito));
+            //_transacoes.Add(new Transacao(2, DateTime.Now.AddMonths(-4).AddDays(2), "Compra", 100, cartaoCredito));
 
             ////// jan
             //_transacoes.Add(new Transacao(3, DateTime.Now.AddMonths(-2), "Lorem NOVEMBRO 2021", 0, corrente));
-            _transacoes.Add(new Transacao(GetNextId(), DateTime.Now.AddMonths(-1), "Lorem JAN 2021", -10, corrente));
+            _transacoes.Add(new Transacao(GetNextId(), DateTime.Now.AddMonths(-1), "transacaoooo", -10, corrente));
 
             //// fev
-            //_transacoes.Add(new Transacao(5, DateTime.Now.AddMonths(-1), "conta", -10, corrente));
-            //_transacoes.Add(new Transacao(6, DateTime.Now.AddMonths(-1), "aplicacao", 10, poupanca));
-            _transacoes.Add(new Transacao(GetNextId(), DateTime.Now, "compra FEV", 5, corrente));
+            _transacoes.Add(new Transacao(GetNextId(), DateTime.Now, "descricao", -10, corrente));
+            _transacoes.Add(new Transacao(GetNextId(), DateTime.Now, "zxcvb", 10, poupanca));
+            _transacoes.Add(new Transacao(GetNextId(), DateTime.Now, "transacao", 5, cartaoCredito));
 
             ////// mar
             ////// ontem
-            _transacoes.Add(new Transacao(GetNextId(), DateTime.Now.AddMonths(1).AddDays(-1), "estorno MAR", 11, poupanca));
+            _transacoes.Add(new Transacao(GetNextId(), DateTime.Now.AddMonths(1).AddDays(-1), "xo xo xo xoxo", 11, poupanca));
 
             ////// hoje
-            _transacoes.Add(new Transacao(GetNextId(), DateTime.Now.AddMonths(1), "transacao x MAR", -7, corrente));
-            _transacoes.Add(new Transacao(GetNextId(), DateTime.Now.AddMonths(1), "aplicacao MAR", 2, cartaoCredito));
+            _transacoes.Add(new Transacao(GetNextId(), DateTime.Now.AddMonths(1), "abcdef", -7, corrente));
+            _transacoes.Add(new Transacao(GetNextId(), DateTime.Now.AddMonths(1), "qwerty", 2, cartaoCredito));
             //_transacoes.Add(new Transacao(GetNextId(), DateTime.Now, "compra", 0, cartaoCredito));
 
 
