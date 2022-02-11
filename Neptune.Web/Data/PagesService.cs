@@ -59,29 +59,10 @@ namespace Neptune.Web.Data
 
             return mensagem;
         }
-        public async Task<string> AdicionarTransacao(Meses2 meses, Transacao novaTransacao)
+
+        public async Task<Transacao> AdicionarTransacao(Transacao novaTransacao)
         {
-            string mensagem = "";
-            try
-            {
-                Transacao transacaoPersistida = await _transacaoService.AdicionarTransacao(novaTransacao);
-
-                if (transacaoPersistida.Id > 0)
-                {
-                    var mes = meses.ObterMes(new DataMes(novaTransacao.Data.Year, novaTransacao.Data.Month));
-                    mes.AdicionarTransacao(novaTransacao);
-
-                    mes.LimparNovaTransacao();
-
-                    return mensagem;
-                }
-            }
-            catch (Exception ex)
-            {
-                mensagem = ex.Message;
-            }
-
-            return mensagem;
+            return await _transacaoService.AdicionarTransacao(novaTransacao);
         }
 
         public async Task<List<Conta>> ObterContas()
