@@ -30,6 +30,7 @@ namespace Neptune.Domain
         {
             Descricao = "descricao";
             Conta = new Conta(0, "selecionada", 0, true);
+            Categoria = new Categoria(1, null, "sem categoria", true);
 
             return this;
         }
