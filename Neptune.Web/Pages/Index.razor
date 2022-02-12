@@ -13,10 +13,10 @@
                 Contas
             </div>
             
-            <ul style="float: left;" >            
+            <ul style="float: left;padding: 0px;padding-left: 16px;" >            
                 @foreach (var conta in _contas)
                 {
-                    <li style="font: normal 11px arial,tahoma,helvetica,sans-serif;">
+                    <li>
                         @if (conta.Selecionada)
                         {
                             <input type="checkbox" checked name="@conta.Id" @onchange="@(() => { conta.SetarSelecionada(false);})"/>
@@ -36,73 +36,73 @@
                 Categorias
             </div>
                     
-            <ul style="float: left;" >
+            <ul id="categorias-nivel-0" >
                 @foreach(var nivel0 in _categorias.Nivel0)
                 {
-                    <li style="font: normal 11px arial,tahoma,helvetica,sans-serif;">
-                    @if (nivel0.Selecionada)
-                    {
-                        <input type="checkbox" checked name="@nivel0.Id" @onchange="@(() => { nivel0.SetarSelecionada(false);})"/>
-                    }
-                    else
-                    {
-                        <input type="checkbox" name="@nivel0.Id" @onchange="@(() => { nivel0.SetarSelecionada(true);})"/>
-                    }
-                    @nivel0.Descricao
-                    </li>
-
-                    <ul style="float: left;" >
-                    @foreach(var nivel1 in nivel0.Filhos)
-                    {
-                        <li style="font: normal 11px arial,tahoma,helvetica,sans-serif;">
-                        @if (nivel1.Selecionada)
+                    <li id="categoria-nivel-0">
+                        @if (nivel0.Selecionada)
                         {
-                            <input type="checkbox" checked name="@nivel1.Id" @onchange="@(() => { nivel1.SetarSelecionada(false);})"/>
+                            <input type="checkbox" checked name="@nivel0.Id" @onchange="@(() => { nivel0.SetarSelecionada(false);})"/>
                         }
                         else
                         {
-                            <input type="checkbox" name="@nivel1.Id" @onchange="@(() => { nivel1.SetarSelecionada(true);})"/>
+                            <input type="checkbox" name="@nivel0.Id" @onchange="@(() => { nivel0.SetarSelecionada(true);})"/>
                         }
-                        @nivel1.Descricao
-                        </li>
-
-                        <ul style="float: left;" >
-                        @foreach(var nivel2 in nivel1.Filhos)
-                        {
-                            <li style="font: normal 11px arial,tahoma,helvetica,sans-serif;">
-                            @if (nivel2.Selecionada)
+                        @nivel0.Descricao
+                       
+                        <ul id="categorias-nivel-1" >
+                            @foreach(var nivel1 in nivel0.Filhos)
                             {
-                                <input type="checkbox" checked name="@nivel2.Id" @onchange="@(() => { nivel2.SetarSelecionada(false);})"/>
-                            }
-                            else
-                            {
-                                <input type="checkbox" name="@nivel2.Id" @onchange="@(() => { nivel2.SetarSelecionada(true);})"/>
-                            }
-                            @nivel2.Descricao
-                            </li>
+                                <li id="categoria-nivel-1">
+                                    @if (nivel1.Selecionada)
+                                    {
+                                        <input type="checkbox" checked id="cat-@nivel1.Id" @onchange="@(() => { nivel1.SetarSelecionada(false);})"/>
+                                    }
+                                    else
+                                    {
+                                        <input type="checkbox" id="cat-@nivel1.Id" @onchange="@(() => { nivel1.SetarSelecionada(true);})"/>
+                                    }
+                                    @nivel1.Descricao
+                                    
+                                    <ul id="categoria-nivel-2">
+                                        @foreach(var nivel2 in nivel1.Filhos)
+                                        {
+                                            <li id="categoria-nivel-2" >
+                                                @if (nivel2.Selecionada)
+                                                {
+                                                    <input type="checkbox" checked id="cat-@nivel2.Id" @onchange="@(() => { nivel2.SetarSelecionada(false);})"/>
+                                                }
+                                                else
+                                                {
+                                                    <input type="checkbox" id="cat-@nivel2.Id" @onchange="@(() => { nivel2.SetarSelecionada(true);})"/>
+                                                }
+                                                @nivel2.Descricao
 
-                            
-
-                            <ul style="float: left;" >
-                            @foreach(var nivel3 in nivel2.Filhos)
-                            {
-                                <li style="font: normal 11px arial,tahoma,helvetica,sans-serif;">
-                                @if (nivel3.Selecionada)
-                                {
-                                    <input type="checkbox" checked name="@nivel3.Id" @onchange="@(() => { nivel3.SetarSelecionada(false);})"/>
-                                }
-                                else
-                                {
-                                    <input type="checkbox" name="@nivel3.Id" @onchange="@(() => { nivel3.SetarSelecionada(true);})"/>
-                                }
-                                @nivel3.Descricao
+                                                
+                                                <ul id="categoria-nivel-3">
+                                                @foreach(var nivel3 in nivel2.Filhos)
+                                                {
+                                                    <li id="categoria-nivel-3">
+                                                    @if (nivel3.Selecionada)
+                                                    {
+                                                        <input type="checkbox" checked id="cat-@nivel3.Id" @onchange="@(() => { nivel3.SetarSelecionada(false);})"/>
+                                                    }
+                                                    else
+                                                    {
+                                                        <input type="checkbox" id="cat-@nivel3.Id" @onchange="@(() => { nivel3.SetarSelecionada(true);})"/>
+                                                    }
+                                                    @nivel3.Descricao
+                                                    </li>
+                                                }
+                                                </ul>
+                                            </li>
+                                        }
+                                    </ul>
                                 </li>
                             }
-                            </ul>
-                        }
-                        </ul>
-                    }
-                    </ul>
+                        </ul>                        
+                    </li>
+
                 }
             </ul>
         </div>
