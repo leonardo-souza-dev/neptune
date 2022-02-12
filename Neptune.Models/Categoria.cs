@@ -1,5 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 
 namespace Neptune.Domain
 {
@@ -24,8 +23,16 @@ namespace Neptune.Domain
         public void SetarSelecionada(bool selecao)
         {
             Selecionada = selecao;
-        }
 
+            foreach (var filho in Filhos)
+            {
+                filho.Selecionada = selecao;
+                foreach (var neto in filho.Filhos)
+                {
+                    neto.Selecionada = selecao;
+                }
+            }
+        }
         public void AdicionarFilhos(List<Categoria> categorias)
         {
             Filhos.AddRange(categorias);
