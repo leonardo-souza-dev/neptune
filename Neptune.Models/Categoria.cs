@@ -10,8 +10,6 @@ namespace Neptune.Domain
         public bool Selecionada { get; private set; }
         public List<Categoria> Filhos { get; private set; } = new List<Categoria>();
 
-        public bool EhNivel0 => !IdCategoriaPai.HasValue;
-
         public Categoria(int id, int? idCategoriaPai, string descricao, bool selecionada)
         {
             Id = id;

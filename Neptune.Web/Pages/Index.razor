@@ -6,7 +6,7 @@
 @inject IContaService _contaService
 @inject ICategoriaService _categoriaService
 
-<div id="tudo" style="height: 100vh;width:60%;"@onmousedown="MouseDown" >
+<div id="tudo" style="height: 100vh;width:60%;">
     <div id="coluna" style="width: 190px;">
         <div id="contas" style="display: block;float: left;width: 210px;">
             <div>
@@ -37,7 +37,7 @@
             </div>
                     
             <ul style="float: left;" >
-                @foreach(var nivel0 in _categorias)
+                @foreach(var nivel0 in _categorias.Nivel0)
                 {
                     <li style="font: normal 11px arial,tahoma,helvetica,sans-serif;">
                     @if (nivel0.Selecionada)
@@ -125,13 +125,29 @@
         @if (modoAdicionarTransacao)
         {
             <EditForm Model="_novaTransacao">
-                <div id="nova-transacao" style="float:left;margin:8px;width:100%;" @onmouseover="@(() => mouseOverNovaTransacao = true)" @onmouseout="@(() => mouseOverNovaTransacao = false)" >
+                <div id="nova-transacao" style="float:left;margin:8px;width:100%;">
                     <table class="table transacoes">
                         <tbody>
                             <tr style="background-color: #efefef">
                                 <td><input type="date" id="meeting-time" name="meeting-time" @bind-value="_novaTransacao.Data" min="2015-01-01" max="2050-01-01"></td>
                                 <td><input type="text" id="nova-transacao-descricao" @bind-value="_novaTransacao.Descricao" /></td>
-                                <td>Categoria</td>
+                                <td>
+                                    <select @bind="_novaTransacao.Categoria.Id">
+                                        <option selected value="0">Selecione</option>
+                                        @foreach(var c0 in _categorias.Nivel0)
+                                        {
+                                            <option value="@c0.Id">@c0.Descricao</option>
+                                            @foreach(var c1 in c0.Filhos)
+                                            {
+                                                <option value="@c1.Id">&nbsp;&nbsp;&nbsp;&nbsp;@c1.Descricao</option>
+                                                @foreach(var c2 in c1.Filhos)
+                                                {
+                                                    <option value="@c2.Id">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;@c2.Descricao</option>
+                                                }
+                                            }
+                                        }
+                                    </select>                                    
+                                </td>
                                 <td>
                                     <select @bind="_novaTransacao.Conta.Id">
                                         <option selected value="0">Selecione</option>
@@ -139,8 +155,7 @@
                                         {
                                             <option value="@c.Id">@c.Nome</option>
                                         }
-                                    </select>
-                                    
+                                    </select>                                    
                                 </td>
                                 <td>R$ 
                                     <input type="text" id="meu-campo-valor" value="0,00" onkeyup="chamaDotNet()" 
@@ -194,6 +209,9 @@
                                                                                                     }" 
                                                                                                     />
                                 </td>
+                                <td>
+                                    <button @onclick="SalvarTransacao">Salvar</button>
+                                </td>
                             </tr>
                         </tbody>
                     </table>
@@ -219,8 +237,7 @@
                                                              t.Categoria.Selecionada).ToList();
                         var transacoesMesAtual = transacoesMesAtualFilter.GroupBy(x => new { x.Data.Year, x.Data.Month, x.Data.Day });
 
-                        var somaTransacoesAnteriores = _transacoes?.Where(x => x.Data.Year == _dataMes.Ano && 
-                                                                               x.Data.Month < _dataMes.Mes && 
+                        var somaTransacoesAnteriores = _transacoes?.Where(x => x.Data.EhAntes(_dataMes) &&
                                                                                x.Conta.Selecionada && 
                                                                                x.Categoria.Selecionada)
                                                                    .Sum(x => x.Valor);
@@ -295,8 +312,9 @@
 
 @code {
     private List<Transacao>? _transacoes;
-    private List<Categoria>? _categorias;
+    private Categorias? _categorias;
     private List<Conta>? _contas;
+    private DataMes _dataMes;
 
     private bool mouseOverNovaTransacao;
     private bool modoAdicionarTransacao = false;
@@ -307,13 +325,8 @@
 
     private List<string> digitosValor = new List<string>();
     private string valorrr = "0,00";
-    private DataMes _dataMes;
 
     private Transacao? _novaTransacao = new Transacao().ObterNovaTransacao();
-
-    private string navMesAnterior => (NavManager.BaseUri + $"?ano={_dataMes.NumAnoDoMesAnterior}&mes={_dataMes.NumMesAnterior}");
-    private string navMesSeguinte => (NavManager.BaseUri + $"?ano={_dataMes.NumAnoDoMesSeguinte}&mes={_dataMes.NumMesSeguinte}");
-
 
     protected override async Task OnInitializedAsync()
     {
@@ -360,14 +373,14 @@
         return (valor.ToString().Contains(".") || valor.ToString().Contains(",")) ? valor.ToString() : valor + ",00";
     }
 
-    void MouseDown()
+    void SalvarTransacao()
     {
-        if (!mouseOverNovaTransacao && modoAdicionarTransacao)
+        if (modoAdicionarTransacao)
         {
             if (_novaTransacao != null && _novaTransacao.NovaTransacaoEhValida())
             {
-                var conta = _contas.First(x => x.Id == _novaTransacao.Conta.Id);
-                _novaTransacao.Conta = conta;
+                _novaTransacao.Conta = _contas.First(x => x.Id == _novaTransacao.Conta.Id);
+                _novaTransacao.Categoria = _categorias.ObterCategoria(_novaTransacao.Categoria.Id);
                 _novaTransacao.Valor = novaTransacaoValor;
                 var resultadoMensagem = _transacaoService.AdicionarTransacao(_novaTransacao).Result;
 
