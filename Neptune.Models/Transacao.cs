@@ -7,16 +7,17 @@ namespace Neptune.Domain
         public int Id { get; set; }
         public DateTime Data { get; set; } = DateTime.Now;
         public string Descricao { get; set; }
-        public string Categoria { get; set; }
+        public Categoria Categoria { get; set; }
         public decimal Valor { get; set; }
         public Conta Conta { get; set; }
         public int ContaId => Conta.Id;
 
-        public Transacao(int id, DateTime data, string descricao, decimal valor, Conta conta)
+        public Transacao(int id, DateTime data, string descricao, Categoria categoria, decimal valor, Conta conta)
         {
             Id = id;
             Data = data;
             Descricao = descricao;
+            Categoria = categoria;
             Valor = valor;
             Conta = conta;
         }
