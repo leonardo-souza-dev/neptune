@@ -1,4 +1,5 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 
 namespace Neptune.Domain
 {
@@ -9,6 +10,8 @@ namespace Neptune.Domain
         public string Descricao { get; private set; }
         public bool Selecionada { get; private set; }
         public List<Categoria> Filhos { get; private set; } = new List<Categoria>();
+
+        public Guid Guid { get; set; } = Guid.NewGuid();
 
         public Categoria(int id, int? idCategoriaPai, string descricao, bool selecionada)
         {
@@ -31,6 +34,7 @@ namespace Neptune.Domain
                 }
             }
         }
+
         public void AdicionarFilhos(List<Categoria> categorias)
         {
             Filhos.AddRange(categorias);

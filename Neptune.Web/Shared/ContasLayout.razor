@@ -1,0 +1,36 @@
+﻿<div id="contas" style="display: block;float: left;width: 210px;">
+    <div>
+        Contas
+    </div>
+            
+    <ul style="float: left;padding: 0px;padding-left: 16px;" >            
+        @foreach (var conta in Itens)
+        {
+            <li>
+                @if (conta.Selecionada)
+                {
+                    <input type="checkbox" checked name="@conta.Id" @onchange="@(() => Update(conta, false))"/>
+                }
+                else
+                {
+                    <input type="checkbox" name="@conta.Id" @onchange="@(() => Update(conta, true))"/>
+                }
+                @conta.Nome 
+            </li>
+        }
+    </ul>
+</div>
+
+@code {
+    [Parameter]
+    public List<Conta> Itens { get; set; }
+
+    [Parameter]
+    public EventCallback<List<Conta>> ItensChanged { get; set; }
+
+    async Task Update(Conta conta, bool selecao)
+    {
+        conta.SetarSelecionada(selecao);
+        await ItensChanged.InvokeAsync(Itens);
+    }
+}

@@ -57,5 +57,15 @@ namespace Neptune.Domain
 
             return categoria;
         }
+
+        public void SetarSelecionada(Categoria categoria, bool selecao)
+        {
+            var cat = Itens.FirstOrDefault(x => x.Id == categoria.Id);
+
+            if (cat != null)
+            {
+                cat.SetarSelecionada(selecao);
+            }
+        }
     }
 }

@@ -1,0 +1,87 @@
+﻿<div id="categorias" style="display: block;float: left;width: 210px;">
+    <div>
+        Categorias
+    </div>
+                    
+    <ul id="categorias-nivel-0" >
+        @foreach(var nivel0 in Itens.Nivel0)
+        {
+            <li id="categoria-nivel-0">
+                @if (nivel0.Selecionada)
+                {
+                    <input type="checkbox" checked name="@nivel0.Id" @onchange="@(() => Update(nivel0, false))"/>
+                }
+                else
+                {
+                    <input type="checkbox" name="@nivel0.Id" @onchange="@(() => Update(nivel0, true))"/>
+                }
+                @nivel0.Descricao
+                       
+                <ul id="categorias-nivel-1" >
+                    @foreach(var nivel1 in nivel0.Filhos)
+                    {
+                        <li id="categoria-nivel-1">
+                            @if (nivel1.Selecionada)
+                            {
+                                <input type="checkbox" checked id="cat-@nivel1.Id" @onchange="@(() => Update(nivel1, false))"/>
+                            }
+                            else
+                            {
+                                <input type="checkbox" id="cat-@nivel1.Id" @onchange="@(() => Update(nivel1, true))" />
+                            }
+                            @nivel1.Descricao
+                                    
+                            <ul id="categoria-nivel-2">
+                                @foreach(var nivel2 in nivel1.Filhos)
+                                {
+                                    <li id="categoria-nivel-2">
+                                        @if (nivel2.Selecionada)
+                                        {
+                                            <input type="checkbox" checked id="cat-@nivel2.Id" @onchange="@(() => Update(nivel2, false))" />
+                                        }
+                                        else
+                                        {
+                                            <input type="checkbox" id="cat-@nivel2.Id" @onchange="@(() => Update(nivel2, true))"/>
+                                        }
+                                        @nivel2.Descricao
+                                                
+                                        <ul id="categoria-nivel-3">
+                                            @foreach(var nivel3 in nivel2.Filhos)
+                                            {
+                                                <li id="categoria-nivel-3">
+                                                    @if (nivel3.Selecionada)
+                                                    {
+                                                        <input type="checkbox" checked id="cat-@nivel3.Id" @onchange="@(() => Update(nivel3, false))"/>
+                                                    }
+                                                    else
+                                                    {
+                                                        <input type="checkbox" id="cat-@nivel3.Id" @onchange="@(() => Update(nivel3, true))"/>
+                                                    }
+                                                    @nivel3.Descricao
+                                                </li>
+                                            }
+                                        </ul>
+                                    </li>
+                                }
+                            </ul>
+                        </li>
+                    }
+                </ul>                        
+            </li>
+        }
+    </ul>
+</div>
+
+@code {
+    [Parameter]
+    public Categorias? Itens { get; set; }
+
+    [Parameter]
+    public EventCallback<Categorias> ItensChanged { get; set; }
+
+    async Task Update(Categoria categoria, bool selecao)
+    {
+        categoria.SetarSelecionada(selecao);
+        await ItensChanged.InvokeAsync(Itens);
+    }
+}
