@@ -7,6 +7,6 @@ namespace Neptune.Application
 {
     public interface ICategoriaService
     {
-        Task<List<Categoria>> ObterTodas();
+        Task<List<Categoria>> ObterTodasComFilhos();
     }
 }

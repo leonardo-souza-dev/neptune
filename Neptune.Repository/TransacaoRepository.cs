@@ -10,49 +10,34 @@ namespace Neptune.Infra
     {
         private readonly List<Transacao> _transacoes = new();
         private readonly IContaRepository _contaRepository;
+        private readonly ICategoriaRepository _categoriaRepository;
 
-        public TransacaoRepository(IContaRepository contaRepository)
+        public TransacaoRepository(IContaRepository contaRepository, ICategoriaRepository categoriaRepository)
         {
             _contaRepository = contaRepository;
+            _categoriaRepository = categoriaRepository;
 
             var contas = _contaRepository.ObterTodas();
             var corrente = contas[0];
             var poupanca = contas[1];
             var cartaoCredito = contas[2];
 
-            //// dez
-            //_transacoes.Add(new Transacao(1, DateTime.Now.AddMonths(-4), "Pgto conta", 0, corrente));
-            //_transacoes.Add(new Transacao(2, DateTime.Now.AddMonths(-4).AddDays(1), "Deposito", 0, poupanca));
-            //_transacoes.Add(new Transacao(2, DateTime.Now.AddMonths(-4).AddDays(2), "Compra", 100, cartaoCredito));
+            var categorias = _categoriaRepository.ObterTodas();
+            var @base = categorias[0];
+            var semCategoria = categorias[1];
+            var basico = categorias[2];
+            var alimentacao = categorias[3];
+            var livre = categorias[4];
+            var lazer = categorias[5];
+            var casa = categorias[6];
 
-            ////// jan
-            //_transacoes.Add(new Transacao(3, DateTime.Now.AddMonths(-2), "Lorem NOVEMBRO 2021", 0, corrente));
-            //_transacoes.Add(new Transacao(GetNextId(), DateTime.Now.AddMonths(-1), "transacaoooo", -10, corrente));
+            // MES PASSADO
+            _transacoes.Add(new Transacao(GetNextId(), DateTime.Now.AddMonths(-1), "transacaoooo", casa, -10, corrente));
 
-            //// fev
-            _transacoes.Add(new Transacao(GetNextId(), DateTime.Now, "descricao", -10, corrente));
-            _transacoes.Add(new Transacao(GetNextId(), DateTime.Now, "zxcvb", 10, poupanca));
-            _transacoes.Add(new Transacao(GetNextId(), DateTime.Now.AddDays(1), "transacao", 5, cartaoCredito));
-
-            ////// mar
-            //_transacoes.Add(new Transacao(GetNextId(), DateTime.Now.AddMonths(1).AddDays(-1), "xo xo xo xoxo", 11, poupanca));
-            //_transacoes.Add(new Transacao(GetNextId(), DateTime.Now.AddMonths(1), "abcdef", -7, corrente));
-            //_transacoes.Add(new Transacao(GetNextId(), DateTime.Now.AddMonths(1), "qwerty", 2, cartaoCredito));
-            //_transacoes.Add(new Transacao(GetNextId(), DateTime.Now.AddMonths(1).AddDays(1), "qwerty", 2, cartaoCredito));
-            //_transacoes.Add(new Transacao(GetNextId(), DateTime.Now, "compra", 0, cartaoCredito));
-
-
-            ////// amanha
-            //_transacoes.Add(new Transacao(GetNextId(), DateTime.Now.AddDays(1), "Lorem", 1, corrente));
-            //_transacoes.Add(new Transacao(10, DateTime.Now.AddDays(1), "Lorem", 0, poupanca));
-
-            ////// depois de amanha
-            //_transacoes.Add(new Transacao(11, DateTime.Now.AddDays(2), "Lorem", 0, corrente));
-            //_transacoes.Add(new Transacao(12, DateTime.Now.AddDays(2), "Lorem", 0, poupanca));
-
-            ////// fevereiro
-            //_transacoes.Add(new Transacao(13, DateTime.Now.AddMonths(1), "Lorem", 0, corrente));
-            //_transacoes.Add(new Transacao(14, DateTime.Now.AddMonths(1), "Lorem", 0, poupanca));
+            // MES ATUAL
+            _transacoes.Add(new Transacao(GetNextId(), DateTime.Now, "descricao", alimentacao, -10, corrente));
+            _transacoes.Add(new Transacao(GetNextId(), DateTime.Now, "zxcvb", livre, 10, poupanca));
+            _transacoes.Add(new Transacao(GetNextId(), DateTime.Now.AddDays(1), "transacao", lazer, 5, cartaoCredito));
         }
 
         public async Task<List<Transacao>> ObterTodas()
@@ -75,6 +60,7 @@ namespace Neptune.Infra
             var novaEntidade = new Transacao(GetNextId(),
                                          transacao.Data,
                                          transacao.Descricao,
+                                         transacao.Categoria,
                                          transacao.Valor,
                                          transacao.Conta);
 

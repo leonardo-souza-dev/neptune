@@ -16,19 +16,17 @@
             <ul style="float: left;" >            
                 @foreach (var conta in _contas)
                 {
-                    <EditForm Model="conta">
-                        <li style="font: normal 11px arial,tahoma,helvetica,sans-serif;">
-                            @if (conta.Selecionada)
-                            {
-                                <input type="checkbox" checked name="@conta.Id" @onchange="@(() => { conta.SetarSelecionada(false);})"/>
-                            }
-                            else
-                            {
-                                <input type="checkbox" name="@conta.Id" @onchange="@(() => { conta.SetarSelecionada(true);})"/>
-                            }
-                            @conta.Nome 
-                        </li>
-                    </EditForm>
+                    <li style="font: normal 11px arial,tahoma,helvetica,sans-serif;">
+                        @if (conta.Selecionada)
+                        {
+                            <input type="checkbox" checked name="@conta.Id" @onchange="@(() => { conta.SetarSelecionada(false);})"/>
+                        }
+                        else
+                        {
+                            <input type="checkbox" name="@conta.Id" @onchange="@(() => { conta.SetarSelecionada(true);})"/>
+                        }
+                        @conta.Nome 
+                    </li>
                 }
             </ul>
         </div>
@@ -37,19 +35,70 @@
             <div>
                 Categorias
             </div>
-            
+                    
             <ul style="float: left;" >
-                @foreach(var nivel1 in _categorias.Where(x => x.CategoriaPai == null))
+                @foreach(var nivel0 in _categorias)
                 {
-                    <li style="font: normal 11px arial,tahoma,helvetica,sans-serif;">@nivel1.Descricao</li>
-                    <ul style="float: left;" >
-                    @foreach(var nivel2 in _categorias.Where(x => x.CategoriaPai == nivel1.Id))
+                    <li style="font: normal 11px arial,tahoma,helvetica,sans-serif;">
+                    @if (nivel0.Selecionada)
                     {
-                        <li style="font: normal 11px arial,tahoma,helvetica,sans-serif;">@nivel2.Descricao</li>
-                        <ul style="float: left;" >
-                        @foreach(var nivel3 in _categorias.Where(x => x.CategoriaPai == nivel2.Id))
+                        <input type="checkbox" checked name="@nivel0.Id" @onchange="@(() => { nivel0.SetarSelecionada(false);})"/>
+                    }
+                    else
+                    {
+                        <input type="checkbox" name="@nivel0.Id" @onchange="@(() => { nivel0.SetarSelecionada(true);})"/>
+                    }
+                    @nivel0.Descricao
+                    </li>
+
+                    <ul style="float: left;" >
+                    @foreach(var nivel1 in nivel0.Filhos)
+                    {
+                        <li style="font: normal 11px arial,tahoma,helvetica,sans-serif;">
+                        @if (nivel1.Selecionada)
                         {
-                            <li style="font: normal 11px arial,tahoma,helvetica,sans-serif;">@nivel3.Descricao</li>
+                            <input type="checkbox" checked name="@nivel1.Id" @onchange="@(() => { nivel1.SetarSelecionada(false);})"/>
+                        }
+                        else
+                        {
+                            <input type="checkbox" name="@nivel1.Id" @onchange="@(() => { nivel1.SetarSelecionada(true);})"/>
+                        }
+                        @nivel1.Descricao
+                        </li>
+
+                        <ul style="float: left;" >
+                        @foreach(var nivel2 in nivel1.Filhos)
+                        {
+                            <li style="font: normal 11px arial,tahoma,helvetica,sans-serif;">
+                            @if (nivel2.Selecionada)
+                            {
+                                <input type="checkbox" checked name="@nivel2.Id" @onchange="@(() => { nivel2.SetarSelecionada(false);})"/>
+                            }
+                            else
+                            {
+                                <input type="checkbox" name="@nivel2.Id" @onchange="@(() => { nivel2.SetarSelecionada(true);})"/>
+                            }
+                            @nivel2.Descricao
+                            </li>
+
+                            
+
+                            <ul style="float: left;" >
+                            @foreach(var nivel3 in nivel2.Filhos)
+                            {
+                                <li style="font: normal 11px arial,tahoma,helvetica,sans-serif;">
+                                @if (nivel3.Selecionada)
+                                {
+                                    <input type="checkbox" checked name="@nivel3.Id" @onchange="@(() => { nivel3.SetarSelecionada(false);})"/>
+                                }
+                                else
+                                {
+                                    <input type="checkbox" name="@nivel3.Id" @onchange="@(() => { nivel3.SetarSelecionada(true);})"/>
+                                }
+                                @nivel3.Descricao
+                                </li>
+                            }
+                            </ul>
                         }
                         </ul>
                     }
@@ -163,10 +212,19 @@
                 </thead>
                 <tbody>
                     @{
-                        var transacoesAnteriores = _transacoes.Where(x => x.Data.Year == _dataMes.Ano && x.Data.Month < _dataMes.Mes && x.Conta.Selecionada);
-                        var somaTransacoesAnteriores = transacoesAnteriores.Sum(x => x.Valor);
+                        var transacoesMesAtualFilter = _transacoes?.Where(t => t.Data.Year == _dataMes.Ano &&
+                                                             t.Data.Month == _dataMes.Mes &&
+                                                             t.Conta.Selecionada &&
+                                                             t.Categoria.Selecionada).ToList();
+                        var transacoesMesAtual = transacoesMesAtualFilter.GroupBy(x => new { x.Data.Year, x.Data.Month, x.Data.Day });
+
+                        var somaTransacoesAnteriores = _transacoes?.Where(x => x.Data.Year == _dataMes.Ano && 
+                                                                               x.Data.Month < _dataMes.Mes && 
+                                                                               x.Conta.Selecionada && 
+                                                                               x.Categoria.Selecionada)
+                                                                   .Sum(x => x.Valor);
                         var saldoInicialContas = _contas.Where(x => x.Selecionada).Sum(x => x.SaldoInicial);
-                        var saldoFinalUltimoDiaMesAnterior = saldoInicialContas + somaTransacoesAnteriores;
+                        var saldoFinalUltimoDiaMesAnterior = saldoInicialContas + somaTransacoesAnteriores.Value;
 
                         <tr>
                             <th colspan="6" style="text-align: right;">
@@ -177,7 +235,7 @@
                         var saldoTemp = saldoFinalUltimoDiaMesAnterior;
                         var dia = 0;
 
-                        @foreach (var diaTransacoes in _transacoesMesContas.GroupBy(x => new { x.Data.Year, x.Data.Month, x.Data.Day }))
+                        @foreach (var diaTransacoes in transacoesMesAtual)
                         {
                             var diaDiferente = dia != diaTransacoes.Key.Day;
                             if (diaDiferente)
@@ -197,7 +255,7 @@
                             {
                                 <tr style="background-color: #cccccc">
                                     <td>@t.Descricao</td>
-                                    <td>@t.Categoria</td>
+                                    <td>@t.Categoria.Descricao</td>
                                     <td>
                                         <select style="background: #cccccc;color: #000;border: 2px solid #cccccc;-webkit-appearance: none;" disabled="disabled">
                                             @foreach (var c in _contas)
@@ -235,11 +293,9 @@
 </div>
 
 @code {
-    private List<Transacao> _transacoes;
-    private List<Categoria> _categorias;    
-    private List<Conta> _contas;
-
-    private IEnumerable<Transacao> _transacoesMesContas => _transacoes.DistinctBy(x => x.Id).Where(t => t.Data.Year == _dataMes.Ano && t.Data.Month == _dataMes.Mes && t.Conta.Selecionada).Distinct();
+    private List<Transacao>? _transacoes;
+    private List<Categoria>? _categorias;
+    private List<Conta>? _contas;
 
     private bool mouseOverNovaTransacao;
     private bool modoAdicionarTransacao = false;
@@ -258,20 +314,13 @@
     private string navMesSeguinte => (NavManager.BaseUri + $"?ano={_dataMes.NumAnoDoMesSeguinte}&mes={_dataMes.NumMesSeguinte}");
 
 
-
     protected override async Task OnInitializedAsync()
     {
         _dataMes = new DataMes(DateTime.Now.Year, DateTime.Now.Month);
 
         _contas = await _contaService.ObterTodas();
-        _contas.ForEach(x => x.SetarSelecionada(true));
         _transacoes = await _transacaoService.ObterTodas();
-        _categorias = await _categoriaService.ObterTodas();
-    }
-
-    protected override async Task OnParametersSetAsync()
-    {
-        await OnInitializedAsync();
+        _categorias = await _categoriaService.ObterTodasComFilhos();
     }
 
     void IrParaMesAnterior()

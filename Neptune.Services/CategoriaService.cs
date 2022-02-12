@@ -1,6 +1,7 @@
 ﻿using Neptune.Domain;
 using Neptune.Infra;
 using System;
+using System.Linq;
 using System.Collections.Generic;
 using System.Threading.Tasks;
 
@@ -8,20 +9,35 @@ namespace Neptune.Application
 {
     public class CategoriaService : ICategoriaService
     {
-        public async Task<List<Categoria>> ObterTodas()
+        private readonly ICategoriaRepository _categoriaRepository;
+
+        public CategoriaService(ICategoriaRepository categoriaRepository)
         {
-            var categorias = new List<Categoria>();
-            categorias.Add(new Categoria(1, null, "base"));
-            categorias.Add(new Categoria(2, null, "sem categoria"));
+            _categoriaRepository = categoriaRepository;
+        }
 
-            categorias.Add(new Categoria(3, 1, "basico"));
-            categorias.Add(new Categoria(4, 3, "alimentacao"));
+        public async Task<List<Categoria>> ObterTodasComFilhos()
+        {
+            var todas = _categoriaRepository.ObterTodas();
 
-            categorias.Add(new Categoria(5, 1, "livre"));
-            categorias.Add(new Categoria(6, 5, "lazer"));
-            categorias.Add(new Categoria(7, 5, "casa"));
+            var categoriasNivel0 = todas.Where(x => x.EhNivel0).ToList();
 
-            return categorias;
+            foreach (var categoriaNivel0 in categoriasNivel0)
+            {
+                var filhosNivel1 = todas.Where(x => x.IdCategoriaPai == categoriaNivel0.Id).ToList();
+                categoriaNivel0.AdicionarFilhos(filhosNivel1);
+
+                foreach (var categoriaNivel1 in filhosNivel1)
+                {
+                    var filhosNivel2 = todas.Where(x => x.IdCategoriaPai == categoriaNivel1.Id).ToList();
+                    categoriaNivel1.AdicionarFilhos(filhosNivel2);
+                }
+            }
+
+            var todasComFilhos = new List<Categoria>();
+            todasComFilhos.AddRange(categoriasNivel0);
+            
+            return todasComFilhos;
         }
     }
 }
