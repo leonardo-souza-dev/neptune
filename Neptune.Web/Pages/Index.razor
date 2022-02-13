@@ -8,8 +8,8 @@
 
 <div id="tudo" style="height: 100vh;width:60%;">
     <div id="coluna" style="width: 190px;">
-        <ContasLayout @bind-Itens="_contas" />
-        <CategoriasLayout @bind-Itens="_categorias" />
+        <ContasComponent @bind-Itens="_contas" />
+        <CategoriasComponent @bind-Itens="_categorias" />
     </div>
 
     <div id="navegacao-e-transacoes" style="margin:8px;display:grid;">
@@ -20,107 +20,13 @@
         </div>
 
         <div id="adicionar-transacao" style="margin: 8px;">
-            <button @onclick="AdicionarTransacao">+ transacao</button>
-        </div>
-        <div id="mensagem">
-            @mensagem 
+            <button @onclick="(() => { modoAdicionarTransacao = true; })">+ transacao</button>
         </div>
         
         @if (modoAdicionarTransacao)
         {
-            <EditForm Model="_novaTransacao">
-                <div id="nova-transacao" style="float:left;margin:8px;width:100%;">
-                    <table class="table transacoes">
-                        <tbody>
-                            <tr style="background-color: #efefef">
-                                <td><input type="date" id="meeting-time" name="meeting-time" @bind-value="_novaTransacao.Data" min="2015-01-01" max="2050-01-01"></td>
-                                <td><input type="text" id="nova-transacao-descricao" @bind-value="_novaTransacao.Descricao" /></td>
-                                <td>
-                                    <select @bind="_novaTransacao.Categoria.Id">
-                                        <option selected value="0">Selecione</option>
-                                        @foreach(var c0 in _categorias.Nivel0)
-                                        {
-                                            <option value="@c0.Id">@c0.Descricao</option>
-                                            @foreach(var c1 in c0.Filhos)
-                                            {
-                                                <option value="@c1.Id">&nbsp;&nbsp;&nbsp;&nbsp;@c1.Descricao</option>
-                                                @foreach(var c2 in c1.Filhos)
-                                                {
-                                                    <option value="@c2.Id">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;@c2.Descricao</option>
-                                                }
-                                            }
-                                        }
-                                    </select>                                    
-                                </td>
-                                <td>
-                                    <select @bind="_novaTransacao.Conta.Id">
-                                        <option selected value="0">Selecione</option>
-                                        @foreach(var c in _contas)
-                                        {
-                                            <option value="@c.Id">@c.Nome</option>
-                                        }
-                                    </select>                                    
-                                </td>
-                                <td>R$ 
-                                    <input type="text" id="meu-campo-valor" value="0,00" onkeyup="chamaDotNet()" 
-                                                                                         onkeydown="if ([48,49,50,51,52,53,54,55,56,57,96,97,98,99,100,101,102,103,104,105].includes(event.which)) { 
-                                                                                                        let valor = this.value; 
-                                                                                                        let valorFloat = parseFloat(valor.replace(',', '.'));      
-                                                                                                        let valorFloatM10 = valorFloat * 10; 
-                                                                                                        let valorFloatD10Round2 = (Math.round(valorFloatM10 * 100) / 100).toFixed(2); 
-                                                                                                        let input = event.key;                                                          
-                                                                                                        let inputInt = parseInt(event.key);                                             
-                                                                                                        let inputIntDiv100 = parseInt(event.key) / 100;                                 
-                                                                                                        let inputIntDiv100Round2 = (Math.round(inputIntDiv100 * 100) / 100).toFixed(2); 
-                                                                                                        let ehNegativo = valorFloatD10Round2 < 0;
-                                                                                                        let soma = parseFloat(Math.abs(valorFloatD10Round2)) + parseFloat(inputIntDiv100Round2); 
-                                                                                                        let somaRound2 = (Math.round(soma * 100) / 100).toFixed(2);
-                                                                                                        let sinal = ehNegativo ? '-' : '';
-                                                                                                        this.value = sinal + somaRound2.toString().replace('.', ',')
-                                                                                                        return false;
-                                                                                                    }
-                                                                                                    else if (event.which == 8) { // backspace
-                                                                                                        let valorReplaceVirgulaPorPonto = this.value.replace(',','.');
-                                                                                                        let valorReplaceVirgulaPorPontoFloat = parseFloat(valorReplaceVirgulaPorPonto);
-                                                                                                        let valorReplaceVirgulaPorPontoFloatD10 = valorReplaceVirgulaPorPontoFloat / 10;
-                                                                                                        let valorReplaceVirgulaPorPontoFloatD10R2 = 0;
-                                                                                                        let ehNegativo = valorReplaceVirgulaPorPontoFloatD10 < 0;
-                                                                                                        if (ehNegativo){
-                                                                                                            valorReplaceVirgulaPorPontoFloatD10R2 = (Math.ceil(valorReplaceVirgulaPorPontoFloatD10 * 100) / 100).toFixed(2);
-                                                                                                        } else {
-                                                                                                            valorReplaceVirgulaPorPontoFloatD10R2 = (Math.floor(valorReplaceVirgulaPorPontoFloatD10 * 100) / 100).toFixed(2);
-                                                                                                        }
-                                                                                                        this.value = valorReplaceVirgulaPorPontoFloatD10R2.toString().replace('.', ',');
-                                                                                                        return false;
-                                                                                                    }
-                                                                                                    else if (event.which == 109 || event.which == 189) { //minus
-                                                                                                        let valor = this.value;
-                                                                                                        let ehNegativo = this.value[0] == '-';
-                                                                                                        if (!ehNegativo) {
-                                                                                                            this.value = ((Math.floor((parseFloat(this.value.replace(',','.')) * -1) * 100) / 100).toFixed(2)).toString().replace('.', ',');;
-                                                                                                        }
-                                                                                                        return false;
-                                                                                                    }
-                                                                                                    else if (event.which == 107 || event.which == 187) { // plus
-                                                                                                        let ehNegativo = this.value[0] == '-';
-                                                                                                        if (ehNegativo) {
-                                                                                                            this.value = ((Math.floor((parseFloat(this.value.replace(',','.')) * -1) * 100) / 100).toFixed(2)).toString().replace('.', ',');;
-                                                                                                        }
-                                                                                                        return false;
-                                                                                                    }
-                                                                                                    else {
-                                                                                                        return false;
-                                                                                                    }" 
-                                                                                                    />
-                                </td>
-                                <td>
-                                    <button @onclick="SalvarTransacao">Salvar</button>
-                                </td>
-                            </tr>
-                        </tbody>
-                    </table>
-                </div>
-            </EditForm>
+            <NovaTransacaoComponent @bind-ModoAdicionarTransacao="modoAdicionarTransacao" NovaTransacao="_novaTransacao" 
+                Contas="_contas" Categorias="_categorias"  />
         }
 
         <div id="transacoes" style="float: left;margin: 8px;width: 100%;">
@@ -225,7 +131,6 @@
 
     private string mensagem;
 
-    private static decimal novaTransacaoValor;
 
     private List<string> digitosValor = new List<string>();
     private string valorrr = "0,00";
@@ -255,54 +160,8 @@
         _dataMes = new DataMes(numAnoMesSeguinte, numMesSeguinte);
     }
 
-    void AdicionarTransacao()
-    {
-        modoAdicionarTransacao = true;
-    }
-
-    private decimal ObterSaldoFinalDoDia(object x)
-    {
-        return 0.2M;
-    }
-
-    [JSInvokable]
-    public static void ChamaDotNet(JsonElement valor)
-    {
-        string valorAdjust = valor.GetRawText().Replace("\"", "");
-        novaTransacaoValor = Convert.ToDecimal(valorAdjust, new CultureInfo("pt-BR"));
-    }
-
     public string FormatarMoeda(decimal valor)
     {
         return (valor.ToString().Contains(".") || valor.ToString().Contains(",")) ? valor.ToString() : valor + ",00";
     }
-
-    void SalvarTransacao()
-    {
-        if (modoAdicionarTransacao)
-        {
-            if (_novaTransacao != null && _novaTransacao.NovaTransacaoEhValida())
-            {
-                _novaTransacao.Conta = _contas.First(x => x.Id == _novaTransacao.Conta.Id);
-                _novaTransacao.Categoria = _categorias.ObterCategoria(_novaTransacao.Categoria.Id);
-                _novaTransacao.Valor = novaTransacaoValor;
-                var resultadoMensagem = _transacaoService.AdicionarTransacao(_novaTransacao).Result;
-
-                if (resultadoMensagem == null)
-                {
-                    mensagem = $"Ocorreu um erro ao adicionar a transacao {resultadoMensagem}";
-                    Console.WriteLine(mensagem);
-                    Debug.WriteLine(mensagem);
-                }
-                else
-                {
-                    Console.WriteLine("TRANSACAO ADICIONADA Id: " + resultadoMensagem.Id);
-                    Debug.WriteLine("TRANSACAO ADICIONADA Id: " + resultadoMensagem.Id);
-                    _novaTransacao = new Transacao().ObterNovaTransacao();
-                }
-            }
-
-            modoAdicionarTransacao = false;
-        }
-    } 
 }

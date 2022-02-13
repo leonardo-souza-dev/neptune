@@ -1,0 +1,148 @@
+﻿@inject ITransacaoService _transacaoService
+
+<div id="nova-transacao" style="float:left;margin:8px;width:100%;">
+    <table class="table transacoes">
+        <tbody>
+            <tr style="background-color: #efefef">
+                <td><input type="date" id="meeting-time" name="meeting-time" @bind-value="NovaTransacao.Data" min="2015-01-01" max="2050-01-01"></td>
+                <td><input type="text" id="nova-transacao-descricao" @bind-value="NovaTransacao.Descricao" /></td>
+                <td>
+                    <select @bind="NovaTransacao.Categoria.Id">
+                        <option selected value="0">Selecione</option>
+                        @foreach (var c0 in Categorias.Nivel0)
+                        {
+                            <option value="@c0.Id">@c0.Descricao</option>
+                            @foreach (var c1 in c0.Filhos)
+                            {
+                                <option value="@c1.Id">&nbsp;&nbsp;&nbsp;&nbsp;@c1.Descricao</option>
+                                @foreach (var c2 in c1.Filhos)
+                                {
+                                    <option value="@c2.Id">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;@c2.Descricao</option>
+                                }
+                            }
+                        }
+                    </select>                                    
+                </td>
+                <td>
+                    <select @bind="NovaTransacao.Conta.Id">
+                        <option selected value="0">Selecione</option>
+                        @foreach (var c in Contas)
+                        {
+                            <option value="@c.Id">@c.Nome</option>
+                        }
+                    </select>                                    
+                </td>
+                <td>R$ 
+                    <input type="text" id="meu-campo-valor" value="0,00" onkeyup="chamaDotNet()" 
+                                                                        onkeydown="if ([48,49,50,51,52,53,54,55,56,57,96,97,98,99,100,101,102,103,104,105].includes(event.which)) { 
+                                                                                    let valor = this.value; 
+                                                                                    let valorFloat = parseFloat(valor.replace(',', '.'));      
+                                                                                    let valorFloatM10 = valorFloat * 10; 
+                                                                                    let valorFloatD10Round2 = (Math.round(valorFloatM10 * 100) / 100).toFixed(2); 
+                                                                                    let input = event.key;                                                          
+                                                                                    let inputInt = parseInt(event.key);                                             
+                                                                                    let inputIntDiv100 = parseInt(event.key) / 100;                                 
+                                                                                    let inputIntDiv100Round2 = (Math.round(inputIntDiv100 * 100) / 100).toFixed(2); 
+                                                                                    let ehNegativo = valorFloatD10Round2 < 0;
+                                                                                    let soma = parseFloat(Math.abs(valorFloatD10Round2)) + parseFloat(inputIntDiv100Round2); 
+                                                                                    let somaRound2 = (Math.round(soma * 100) / 100).toFixed(2);
+                                                                                    let sinal = ehNegativo ? '-' : '';
+                                                                                    this.value = sinal + somaRound2.toString().replace('.', ',')
+                                                                                    return false;
+                                                                                }
+                                                                                else if (event.which == 8) { // backspace
+                                                                                    let valorReplaceVirgulaPorPonto = this.value.replace(',','.');
+                                                                                    let valorReplaceVirgulaPorPontoFloat = parseFloat(valorReplaceVirgulaPorPonto);
+                                                                                    let valorReplaceVirgulaPorPontoFloatD10 = valorReplaceVirgulaPorPontoFloat / 10;
+                                                                                    let valorReplaceVirgulaPorPontoFloatD10R2 = 0;
+                                                                                    let ehNegativo = valorReplaceVirgulaPorPontoFloatD10 < 0;
+                                                                                    if (ehNegativo){
+                                                                                        valorReplaceVirgulaPorPontoFloatD10R2 = (Math.ceil(valorReplaceVirgulaPorPontoFloatD10 * 100) / 100).toFixed(2);
+                                                                                    } else {
+                                                                                        valorReplaceVirgulaPorPontoFloatD10R2 = (Math.floor(valorReplaceVirgulaPorPontoFloatD10 * 100) / 100).toFixed(2);
+                                                                                    }
+                                                                                    this.value = valorReplaceVirgulaPorPontoFloatD10R2.toString().replace('.', ',');
+                                                                                    return false;
+                                                                                }
+                                                                                else if (event.which == 109 || event.which == 189) { //minus
+                                                                                    let valor = this.value;
+                                                                                    let ehNegativo = this.value[0] == '-';
+                                                                                    if (!ehNegativo) {
+                                                                                        this.value = ((Math.floor((parseFloat(this.value.replace(',','.')) * -1) * 100) / 100).toFixed(2)).toString().replace('.', ',');;
+                                                                                    }
+                                                                                    return false;
+                                                                                }
+                                                                                else if (event.which == 107 || event.which == 187) { // plus
+                                                                                    let ehNegativo = this.value[0] == '-';
+                                                                                    if (ehNegativo) {
+                                                                                        this.value = ((Math.floor((parseFloat(this.value.replace(',','.')) * -1) * 100) / 100).toFixed(2)).toString().replace('.', ',');;
+                                                                                    }
+                                                                                    return false;
+                                                                                }
+                                                                                else {
+                                                                                    return false;
+                                                                                }" 
+                                                                                />
+                </td>
+                <td>
+                    <button @onclick="SalvarTransacao">Salvar</button>
+                </td>
+            </tr>
+        </tbody>
+    </table>
+</div>
+
+
+@code {
+    [Parameter]
+    public Transacao? NovaTransacao { get; set; }
+    [Parameter]
+    public Categorias? Categorias { get; set; }
+    [Parameter]
+    public List<Conta>? Contas { get; set; }
+    [Parameter]
+    public bool ModoAdicionarTransacao { get; set; }
+
+    [Parameter]
+    public EventCallback<bool> ModoAdicionarTransacaoChanged { get; set; }
+
+    private static decimal novaTransacaoValor;
+
+    async Task SalvarTransacao()
+    {
+        if (ModoAdicionarTransacao)
+        {
+            if (NovaTransacao != null && NovaTransacao.NovaTransacaoEhValida())
+            {
+                NovaTransacao.Conta = Contas?.First(x => x.Id == NovaTransacao.Conta.Id);
+                NovaTransacao.Categoria = Categorias?.ObterCategoria(NovaTransacao.Categoria.Id);
+                NovaTransacao.Valor = novaTransacaoValor;
+                var resultadoMensagem = _transacaoService.AdicionarTransacao(NovaTransacao).Result;
+
+                if (resultadoMensagem == null)
+                {
+                    var mensagem = $"Ocorreu um erro ao adicionar a transacao {resultadoMensagem}";
+                    Console.WriteLine(mensagem);
+                    Debug.WriteLine(mensagem);
+                }
+                else
+                {
+                    Console.WriteLine("TRANSACAO ADICIONADA Id: " + resultadoMensagem.Id);
+                    Debug.WriteLine("TRANSACAO ADICIONADA Id: " + resultadoMensagem.Id);
+                    NovaTransacao = new Transacao().ObterNovaTransacao();
+                }
+            }
+
+            ModoAdicionarTransacao = false;
+            await ModoAdicionarTransacaoChanged.InvokeAsync(ModoAdicionarTransacao);
+        }
+    } 
+
+    [JSInvokable]
+    public static void ChamaDotNet(JsonElement valor)
+    {
+        string valorAdjust = valor.GetRawText().Replace("\"", "");
+        novaTransacaoValor = Convert.ToDecimal(valorAdjust, new CultureInfo("pt-BR"));
+    }
+
+}
