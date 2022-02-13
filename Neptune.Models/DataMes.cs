@@ -1,7 +1,4 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.ComponentModel.DataAnnotations;
-using System.Linq;
 
 namespace Neptune.Domain
 {
@@ -45,6 +42,9 @@ namespace Neptune.Domain
         {
             get => UltimoDiaDoMesAnterior.ToString("dd/MM/yyyy");
         }
+
+        public DataMes ObterMesAnterior() => new DataMes(NumAnoDoMesAnterior, NumMesAnterior);
+        public DataMes ObterMesSeguinte() => new DataMes(NumAnoDoMesSeguinte, NumMesSeguinte);
 
         public int CompareTo(object obj)
         {

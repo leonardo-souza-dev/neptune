@@ -1,0 +1,108 @@
+﻿@inject ITransacaoService _transacaoService
+
+<div id="transacoes" style="float: left;margin: 8px;width: 100%;">
+    <table class="table transacoes">
+        <thead>
+            <tr>
+                <th>Descricao</th>
+                <th>Categoria</th>
+                <th>Conta</th>
+                <th>Valor</th>
+            </tr>
+        </thead>
+        <tbody>
+            @{
+                var transacoesMesAtualFilter = _transacoes?.Where(t => t.Data.Year == DataMes.Ano &&
+                                                        t.Data.Month == DataMes.Mes &&
+                                                        t.Conta.Selecionada &&
+                                                        t.Categoria.Selecionada).ToList();
+                var transacoesMesAtual = transacoesMesAtualFilter.GroupBy(x => new { x.Data.Year, x.Data.Month, x.Data.Day });
+
+                var somaTransacoesAnteriores = _transacoes?.Where(x => x.Data.EhAntes(DataMes) &&
+                                                                        x.Conta.Selecionada && 
+                                                                        x.Categoria.Selecionada)
+                                                            .Sum(x => x.Valor);
+                var saldoInicialContas = Contas.Where(x => x.Selecionada).Sum(x => x.SaldoInicial);
+                var saldoFinalUltimoDiaMesAnterior = saldoInicialContas + somaTransacoesAnteriores.Value;
+
+                <tr>
+                    <th colspan="6" style="text-align: right;">
+                        Saldo no dia @DataMes.UltimoDiaDoMesAnteriorFormat&nbsp;&nbsp;&nbsp; R$ @FormatarMoeda(saldoFinalUltimoDiaMesAnterior)
+                    </th>
+                </tr>
+
+                var saldoTemp = saldoFinalUltimoDiaMesAnterior;
+                var dia = 0;
+
+                @foreach (var diaTransacoes in transacoesMesAtual)
+                {
+                    var diaDiferente = dia != diaTransacoes.Key.Day;
+                    if (diaDiferente)
+                    {
+                        <tr>
+                            <td colspan="4">@diaTransacoes.Key.Day/@diaTransacoes.Key.Month.ToString().PadLeft(2, '0')/@diaTransacoes.Key.Year</td>
+                        </tr>
+
+                        dia = diaTransacoes.Key.Day;
+                    }
+
+                    decimal somaTransacoesDia = diaTransacoes.Sum(x => x.Valor);
+                    saldoTemp += somaTransacoesDia;
+
+                    var count = 0;
+                    @foreach (Transacao t in diaTransacoes)
+                    {
+                        <tr style="background-color: #cccccc">
+                            <td>@t.Descricao</td>
+                            <td>@t.Categoria.Descricao</td>
+                            <td>
+                                <select style="background: #cccccc;color: #000;border: 2px solid #cccccc;-webkit-appearance: none;" disabled="disabled">
+                                    @foreach (var c in Contas)
+                                    {
+                                        if (c.Id == t.Conta.Id)
+                                        {
+                                            <option selected>@c.Nome</option>
+                                        }
+                                        else
+                                        {
+                                            <option>@c.Nome</option>
+                                        }
+                                    }
+                                </select>
+                            </td>
+                            <td>R$ @FormatarMoeda(t.Valor)</td>
+                        </tr>
+
+                        count = count + 1;
+                    }
+
+                    if (count == diaTransacoes.Count())
+                    {
+                        <tr>
+                            <td colspan="4" style="text-align: right;">Saldo do dia: R$ @FormatarMoeda(saldoTemp)</td>
+                        </tr>
+                    }
+                }
+        }
+        </tbody>
+    </table>
+</div>
+
+@code {
+    [Parameter]
+    public List<Conta>? Contas { get; set; }
+    [Parameter]
+    public DataMes DataMes { get; set; }
+
+    private List<Transacao>? _transacoes { get; set; }
+
+    protected override async Task OnInitializedAsync()
+    {
+        _transacoes = await _transacaoService.ObterTodas();
+    }
+
+    public string FormatarMoeda(decimal valor)
+    {
+        return (valor.ToString().Contains(".") || valor.ToString().Contains(",")) ? valor.ToString() : valor + ",00";
+    }
+}
