@@ -32,57 +32,8 @@
                         }
                     </select>                                    
                 </td>
-                <td>R$ 
-                    <input type="text" id="meu-campo-valor" value="0,00" onkeyup="chamaDotNet()" 
-                                                                        onkeydown="if ([48,49,50,51,52,53,54,55,56,57,96,97,98,99,100,101,102,103,104,105].includes(event.which)) { 
-                                                                                    let valor = this.value; 
-                                                                                    let valorFloat = parseFloat(valor.replace(',', '.'));      
-                                                                                    let valorFloatM10 = valorFloat * 10; 
-                                                                                    let valorFloatD10Round2 = (Math.round(valorFloatM10 * 100) / 100).toFixed(2); 
-                                                                                    let input = event.key;                                                          
-                                                                                    let inputInt = parseInt(event.key);                                             
-                                                                                    let inputIntDiv100 = parseInt(event.key) / 100;                                 
-                                                                                    let inputIntDiv100Round2 = (Math.round(inputIntDiv100 * 100) / 100).toFixed(2); 
-                                                                                    let ehNegativo = valorFloatD10Round2 < 0;
-                                                                                    let soma = parseFloat(Math.abs(valorFloatD10Round2)) + parseFloat(inputIntDiv100Round2); 
-                                                                                    let somaRound2 = (Math.round(soma * 100) / 100).toFixed(2);
-                                                                                    let sinal = ehNegativo ? '-' : '';
-                                                                                    this.value = sinal + somaRound2.toString().replace('.', ',')
-                                                                                    return false;
-                                                                                }
-                                                                                else if (event.which == 8) { // backspace
-                                                                                    let valorReplaceVirgulaPorPonto = this.value.replace(',','.');
-                                                                                    let valorReplaceVirgulaPorPontoFloat = parseFloat(valorReplaceVirgulaPorPonto);
-                                                                                    let valorReplaceVirgulaPorPontoFloatD10 = valorReplaceVirgulaPorPontoFloat / 10;
-                                                                                    let valorReplaceVirgulaPorPontoFloatD10R2 = 0;
-                                                                                    let ehNegativo = valorReplaceVirgulaPorPontoFloatD10 < 0;
-                                                                                    if (ehNegativo){
-                                                                                        valorReplaceVirgulaPorPontoFloatD10R2 = (Math.ceil(valorReplaceVirgulaPorPontoFloatD10 * 100) / 100).toFixed(2);
-                                                                                    } else {
-                                                                                        valorReplaceVirgulaPorPontoFloatD10R2 = (Math.floor(valorReplaceVirgulaPorPontoFloatD10 * 100) / 100).toFixed(2);
-                                                                                    }
-                                                                                    this.value = valorReplaceVirgulaPorPontoFloatD10R2.toString().replace('.', ',');
-                                                                                    return false;
-                                                                                }
-                                                                                else if (event.which == 109 || event.which == 189) { //minus
-                                                                                    let valor = this.value;
-                                                                                    let ehNegativo = this.value[0] == '-';
-                                                                                    if (!ehNegativo) {
-                                                                                        this.value = ((Math.floor((parseFloat(this.value.replace(',','.')) * -1) * 100) / 100).toFixed(2)).toString().replace('.', ',');;
-                                                                                    }
-                                                                                    return false;
-                                                                                }
-                                                                                else if (event.which == 107 || event.which == 187) { // plus
-                                                                                    let ehNegativo = this.value[0] == '-';
-                                                                                    if (ehNegativo) {
-                                                                                        this.value = ((Math.floor((parseFloat(this.value.replace(',','.')) * -1) * 100) / 100).toFixed(2)).toString().replace('.', ',');;
-                                                                                    }
-                                                                                    return false;
-                                                                                }
-                                                                                else {
-                                                                                    return false;
-                                                                                }" 
-                                                                                />
+                <td>
+                    R$ <input type="text" id="meu-campo-valor" value="0,00" onkeyup="chamaDotNet()" onkeydown="if ([48,49,50,51,52,53,54,55,56,57,96,97,98,99,100,101,102,103,104,105].includes(event.which)) { let v = (Math.round(parseFloat(this.value.replace(',', '.')) * 1000) / 100).toFixed(2);this.value = v < 0 ? '-' : '' + ((Math.round((parseFloat(Math.abs(v)) + parseFloat((Math.round((parseInt(event.key))) / 100).toFixed(2))) * 100) / 100).toFixed(2)).toString().replace('.', ','); return false;} else if (event.which == 8) { /* backspace */ let v = parseFloat(this.value.replace(',','.')) / 10;let r = 0;if (v < 0) r = (Math.ceil(v * 100) / 100).toFixed(2);else r = (Math.floor(v * 100) / 100).toFixed(2);this.value = r.toString().replace('.', ',');return false; } else if (event.which == 109 || event.which == 189) { /* minus */ if (!(this.value[0] == '-')) this.value = ((Math.floor((parseFloat(this.value.replace(',','.')) * -1) * 100) / 100).toFixed(2)).toString().replace('.', ',');return false; } else if (event.which == 107 || event.which == 187) { /* plus */ if (this.value[0] == '-') this.value = ((Math.floor((parseFloat(this.value.replace(',','.')) * -1) * 100) / 100).toFixed(2)).toString().replace('.', ',');return false; } else return false;" />
                 </td>
                 <td>
                     <button @onclick="SalvarTransacao">Salvar</button>

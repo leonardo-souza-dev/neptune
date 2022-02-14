@@ -12,27 +12,20 @@
         </thead>
         <tbody>
             @{
-                var transacoesMesAtualFilter = _transacoes?.Where(t => t.Data.Year == DataMes.Ano &&
-                                                        t.Data.Month == DataMes.Mes &&
-                                                        t.Conta.Selecionada &&
-                                                        t.Categoria.Selecionada).ToList();
-                var transacoesMesAtual = transacoesMesAtualFilter.GroupBy(x => new { x.Data.Year, x.Data.Month, x.Data.Day });
-
-                var somaTransacoesAnteriores = _transacoes?.Where(x => x.Data.EhAntes(DataMes) &&
-                                                                        x.Conta.Selecionada && 
-                                                                        x.Categoria.Selecionada)
-                                                            .Sum(x => x.Valor);
-                var saldoInicialContas = Contas.Where(x => x.Selecionada).Sum(x => x.SaldoInicial);
-                var saldoFinalUltimoDiaMesAnterior = saldoInicialContas + somaTransacoesAnteriores.Value;
-
                 <tr>
                     <th colspan="6" style="text-align: right;">
-                        Saldo no dia @DataMes.UltimoDiaDoMesAnteriorFormat&nbsp;&nbsp;&nbsp; R$ @FormatarMoeda(saldoFinalUltimoDiaMesAnterior)
+                        Saldo no dia @DataMes.UltimoDiaDoMesAnteriorFormat&nbsp;&nbsp;&nbsp; R$ @FormatarMoeda(_saldoFinalUltimoDiaMesAnterior.Value)
                     </th>
                 </tr>
 
-                var saldoTemp = saldoFinalUltimoDiaMesAnterior;
+                var saldoTemp = _saldoFinalUltimoDiaMesAnterior;
                 var dia = 0;
+
+                var transacoesMesAtual = _transacoes?.Where(t => t.Data.Year == DataMes.Ano &&
+                                                                 t.Data.Month == DataMes.Mes &&
+                                                                 t.Conta.Selecionada &&
+                                                                 t.Categoria.Selecionada)
+                                                     .GroupBy(x => new { x.Data.Year, x.Data.Month, x.Data.Day });
 
                 @foreach (var diaTransacoes in transacoesMesAtual)
                 {
@@ -79,7 +72,7 @@
                     if (count == diaTransacoes.Count())
                     {
                         <tr>
-                            <td colspan="4" style="text-align: right;">Saldo do dia: R$ @FormatarMoeda(saldoTemp)</td>
+                            <td colspan="4" style="text-align: right;">Saldo do dia: R$ @FormatarMoeda(saldoTemp.Value)</td>
                         </tr>
                     }
                 }
@@ -95,6 +88,12 @@
     public DataMes DataMes { get; set; }
 
     private List<Transacao>? _transacoes { get; set; }
+
+    private decimal? _saldoFinalUltimoDiaMesAnterior =>
+     Contas.Where(x => x.Selecionada).Sum(x => x.SaldoInicial) + _transacoes?.Where(x => x.Data.EhAntes(DataMes) &&
+                                                                                         x.Conta.Selecionada &&
+                                                                                         x.Categoria.Selecionada)
+                                                                             .Sum(x => x.Valor);
 
     protected override async Task OnInitializedAsync()
     {
