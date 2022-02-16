@@ -9,5 +9,6 @@ namespace Neptune.Application
     {
         Task<List<Transacao>> ObterTodas();
         Task<Transacao> AdicionarTransacao(Transacao transacao);
+        Task<List<Mes>> ObterTodosMeses(List<Conta> contas);
     }
 }

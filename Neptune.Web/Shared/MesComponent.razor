@@ -1,0 +1,62 @@
+﻿@using Neptune.Web.ViewModel
+@inject ITransacaoService _transacaoService
+
+<div id="transacoes" style="float: left;margin: 8px;width: 100%;">
+    <table class="table transacoes">
+        <thead>
+            <tr>
+                <th>Descricao</th>
+                <th>Categoria</th>
+                <th>Conta</th>
+                <th>Valor</th>
+            </tr>
+        </thead>
+        <tbody>
+            <tr>
+                <th colspan="6" style="text-align: right;">
+                    Saldo no dia @Mes.UltimoDiaMesAnterior.ToString("d") &nbsp;&nbsp;&nbsp; R$ @Mes.SaldoUltimoDiaMesAnterior
+                </th>
+            </tr>
+            @{
+                decimal saldoDiaAnteriorMaisProximoTemp = Mes.SaldoUltimoDiaMesAnterior;
+            
+                @foreach(var dia in Mes.Dias)
+                {
+                    var diaTransacoes = dia.Transacoes.Where(x => x.Conta.Selecionada && x.Categoria.Selecionada);
+
+                    @if (diaTransacoes.Any())
+                    {
+                        <tr>
+                            <td colspan="4">@dia.Data</td>
+                        </tr>
+                    }
+
+                    @foreach(var t in diaTransacoes)
+                    {
+                        <tr style="background-color: #cccccc">
+                            <td>@t.Descricao</td>
+                            <td>@t.Categoria.Descricao</td>
+                            <td>@t.Conta.Nome</td>
+                            <td>@t.Valor</td>
+                        </tr>
+                    }
+
+                    @if (diaTransacoes.Any())
+                    {
+                        var saldoFinalDoDia = saldoDiaAnteriorMaisProximoTemp + diaTransacoes.Sum(x => x.Valor);
+                        <tr>
+                            <td colspan="4" style="text-align: right;">Saldo do dia: @saldoFinalDoDia</td>
+                        </tr>
+                        saldoDiaAnteriorMaisProximoTemp = saldoFinalDoDia;
+
+                    }
+                }
+            }
+        </tbody>
+    </table>
+</div>
+
+@code {
+    [Parameter]
+    public Mes? Mes { get; set; }
+}

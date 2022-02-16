@@ -23,21 +23,25 @@ namespace Neptune.Infra
             var cartaoCredito = contas[2];
 
             var categorias = _categoriaRepository.ObterTodas();
-            var @base = categorias[0];
-            var semCategoria = categorias[1];
-            var basico = categorias[2];
+            
+            var semCategoria = categorias[0];
+            var @base = categorias[1];
+            var basico55 = categorias[2];
             var alimentacao = categorias[3];
-            var livre = categorias[4];
+            var livre20 = categorias[4];
             var lazer = categorias[5];
             var casa = categorias[6];
 
             // MES PASSADO
-            _transacoes.Add(new Transacao(GetNextId(), DateTime.Now.AddMonths(-1), "transacaoooo", casa, -10, corrente));
+            //_transacoes.Add(new Transacao(GetNextId(), DateTime.Now.AddMonths(-1), "transaction last month", casa, -10, corrente));
 
             // MES ATUAL
-            _transacoes.Add(new Transacao(GetNextId(), DateTime.Now, "descricao", alimentacao, -10, corrente));
-            _transacoes.Add(new Transacao(GetNextId(), DateTime.Now, "zxcvb", livre, 10, poupanca));
-            _transacoes.Add(new Transacao(GetNextId(), DateTime.Now.AddDays(1), "transacao", lazer, 5, cartaoCredito));
+            _transacoes.Add(new Transacao(GetNextId(), DateTime.Now, "descricao w", alimentacao, -10, corrente));
+            _transacoes.Add(new Transacao(GetNextId(), DateTime.Now, "descricao z", livre20, 10, poupanca));
+
+            _transacoes.Add(new Transacao(GetNextId(), DateTime.Now.AddDays(1), "descricao y", lazer, 5, cartaoCredito));
+            _transacoes.Add(new Transacao(GetNextId(), DateTime.Now.AddDays(1), "descricao x", alimentacao, 1, poupanca));
+            _transacoes.Add(new Transacao(GetNextId(), DateTime.Now.AddDays(1), "descricao b", casa, 10, corrente));
         }
 
         public async Task<List<Transacao>> ObterTodas()

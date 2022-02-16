@@ -4,6 +4,7 @@
 
 @inject IContaService _contaService
 @inject ICategoriaService _categoriaService
+@inject ITransacaoService _transacaoService
 
 <div id="tudo" style="height: 100vh;width:60%;">
     <div id="coluna" style="width: 190px;">
@@ -24,26 +25,28 @@
         
         @if (modoAdicionarTransacao)
         {
-            <NovaTransacaoComponent @bind-ModoAdicionarTransacao="modoAdicionarTransacao" NovaTransacao="new Transacao().ObterNovaTransacao()" Contas="_contas" Categorias="_categorias"  />
+            <NovaTransacaoComponent @bind-ModoAdicionarTransacao="modoAdicionarTransacao"  Categorias="_categorias" Contas="_contas" 
+                NovaTransacao="new Transacao().ObterNovaTransacao()"  />
         }
 
-        <TransacoesComponent DataMes="_dataMes" Contas="_contas" />
+        <MesComponent Mes="_mesesTodos?.Where(x => x.DataMes.Ano == _dataMes.Ano && x.DataMes.Mes == _dataMes.Mes).FirstOrDefault()" />
     </div>
 
 </div>
 
 @code {
-    private Categorias? _categorias;
-    private List<Conta>? _contas;
     private DataMes _dataMes;
+    private List<Conta>? _contas;
+    private Categorias? _categorias;
+    private List<Mes>? _mesesTodos;
 
     private bool modoAdicionarTransacao = false;
 
     protected override async Task OnInitializedAsync()
     {
         _dataMes = new DataMes(DateTime.Now.Year, DateTime.Now.Month);
-
         _contas = await _contaService.ObterTodas();
         _categorias = await _categoriaService.ObterTodasComFilhos();
+        _mesesTodos = await _transacaoService.ObterTodosMeses(_contas);
     }
 }
