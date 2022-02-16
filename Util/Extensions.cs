@@ -19,5 +19,10 @@ namespace Util
             else
                 return mes - 1;
         }
+
+        public static string FormatarMoeda(this decimal valor)
+        {
+            return $"R$ {((valor.ToString().Contains('.') || valor.ToString().Contains(',')) ? valor.ToString() : valor + ",00")}";
+        }
     }
 }

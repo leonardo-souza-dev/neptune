@@ -1,4 +1,6 @@
 ﻿@using Neptune.Web.ViewModel
+
+
 @inject ITransacaoService _transacaoService
 
 <div id="transacoes" style="float: left;margin: 8px;width: 100%;">
@@ -14,7 +16,7 @@
         <tbody>
             <tr>
                 <th colspan="6" style="text-align: right;">
-                    Saldo no dia @Mes.UltimoDiaMesAnterior.ToString("d") &nbsp;&nbsp;&nbsp; R$ @Mes.SaldoUltimoDiaMesAnterior
+                    Saldo no dia @Mes.UltimoDiaMesAnterior.ToString("d") &nbsp;&nbsp;&nbsp; R$ @Mes.SaldoUltimoDiaMesAnterior.FormatarMoeda()
                 </th>
             </tr>
             @{
@@ -37,18 +39,17 @@
                             <td>@t.Descricao</td>
                             <td>@t.Categoria.Descricao</td>
                             <td>@t.Conta.Nome</td>
-                            <td>@t.Valor</td>
+                            <td>@t.Valor.FormatarMoeda()</td>
                         </tr>
                     }
 
                     @if (diaTransacoes.Any())
                     {
-                        var saldoFinalDoDia = saldoDiaAnteriorMaisProximoTemp + diaTransacoes.Sum(x => x.Valor);
+                        decimal saldoFinalDoDia = saldoDiaAnteriorMaisProximoTemp + diaTransacoes.Sum(x => x.Valor);
                         <tr>
-                            <td colspan="4" style="text-align: right;">Saldo do dia: @saldoFinalDoDia</td>
+                            <td colspan="4" style="text-align: right;">Saldo do dia: @saldoFinalDoDia.FormatarMoeda()</td>
                         </tr>
                         saldoDiaAnteriorMaisProximoTemp = saldoFinalDoDia;
-
                     }
                 }
             }

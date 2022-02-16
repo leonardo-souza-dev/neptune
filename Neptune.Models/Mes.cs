@@ -1,7 +1,6 @@
 ﻿using System;
 using System.Linq;
 using System.Collections.Generic;
-using Neptune.Domain.Utils;
 
 namespace Neptune.Domain
 {
@@ -21,11 +20,6 @@ namespace Neptune.Domain
             var transacoesDia = transacoes.GroupBy(x => new { x.Data.Year, x.Data.Month, x.Data.Day }).ToList();
 
             transacoesDia.ForEach(t => Dias.Add(new Dia(t.ToList(), SaldoUltimoDiaMesAnterior)));
-        }
-
-        public string FormatarMoeda(decimal valor)
-        {
-            return (valor.ToString().Contains(".") || valor.ToString().Contains(",")) ? valor.ToString() : valor + ",00";
         }
     }
 }
